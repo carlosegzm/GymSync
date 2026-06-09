@@ -26,6 +26,7 @@ public class PhysicalAssessmentMapper {
                 .assessmentDate(physicalAssessment.getAssessmentDate())
                 .weight(physicalAssessment.getWeight())
                 .height(physicalAssessment.getHeight())
+                .bodyFatPercentage(physicalAssessment.getBodyFatPercentage())
                 .clientId(physicalAssessment.getClient().getId())
                 .trainerId(physicalAssessment.getTrainer().getId())
                 .build();
