@@ -1,6 +1,6 @@
 // src/AppLayout.jsx
 import { Outlet } from 'react-router-dom';
-import NavBar from '../components/NavBar';
+import NavBar from '../NavBar';
 
 /**
  * Layout Principal da Aplicação.
