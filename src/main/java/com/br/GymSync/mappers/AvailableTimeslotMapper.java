@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class AvailableTimeslotMapper {
 
-    private AvailableTimeslot toEntity(AvailableTimeslotRequestDTO request, User trainer){
+    public AvailableTimeslot toEntity(AvailableTimeslotRequestDTO request, User trainer){
         return AvailableTimeslot.builder()
                 .date(request.date())
                 .startTime(request.startTime())
@@ -19,7 +19,7 @@ public class AvailableTimeslotMapper {
                 .build();
     }
 
-    private AvailableTimeslotResponseDTO toResponse(AvailableTimeslot availableTimeslot){
+    public AvailableTimeslotResponseDTO toResponse(AvailableTimeslot availableTimeslot){
         return AvailableTimeslotResponseDTO.builder()
                 .id(availableTimeslot.getId())
                 .date(availableTimeslot.getDate())
