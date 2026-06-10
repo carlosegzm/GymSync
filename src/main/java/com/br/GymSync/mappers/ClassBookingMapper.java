@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Component
 public class ClassBookingMapper {
 
-    private ClassBooking toEntity(ClassBookingRequestDTO request, User client, GroupClass groupClass){
+    public ClassBooking toEntity(ClassBookingRequestDTO request, User client, GroupClass groupClass){
         return ClassBooking.builder()
                 .client(client)
                 .groupClass(groupClass)
@@ -20,7 +20,7 @@ public class ClassBookingMapper {
                 .build();
     }
 
-    private ClassBookingResponseDTO toResponse(ClassBooking classBooking){
+    public ClassBookingResponseDTO toResponse(ClassBooking classBooking){
         return ClassBookingResponseDTO.builder()
                 .id(classBooking.getId())
                 .bookingDateTime(classBooking.getBookingDateTime())

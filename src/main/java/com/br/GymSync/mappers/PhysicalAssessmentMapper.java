@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class PhysicalAssessmentMapper {
 
-    private PhysicalAssessment toEntity(PhysicalAssessmentRequestDTO request, User client, User trainer){
+    public PhysicalAssessment toEntity(PhysicalAssessmentRequestDTO request, User client, User trainer){
         return PhysicalAssessment.builder()
                 .assessmentDate(request.assessmentDate())
                 .weight(request.weight())
@@ -20,7 +20,7 @@ public class PhysicalAssessmentMapper {
                 .build();
     }
 
-    private PhysicalAssessmentResponseDTO toResponse(PhysicalAssessment physicalAssessment) {
+    public PhysicalAssessmentResponseDTO toResponse(PhysicalAssessment physicalAssessment) {
         return PhysicalAssessmentResponseDTO.builder()
                 .id(physicalAssessment.getId())
                 .assessmentDate(physicalAssessment.getAssessmentDate())

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class GroupClassMapper {
 
-    private GroupClass toEntity(GroupClassRequestDTO request, User trainer) {
+    public GroupClass toEntity(GroupClassRequestDTO request, User trainer) {
         return GroupClass.builder()
                 .name(request.name())
                 .classType(request.classType())
@@ -19,7 +19,7 @@ public class GroupClassMapper {
                 .build();
     }
 
-    private GroupClassResponseDTO toResponse(GroupClass groupClass) {
+    public GroupClassResponseDTO toResponse(GroupClass groupClass) {
         return GroupClassResponseDTO.builder()
                 .id(groupClass.getId())
                 .name(groupClass.getName())
