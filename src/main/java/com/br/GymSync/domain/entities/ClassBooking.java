@@ -1,5 +1,6 @@
 package com.br.GymSync.domain.entities;
 
+import com.br.GymSync.domain.enums.BookingStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -29,5 +30,9 @@ public class ClassBooking {
     @ManyToOne
     @JoinColumn(name = "group_class_id", nullable = false)
     GroupClass groupClass;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private BookingStatus status = BookingStatus.PENDING;
 
 }
