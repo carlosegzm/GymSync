@@ -1,40 +1,35 @@
 package com.br.GymSync.domain.entities;
 
-import com.br.GymSync.domain.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Builder
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
-@Table(name = "users")
-public class User {
+@Table(name = "membership_pans")
+public class MembershipPlan {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(nullable = false, updatable = false)
     private UUID id;
 
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false, unique = true)
-    private String email;
+    @Column(nullable = false)
+    private BigDecimal price;
 
     @Column(nullable = false)
-    private String password;
-
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private Role role;
+    private Integer durationInMonths;
 
     @ManyToOne
-    @JoinColumn(name = "gym_id")
+    @JoinColumn(name = "gym_id", nullable = false)
     private Gym gym;
 
 }
