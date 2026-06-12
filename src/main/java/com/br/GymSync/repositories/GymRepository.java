@@ -7,5 +7,6 @@ import org.springframework.stereotype.Repository;
 import java.util.UUID;
 
 @Repository
-public interface GymRepositoriy extends JpaRepository<Gym, UUID> {
+public interface GymRepository extends JpaRepository<Gym, UUID> {
+    boolean existsByCnpj(String cnpj);
 }

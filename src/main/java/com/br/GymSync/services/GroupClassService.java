@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class GroupClassService {
@@ -34,4 +36,13 @@ public class GroupClassService {
         return groupClassRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Group Class not found with ID: " + id));
     }
+
+    @Transactional(readOnly = true)
+    public List<GroupClassResponseDTO> listAllClasses() {
+        return groupClassRepository.findAll()
+                .stream()
+                .map(groupClassMapper::toResponse)
+                .toList();
+    }
+
 }

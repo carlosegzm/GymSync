@@ -5,6 +5,7 @@ import com.br.GymSync.domain.entities.AvailableTimeslot;
 import com.br.GymSync.domain.entities.User;
 import com.br.GymSync.domain.enums.Role;
 import com.br.GymSync.exceptions.custom.InvalidUserRoleException;
+import com.br.GymSync.exceptions.custom.ResourceNotFoundException;
 import com.br.GymSync.mappers.AvailableTimeslotMapper;
 import com.br.GymSync.repositories.AvailableTimeslotRepository;
 import lombok.RequiredArgsConstructor;
@@ -57,4 +58,43 @@ public class AvailableTimeslotService {
         List<AvailableTimeslot> savedSlots = timeslotRepository.saveAll(slotsToSave);
         return savedSlots.stream().map(timeslotMapper::toResponse).toList();
     }
+
+    @Transactional
+    public void cancelTimeslot(Long slotId) {
+        AvailableTimeslot slot = timeslotRepository.findById(slotId)
+                .orElseThrow(() -> new ResourceNotFoundException("Timeslot not found."));
+
+        if (!slot.isAvailable()) {
+            throw new IllegalStateException("Cannot cancel a timeslot that has already been booked by a client.");
+        }
+
+        timeslotRepository.delete(slot);
+    }
+
+    @Transactional(readOnly = true)
+    public List<AvailableTimeslotResponseDTO> listAvailableSlotsByTrainer(UUID trainerId) {
+        return timeslotRepository.findByTrainerIdAndAvailableTrue(trainerId)
+                .stream()
+                .map(timeslotMapper::toResponse)
+                .toList();
+    }
+
+    @Transactional
+    public AvailableTimeslotResponseDTO bookTimeslot(Long slotId, UUID clientId) {
+        AvailableTimeslot slot = timeslotRepository.findById(slotId)
+                .orElseThrow(() -> new ResourceNotFoundException("Timeslot not found with ID: " + slotId));
+
+        if (!slot.isAvailable()) {
+            throw new IllegalStateException("This timeslot is already booked by another client.");
+        }
+
+        User client = userService.findEntityById(clientId);
+
+        slot.setAvailable(false);
+        slot.setClient(client);
+
+        AvailableTimeslot savedSlot = timeslotRepository.save(slot);
+        return timeslotMapper.toResponse(savedSlot);
+    }
+
 }
