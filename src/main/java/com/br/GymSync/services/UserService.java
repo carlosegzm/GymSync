@@ -4,6 +4,7 @@ import com.br.GymSync.dtos.user.UserRequestDTO;
 import com.br.GymSync.dtos.user.UserResponseDTO;
 import com.br.GymSync.domain.entities.User;
 import com.br.GymSync.exceptions.custom.EmailAlreadyExistsException;
+import com.br.GymSync.exceptions.custom.InvalidCredentialsException;
 import com.br.GymSync.exceptions.custom.ResourceNotFoundException;
 import com.br.GymSync.mappers.UserMapper;
 import com.br.GymSync.repositories.UserRepository;
@@ -37,4 +38,17 @@ public class UserService {
         return userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + id));
     }
+
+    @Transactional(readOnly = true)
+    public User login(String email, String password) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new InvalidCredentialsException("Invalid email or password."));
+
+        if (!user.getPassword().equals(password)) {
+            throw new InvalidCredentialsException("Invalid email or password.");
+        }
+
+        return user;
+    }
+
 }
