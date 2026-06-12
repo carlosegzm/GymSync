@@ -36,4 +36,7 @@ public class AvailableTimeslot {
     @JoinColumn(name = "trainer_id", nullable = false)
     private User trainer;
 
+    @ManyToOne
+    @JoinColumn(name = "client_id")
+    private User client;
 }
