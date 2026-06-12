@@ -4,16 +4,21 @@ import { createRoot } from "react-dom/client";
 import { createHashRouter, RouterProvider } from "react-router-dom";
 
 //Paginas
-import Dashboard from "./pages/Dashboard.jsx";
-import Login from "./pages/Login.jsx";
-import Profile from "./pages/Profile.jsx";
+import Dashboard from "./pages/Dashboard.jsx"
+import Login from "./pages/auth/Login.jsx";
+import Profile from "./pages/user/Profile.jsx";
+import Register from './pages/auth/Register.jsx';
 
 //Layout e seguranca
-import AppLayout from './layout/AppLayout';
+import AppLayout from './components/layout/AppLayout.jsx';
 import ProtectedRoute from './components/commom/ProtectedRoute';
 
 // Contexto
 import { AuthProvider } from './context/AuthContext';
+
+//Estilização - bootstrap
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.min.js"
 
 /**
  * Entry Point da aplicação
@@ -54,6 +59,10 @@ const router = createHashRouter([
 			{
 				path: 'login',
 				element: <Login />,
+			},
+			{
+				path: 'register',
+				element: <Register />,
 			},
 		],
 	},

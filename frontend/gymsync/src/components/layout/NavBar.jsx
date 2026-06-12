@@ -1,8 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { Navbar, Nav, Container, NavDropdown } from 'react-bootstrap';
-import { useAuth } from '../context/AuthContext';
-
-//TODO
+import { Navbar, Nav, Container, NavDropdown } from 'react-bootstrap'
+import { useAuth } from '../../context/AuthContext';
 
 /**
  * Barra de Navegação Principal (Topo).
@@ -73,6 +71,7 @@ function NavBar() {
 							// Links para usuário DESLOGADO
 							<>
 								<Nav.Link as={Link} to="/login">Login</Nav.Link>
+								<Nav.Link as={Link} to="/register">Cadastrar</Nav.Link>
 							</>
 						)}
 					</Nav>
