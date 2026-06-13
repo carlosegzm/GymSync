@@ -5,14 +5,8 @@ import { useNavigate } from 'react-router-dom';
 // context
 import { useAuth } from '../../context/AuthContext';
 
-// commons
-// ...
-
 // components
-// ...
-
-// services and hooks
-// ...
+import Button from '../../components/commom/Button';
 
 /**
  * Tela de Perfil do Usuário.
@@ -35,8 +29,59 @@ export default function Profile() {
     if (!user) return <p>Carregando...</p>;
 
     return (
-        <div>
-            <p>TODO</p>
+        <div className="container mt-5">
+            <div className="row justify-content-center">
+                <div className="col-md-6 col-lg-5">
+
+                    {/* Card do Perfil estilo Protótipo */}
+                    <div className="card shadow-sm border-0" style={{ borderRadius: '15px', backgroundColor: '#fdfdf5' }}> {/* Cor do fundo do seu desenho */}
+                        <div className="card-body text-center p-5 mb-6">
+
+                            {/* Pfp */}
+                            <div className="mb-4 position-relative d-inline-block">
+                                <img
+                                    src={user.fotoPerfil}
+                                    alt="Foto de Perfil"
+                                    className="rounded-circle border border-3 border-white shadow-sm"
+                                    style={{
+                                        width: '120px',
+                                        height: '120px',
+                                        objectFit: 'cover',
+                                        backgroundColor: '#eee'
+                                    }}
+                                />
+                            </div>
+
+                            {/* Info Cadastrais */}
+                            <div className="bg-white p-4 rounded-3 shadow-sm mb-4 text-start">
+                                <h5 className="mb-3 text-secondary border-bottom pb-2">Informações Cadastrais</h5>
+
+                                <div className="mb-3">
+                                    <label className="small text-muted fw-bold">NOME</label>
+                                    <p className="m-0 lead">{user.nome}</p>
+                                </div>
+
+                                <div className="mb-3">
+                                    <label className="small text-muted fw-bold">EMAIL</label>
+                                    <p className="m-0">{user.email}</p>
+                                </div>
+
+                                <div className="mb-3">
+                                    <label className="small text-muted fw-bold">ROLE</label>
+                                    <p className="m-0">{user.role}</p>
+                                </div>
+                            </div>
+
+                            <div className="bg-white p-4 rounded-3 shadow-sm mb-4 text-start">
+                                <h5 className="mb-3 text-secondary border-bottom pb-2">Implementar Página de perfil</h5>
+                            </div>
+                            
+
+                        </div>
+                    </div>
+                
+                </div>
+            </div>
         </div>
     );
 }

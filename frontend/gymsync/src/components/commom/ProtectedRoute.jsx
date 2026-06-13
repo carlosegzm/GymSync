@@ -23,6 +23,8 @@ const ProtectedRoute = ({ children }) => {
 	const { isAuthenticated, isLoading } = useAuth();
 	const location = useLocation();
 
+	console.log((isAuthenticated))
+
 	if (isLoading) {
 		return <p>Carregando...</p>;
 	}
