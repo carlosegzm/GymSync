@@ -9,7 +9,7 @@ import Login from "./pages/Login.jsx";
 import Profile from "./pages/Profile.jsx";
 
 //Layout e seguranca
-import AppLayout from './layout/AppLayout';
+import AppLayout from './components/layout/AppLayout.jsx';
 import ProtectedRoute from './components/commom/ProtectedRoute';
 
 // Contexto

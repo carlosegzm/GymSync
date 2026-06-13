@@ -9,7 +9,7 @@ const MOCK_USER = {
 	nome: 'Carlos Eduardo',
 	email: 'carlos@gymsync.com',
 	fotoPerfil: null,
-	role: 'ALUNO', // 'ALUNO' | 'TREINADOR'
+	role: 'TREINADOR', // 'ALUNO' | 'TREINADOR'
 };
 
 export const AuthProvider = ({ children }) => {
