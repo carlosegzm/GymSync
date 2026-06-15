@@ -1,17 +1,44 @@
+import RegisterForm from '../../components/forms/auth/RegisterForm';
+import styles from './AuthPage.module.css';
+
 /**
  * Página de Cadastro.
  *
  * @component
  * @description
- * Wrapper visual para o formulário de registro. Centraliza o componente `<RegisterForm />`
- * na tela e aplica o layout padrão de formulários.
+ * Wrapper visual idêntico ao Login, trocando apenas o componente de formulário.
+ * Toda a lógica de registro reside em {@link RegisterForm}.
  */
 export default function Register() {
   return (
-    <div className="form-container">
-      <div className="row justify-content-center">
-        <div className="col-lg-6 col-md-8 col-sm-10">
-          <h2 className="text-center mb-4">Cadastro</h2>
+    <div className={styles.page}>
+      {/* Lado esquerdo — branding */}
+      <div className={styles.brand}>
+        <div className={styles.brandContent}>
+          <p className={styles.brandEyebrow}>Sistema de Gestão</p>
+          <h1 className={styles.brandLogo}>
+            <span className={styles.brandAccent}>GYM</span>SYNC
+          </h1>
+          <p className={styles.brandTagline}>
+            Comece hoje. Acompanhe cada avanço da sua jornada.
+          </p>
+
+          <ul className={styles.brandFeatures}>
+            <li><span className={styles.featureDot} />Perfil de aluno ou treinador</li>
+            <li><span className={styles.featureDot} />Histórico completo de avaliações</li>
+            <li><span className={styles.featureDot} />Gráficos de evolução mensal</li>
+          </ul>
+        </div>
+
+        <div className={styles.brandDecor} aria-hidden="true">
+          <div className={styles.brandCircle} />
+        </div>
+      </div>
+
+      {/* Lado direito — formulário */}
+      <div className={styles.formSide}>
+        <div className={styles.formBox}>
+          <RegisterForm />
         </div>
       </div>
     </div>

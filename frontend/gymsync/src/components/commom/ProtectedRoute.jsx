@@ -1,38 +1,48 @@
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
+import { ROLE_HOME } from '../../routing/routeConfig';
+
 /**
- * Componente de rota protegida (HOC - Higher Order Component).
+ * Protege rotas por autenticação e/ou role.
  *
- * @component
- * @description
- * Envolve componentes que requerem autenticação. Gerencia o fluxo de acesso:
- * 1. **Loading:** Enquanto verifica o token, exibe "Carregando...".
- * 2. **Não Autenticado:** Redireciona para `/login` salvando a localização atual (para retorno pós-login).
- * 3. **Autenticado:** Renderiza o conteúdo filho (`children`).
- *
- * @param {Object} props
- * @param {React.ReactNode} props.children - O componente da página que deve ser protegido.
+ * @param {React.ReactNode} children  - Conteúdo da rota protegida
+ * @param {string}          [role]    - Role exigido (ex: 'ALUNO', 'TREINADOR').
+ *                                      Se omitido, aceita qualquer usuário autenticado.
  *
  * @example
- * <ProtectedRoute>
- *     <Dashboard />
- * </ProtectedRoute>
+ * // Qualquer usuário autenticado:
+ * <ProtectedRoute><Dashboard /></ProtectedRoute>
+ *
+ * // Apenas treinadores:
+ * <ProtectedRoute role="TREINADOR"><AgendaTreinador /></ProtectedRoute>
  */
-const ProtectedRoute = ({ children }) => {
-	const { isAuthenticated, isLoading } = useAuth();
+const ProtectedRoute = ({ children, role }) => {
+	const { isAuthenticated, isLoading, user } = useAuth();
 	const location = useLocation();
 
-	console.log((isAuthenticated))
-
 	if (isLoading) {
-		return <p>Carregando...</p>;
+		return (
+			<div style={{
+				display: 'flex', alignItems: 'center', justifyContent: 'center',
+				height: '100vh', background: 'var(--bg-base)', color: 'var(--text-secondary)',
+				fontFamily: 'var(--font-body)',
+			}}>
+				Carregando...
+			</div>
+		);
 	}
 
 	// Se não estiver autenticado, redireciona para a página de login
 	if (!isAuthenticated) {
 		return <Navigate to="/login" state={{ from: location }} replace />;
 	}
+
+	// Role incorreto: redireciona para o home do role atual do usuário
+  if (role && user?.role !== role) {
+    const home = ROLE_HOME[user?.role] ?? '/login';
+    return <Navigate to={home} replace />;
+  }
 
 	// Se estiver autenticado e o loading terminou, renderiza o componente filho (Protected child)
 	return children;

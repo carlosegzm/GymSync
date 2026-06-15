@@ -19,6 +19,7 @@ import { AuthProvider } from './context/AuthContext';
 //Estilização - bootstrap
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.min.js"
+import './styles/global.css'
 
 /**
  * Entry Point da aplicação
@@ -40,6 +41,14 @@ const router = createHashRouter([
 			// Rotas Protegidas
 			{
 				index: true,
+				element: (
+					<ProtectedRoute>
+						<Dashboard />
+					</ProtectedRoute>
+				),
+			},
+			{ // redundancia pra evitar 404
+				path: 'dashboard',
 				element: (
 					<ProtectedRoute>
 						<Dashboard />
