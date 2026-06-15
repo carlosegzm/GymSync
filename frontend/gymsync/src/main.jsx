@@ -47,6 +47,14 @@ const router = createHashRouter([
 					</ProtectedRoute>
 				),
 			},
+			{ // redundancia pra evitar 404
+				path: 'dashboard',
+				element: (
+					<ProtectedRoute>
+						<Dashboard />
+					</ProtectedRoute>
+				),
+			},
 			{
 				path: 'profile',
 				element: (

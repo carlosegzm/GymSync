@@ -16,14 +16,18 @@
 export const ROLES = {
   ALUNO:     'ALUNO',
   TREINADOR: 'TREINADOR',
-  // ADMIN:  'ADMIN',   ← descomente quando precisar
+  // ADMIN:  'ADMIN', 
 };
 
 /** Rota de fallback para cada role após o login */
 export const ROLE_HOME = {
-  [ROLES.ALUNO]:     '/aluno/dashboard',
-  [ROLES.TREINADOR]: '/treinador/dashboard',
+  [ROLES.ALUNO]:     '/dashboard',
+  [ROLES.TREINADOR]: '/dashboard',
   // [ROLES.ADMIN]:  '/admin/dashboard',
+
+  // futuramente:
+  // [ROLES.ALUNO]:     '/aluno/dashboard',
+  // [ROLES.TREINADOR]: '/treinador/dashboard',
 };
 
 /**

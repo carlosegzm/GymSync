@@ -5,7 +5,10 @@ import { useNavigate, Link } from 'react-router-dom';
 // context
 import { useAuth } from '../../../context/AuthContext';
 
+// services 
 import authService from '../../../services/authService.mock';
+
+// routing
 import { ROLE_HOME, ROLES } from '../../../routing/routeConfig';
 
 // styles
@@ -62,7 +65,7 @@ export default function RegisterForm() {
         setError('');
 
         if (!name.trim()) { setError('Informe seu nome.'); return; }
-        if (!email.trim()) { setError('Informe o e-mFail.'); return; }
+        if (!email.trim()) { setError('Informe o e-mail.'); return; }
         if (strength.score < 2) { setError('Escolha uma senha mais forte.'); return; }
         if (password !== confirmPassword) { setError('As senhas não coincidem.'); return; }
 
