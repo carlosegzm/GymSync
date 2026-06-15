@@ -19,6 +19,7 @@ import { AuthProvider } from './context/AuthContext';
 //Estilização - bootstrap
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.min.js"
+import './styles/global.css'
 
 /**
  * Entry Point da aplicação
