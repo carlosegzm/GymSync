@@ -23,7 +23,9 @@ CREATE TABLE available_timeslot (
     end_time TIME NOT NULL,
     available BOOLEAN NOT NULL,
     trainer_id UUID NOT NULL,
-    CONSTRAINT fk_timeslot_trainer FOREIGN KEY (trainer_id) REFERENCES users(id)
+    client_id UUID,
+    CONSTRAINT fk_timeslot_trainer FOREIGN KEY (trainer_id) REFERENCES users(id),
+    CONSTRAINT fk_timeslot_client FOREIGN KEY (client_id) REFERENCES users(id)
 );
 
 CREATE TABLE class_booking (

@@ -1,0 +1,42 @@
+import api from './api';
+
+/**
+ * Authentication service.
+ * Handles login and registration against the real Spring Boot backend.
+ */
+const authService = {
+	/**
+	 * Authenticates a user via query params (as required by the backend).
+	 * POST /api/users/login?email=...&password=...
+	 *
+	 * @param {string} email
+	 * @param {string} password
+	 * @returns {Promise<{ id, name, email, role, gym: { id, name } }>}
+	 */
+	async login(email, password) {
+		const { data } = await api.post('/api/users/login', null, {
+			params: { email, password },
+		});
+		return data;
+	},
+
+	/**
+	 * Registers a new user (CLIENT role) via JSON body.
+	 * POST /api/users/register
+	 *
+	 * @param {{ name, email, password, gymId }} payload
+	 * @returns {Promise<{ id, name, email, role }>}
+	 */
+	async register({ name, email, password, gymId }) {
+		const { data } = await api.post('/api/users/register', {
+			name,
+			email,
+			password,
+			role: 'CLIENT',
+			gymId,
+		});
+		return data;
+	},
+};
+
+export default authService;
