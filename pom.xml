@@ -43,6 +43,21 @@
 			<artifactId>spring-boot-starter-webmvc</artifactId>
 		</dependency>
 
+		<!-- Checar pra ver se não tem erro -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+
+		<!-- Nem sei se é necessário -->
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<!-- Possivel erro de compatibilidade com a versão do spring -->
+			<version>3.0.2</version> 
+		</dependency>
+
+
 		<!-- Container efemero prórpio do spring -->
 		<!-- <dependency>
 			<groupId>org.springframework.boot</groupId>
