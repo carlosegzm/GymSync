@@ -4,10 +4,10 @@ import { createRoot } from "react-dom/client";
 import { createHashRouter, RouterProvider } from "react-router-dom";
 
 //Paginas
-import Dashboard from "./pages/Dashboard.jsx"
 import Login from "./pages/auth/Login.jsx";
-import Profile from "./pages/user/Profile.jsx";
 import Register from './pages/auth/Register.jsx';
+import Dashboard from "./pages/Dashboard.jsx"
+import Schedule from './pages/schedule/Schedule.jsx';
 
 //Layout e seguranca
 import AppLayout from './components/layout/AppLayout.jsx';
@@ -16,7 +16,7 @@ import ProtectedRoute from './components/commom/ProtectedRoute';
 // Contexto
 import { AuthProvider } from './context/AuthContext';
 
-//Estilização - bootstrap
+//Estilização
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.min.js"
 import './styles/global.css'
@@ -32,6 +32,12 @@ import './styles/global.css'
  * as outras páginas são renderizadas dentro dele (via Outlet).
  * 3. **Providers:** Envolve toda a app no `AuthProvider` para garantir que
  * o estado de login esteja acessível globalmente.
+ * 
+ * Estrutura das rotas:
+ *   /login    → LoginPage   (public)
+ *   /register → RegisterPage (public — used by admins to add students)
+ *   /         → Dashboard   (protected, redirects to /login if not authenticated)
+ *   /schedule → Schedule    (protected — group class booking)
  */
 const router = createHashRouter([
 	{
@@ -43,7 +49,7 @@ const router = createHashRouter([
 				index: true,
 				element: (
 					<ProtectedRoute>
-						<Dashboard />
+						<Navigate to="/dashboard" replace />
 					</ProtectedRoute>
 				),
 			},
@@ -56,23 +62,17 @@ const router = createHashRouter([
 				),
 			},
 			{
-				path: 'profile',
+				path: 'schedule',
 				element: (
 					<ProtectedRoute>
-						<Profile />
+						<Schedule />
 					</ProtectedRoute>
 				),
 			},
 
 			// Rotas Públicas que compartilham o mesmo layout
-			{
-				path: 'login',
-				element: <Login />,
-			},
-			{
-				path: 'register',
-				element: <Register />,
-			},
+			{ path: 'login',    element: <Login /> },
+			{ path: 'register', element: <Register /> },
 		],
 	},
 

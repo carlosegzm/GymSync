@@ -6,7 +6,7 @@ import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
 
 // services
-import authService from '../../../services/authService.mock';
+import authService from '../../../services/authService';
 
 // routing
 import { ROLE_HOME } from "../../../routing/routeConfig";
@@ -48,9 +48,10 @@ export default function LoginForm() {
 
 			// Redirect to the route the user was trying to access,
 			// or to the default home for their role.
-			const destination = location.state?.from?.pathname ?? ROLE_HOME[userData.role] ?? '/';
+			const destination = location.state?.from?.pathname ?? '/dashboard';
 			navigate(destination, { replace: true });
 		} catch (err) {
+			const msg = err.response?.data?.message ?? err.message ?? 'Login failed. Please try again.';
 			setError(err.message ?? 'Login failed. Please try again.');
 		} finally {
 			setLoading(false);
@@ -63,15 +64,6 @@ export default function LoginForm() {
 				<h2 className={styles.formTitle}>Sign in</h2>
 				<p className={styles.formSubtitle}>Access your GymSync account</p>
 			</div>
-
-			{/* Test credentials visible in DEV only */}
-			{import.meta.env.DEV && (
-				<div className={styles.devHint}>
-					<span>🧪 Mock active</span>
-					<code>aluno@gymsync.com / 123456</code>
-					<code>treinador@gymsync.com / 123456</code>
-				</div>
-			)}
 
 			{/* Email Field */}
 			<div className={styles.field}>

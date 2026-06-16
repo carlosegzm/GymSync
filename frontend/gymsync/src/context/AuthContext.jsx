@@ -1,39 +1,74 @@
-// MOCK — Será substituido pelo AuthContext.jsx real quando o backend estiver pronto
+// React
 import React, { createContext, useContext, useState } from 'react';
+
+// service
+import authService from '../services/authService';
 
 const AuthContext = createContext(null);
 
-// ALternar entre 'ALUNO' e 'TREINADOR' para testar os paineis (quando existirem kkkkkk)
-const MOCK_USER = {
-	id: 1,
-	nome: 'Carlos Eduardo',
-	email: 'carlos@gymsync.com',
-	fotoPerfil: null,
-	role: 'TREINADOR', // 'ALUNO' | 'TREINADOR'
-};
-
+/**
+ * Provides authentication state to the entire application.
+ * 
+ * Persistência no localStorage:
+ *   - 'user'  → { id, name, email, role }
+ *   - 'gymId' → gym.id da resposta do login
+ *   - 'token' → JWT (se o futuramente o back responder)
+ */
 export const AuthProvider = ({ children }) => {
-	const [user, setUser] = useState(MOCK_USER);
-	const [isAuthenticated, setIsAuthenticated] = useState(true);
-	const isLoading = false;
+	const [user, setUser] = useState(null);
+	const [isAuthenticated, setIsAuthenticated] = useState(false);
+	const [isLoading, setIsLoading] = useState(true);
 
+	// Carrega a sessão do localstorage ao carregar uma página
+	useEffect(() => {
+		try {
+			const stored = localStorage.getItem('user');
+			if (stored) {
+				setUser(JSON.parse(stored));
+				setIsAuthenticated(true);
+			}
+		} catch {
+			localStorage.clear();
+		} finally {
+			setIsLoading(false);
+		}
+	}, []);
+
+	/**
+	 * Salva o user e o gymId depois de um login bem sucedido
+	 *
+	 * @param {{ id, name, email, role, gym: { id, name } }} data
+	 */
 	const login = (data) => {
 		const userToStore = {
-			id: data.id,
-			nome: data.nome,
-			fotoPerfil: data.fotoPerfil,
+			id:    data.id,
+			name:  data.name,
 			email: data.email,
-			role: data.role,
+			role:  data.role,
 		};
+
+		localStorage.setItem('user',  JSON.stringify(userToStore));
+		localStorage.setItem('gymId', data.gym?.id ?? '');
+
 		setUser(userToStore);
 		setIsAuthenticated(true);
 	};
 
-	const updateUser = (newUserData) => {
-		setUser((prev) => ({ ...prev, ...newUserData }));
+	/**
+	 * Atualiza a informação de um usuário
+	 * Preserva id e Role (por enquanto)
+	 *
+	 * @param {Partial<typeof user>} newData
+	 */
+	const updateUser = (newData) => {
+		const merged = { ...user, ...newData };
+		localStorage.setItem('user', JSON.stringify(merged));
+		setUser(merged);
 	};
 
+	// limpa a sessão e redireciona para o login
 	const logout = () => {
+		localStorage.clear();
 		setUser(null);
 		setIsAuthenticated(false);
 	};
@@ -47,9 +82,19 @@ export const AuthProvider = ({ children }) => {
 		updateUser
 	};
 
-	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+	return (
+		<AuthContext.Provider value={{ user, isAuthenticated, isLoading, login, logout, updateUser }}>
+			{children}
+		</AuthContext.Provider>
+	);
 };
 
+/**
+ * Hook to access the auth context from any component.
+ * Must be used inside AuthProvider.
+ *
+ * @returns {{ user, isAuthenticated, isLoading, login, logout, updateUser }}
+ */
 export const useAuth = () => {
 	const context = useContext(AuthContext);
 	if (!context) {

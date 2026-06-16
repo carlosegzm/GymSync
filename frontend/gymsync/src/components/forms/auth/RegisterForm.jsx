@@ -6,7 +6,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 
 // services 
-import authService from '../../../services/authService.mock';
+import authService from '../../../services/authService';
 
 // routing
 import { ROLE_HOME, ROLES } from '../../../routing/routeConfig';
@@ -53,29 +53,38 @@ export default function RegisterForm() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirm] = useState('');
-    const [role, setRole] = useState(ROLES.ALUNO);
     const [visiblePassword, setVisiblePassword] = useState(false);
     const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
     const [loading, setLoading] = useState(false);
 
     const strength = useMemo(() => calculatePasswordStrength(password), [password]);
 
     async function handleSubmit(e) {
         e.preventDefault();
-        setError('');
+		setError('');
+		setSuccess('');
 
         if (!name.trim()) { setError('Informe seu nome.'); return; }
         if (!email.trim()) { setError('Informe o e-mail.'); return; }
         if (strength.score < 2) { setError('Escolha uma senha mais forte.'); return; }
         if (password !== confirmPassword) { setError('As senhas não coincidem.'); return; }
 
+        // gymId was stored in localStorage when the admin logged in
+        const gymId = localStorage.getItem('gymId');
+        if (!gymId) {
+            setError('Gym not found. Please ask an admin to log in first.');
+            return;
+        }
+
         setLoading(true);
         try {
-            const userData = await authService.register({ name, email, password, role });
-            login(userData);
-            navigate(ROLE_HOME[userData.role] ?? '/', { replace: true });
+            await authService.register({ name, email, password, gymId });
+            setSuccess('Account created! Redirecting to login...');
+            setTimeout(() => navigate('/login'), 1800);
         } catch (err) {
-            setError(err.message ?? 'Erro ao criar conta. Tente novamente.');
+            const msg = err.response?.data?.message ?? err.message ?? 'Registration failed. Please try again.';
+            setError(msg);
         } finally {
             setLoading(false);
         }
@@ -86,22 +95,6 @@ export default function RegisterForm() {
             <div className={styles.formHeader}>
                 <h2 className={styles.formTitle}>Criar conta</h2>
                 <p className={styles.formSubtitle}>Junte-se ao GymSync</p>
-            </div>
-
-            {/* Seletor de Role */}
-            <div className={styles.roleSelector}>
-                {Object.values(ROLES).map((r) => (
-                    <button
-                        key={r}
-                        type="button"
-                        className={[styles.roleBtn, role === r ? styles.roleBtnActive : ''].join(' ')}
-                        onClick={() => setRole(r)}
-                        disabled={loading}
-                    >
-                        <span className={styles.roleIcon}>{r === ROLES.ALUNO ? '🏃' : '🏋️'}</span>
-                        <span className={styles.roleLabel}>{r === ROLES.ALUNO ? 'Aluno' : 'Treinador'}</span>
-                    </button>
-                ))}
             </div>
 
             <div className={styles.field}>
@@ -156,7 +149,7 @@ export default function RegisterForm() {
                     </button>
                 </div>
 
-                {/* Medidor de força — o elemento signature da tela */}
+                {/* Medidor de força - o elemento signature da tela */}
                 {password && (
                     <div className={styles.strengthMeter}>
                         <div className={styles.strengthBars}>
@@ -204,6 +197,12 @@ export default function RegisterForm() {
                     {error}
                 </div>
             )}
+
+            {success &&
+                <div className={styles.success} role="status">
+                    {success}
+                </div>
+            }
 
             <button
                 type="submit"
