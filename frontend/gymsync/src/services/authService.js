@@ -24,16 +24,15 @@ const authService = {
 	 * Registers a new user (CLIENT role) via JSON body.
 	 * POST /api/users/register
 	 *
-	 * @param {{ name, email, password, gymId }} payload
+	 * @param {{ name, email, password }} payload
 	 * @returns {Promise<{ id, name, email, role }>}
 	 */
-	async register({ name, email, password, gymId }) {
+	async register({ name, email, password }) {
 		const { data } = await api.post('/api/users/register', {
 			name,
 			email,
 			password,
-			role: 'CLIENT',
-			gymId,
+			role: 'CLIENT'
 		});
 		return data;
 	},

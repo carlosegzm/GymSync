@@ -70,16 +70,9 @@ export default function RegisterForm() {
         if (strength.score < 2) { setError('Escolha uma senha mais forte.'); return; }
         if (password !== confirmPassword) { setError('As senhas não coincidem.'); return; }
 
-        // gymId was stored in localStorage when the admin logged in
-        const gymId = localStorage.getItem('gymId');
-        if (!gymId) {
-            setError('Gym not found. Please ask an admin to log in first.');
-            return;
-        }
-
         setLoading(true);
         try {
-            await authService.register({ name, email, password, gymId });
+            await authService.register({ name, email, password });
             setSuccess('Account created! Redirecting to login...');
             setTimeout(() => navigate('/login'), 1800);
         } catch (err) {
