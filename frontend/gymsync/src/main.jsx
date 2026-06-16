@@ -2,6 +2,7 @@
 import React from 'react';
 import { createRoot } from "react-dom/client";
 import { createHashRouter, RouterProvider } from "react-router-dom";
+import { Navigate } from 'react-router-dom';
 
 //Paginas
 import Login from "./pages/auth/Login.jsx";
