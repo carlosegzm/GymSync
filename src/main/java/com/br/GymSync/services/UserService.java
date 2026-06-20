@@ -23,7 +23,7 @@ public class UserService {
 
     @Transactional
     public UserResponseDTO create(UserRequestDTO request) {
-        if (userRepository.findByEmail(request.email()) != null) {
+        if (userRepository.findByEmail(request.email()).isPresent()) {
             throw new EmailAlreadyExistsException("Email already registered!");
         }
 
