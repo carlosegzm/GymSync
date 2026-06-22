@@ -26,4 +26,14 @@ public class UserMapper {
                 .build();
     }
 
+    public UserResponseDTO toResponse(User user, String token) {
+        return UserResponseDTO.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .email(user.getEmail())
+                .role(user.getRole())
+                .token(token)
+                .build();
+    }
+
 }

@@ -2,6 +2,7 @@ package com.br.GymSync.services;
 
 import com.br.GymSync.dtos.user.UserRequestDTO;
 import com.br.GymSync.dtos.user.UserResponseDTO;
+import com.br.GymSync.config.TokenService;
 import com.br.GymSync.domain.entities.User;
 import com.br.GymSync.exceptions.custom.EmailAlreadyExistsException;
 import com.br.GymSync.exceptions.custom.InvalidCredentialsException;
@@ -21,6 +22,8 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
+    private final TokenService tokenService;
+
     @Transactional
     public UserResponseDTO create(UserRequestDTO request) {
         if (userRepository.findByEmail(request.email()).isPresent()) {
@@ -30,7 +33,9 @@ public class UserService {
         User user = userMapper.toEntity(request);
         User savedUser = userRepository.save(user);
 
-        return userMapper.toResponse(savedUser);
+        String token = tokenService.generateToken(savedUser);
+
+        return userMapper.toResponse(savedUser, token);
     }
 
     @Transactional(readOnly = true)
@@ -40,7 +45,7 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public User login(String email, String password) {
+    public UserResponseDTO login(String email, String password) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new InvalidCredentialsException("Invalid email or password."));
 
@@ -48,7 +53,9 @@ public class UserService {
             throw new InvalidCredentialsException("Invalid email or password.");
         }
 
-        return user;
+        String token = tokenService.generateToken(user);
+
+        return userMapper.toResponse(user, token);
     }
 
 }
