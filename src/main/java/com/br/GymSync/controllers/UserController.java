@@ -1,5 +1,6 @@
 package com.br.GymSync.controllers;
 
+import com.br.GymSync.dtos.auth.TokenValidationResponse;
 import com.br.GymSync.dtos.user.UserRequestDTO;
 import com.br.GymSync.dtos.user.UserResponseDTO;
 import com.br.GymSync.services.UserService;
@@ -25,5 +26,18 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<UserResponseDTO> login(@RequestParam String email, @RequestParam String password) {
         return ResponseEntity.ok(userService.login(email, password));
+    }
+
+    @GetMapping("/validate")
+    public ResponseEntity<TokenValidationResponse> validateToken(
+            @RequestHeader("Authorization") String authHeader) {
+
+        String subject = userService.validateToken(authHeader);
+
+        return ResponseEntity.ok(
+                TokenValidationResponse.builder()
+                        .valid(!subject.isEmpty())
+                        .subject(subject)
+                        .build());
     }
 }

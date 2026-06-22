@@ -10,6 +10,7 @@ import com.br.GymSync.exceptions.custom.ResourceNotFoundException;
 import com.br.GymSync.mappers.UserMapper;
 import com.br.GymSync.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,4 +59,9 @@ public class UserService {
         return userMapper.toResponse(user, token);
     }
 
+    public String validateToken(String authHeader) {
+        String token = authHeader.replace("Bearer ", "");
+        
+        return tokenService.validateToken(token);
+    }
 }
