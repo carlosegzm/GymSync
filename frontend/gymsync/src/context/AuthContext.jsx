@@ -7,48 +7,76 @@ import authService from '../services/authService';
 const AuthContext = createContext(null);
 
 /**
- * Provides authentication state to the entire application.
+ * Provides an authentication state to the entire application.
  * 
  * Persistência no localStorage:
  *   - 'user'  → { id, name, email, role }
- *   - 'gymId' → gym.id da resposta do login
- *   - 'token' → JWT (se o futuramente o back responder)
+ *   - 'token' → JWT
  */
 export const AuthProvider = ({ children }) => {
 	const [user, setUser] = useState(null);
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
 	const [isLoading, setIsLoading] = useState(true);
 
-	// Carrega a sessão do localstorage ao carregar uma página
+	/**
+	 * Carrega a sessão do localstorage ao carregar uma página
+	 */
 	useEffect(() => {
-		try {
-			const stored = localStorage.getItem('user');
-			if (stored) {
-				setUser(JSON.parse(stored));
-				setIsAuthenticated(true);
+		const loadUserFromStorage = async () => {
+			try {
+				const storedUser = localStorage.getItem('user');
+				const token = localStorage.getItem('token');
+
+				if (!storedUser || !token) return;
+
+				const validation = await authService.validateToken();
+
+				if (validation.valid) {
+					setUser(JSON.parse(storedUser));
+					setIsAuthenticated(true);
+					return;
+				}
+
+				console.log('AuthContext: Invalid token, cleaning storage');
+				cleanup();
+			} catch {
+				console.error('AuthContext: Error while loading user');
+				cleanup();
+			} finally {
+				setIsLoading(false);
 			}
-		} catch {
-			localStorage.clear();
-		} finally {
-			setIsLoading(false);
 		}
+
+		loadUserFromStorage();
 	}, []);
 
 	/**
-	 * Salva o user e o gymId depois de um login bem sucedido
+	 * Limpa o local storage e torna o usuário não autenticado
+	 */
+	const cleanup = () => {
+		localStorage.clear();
+		setIsAuthenticated(false);
+		setUser(null);
+	}
+
+	/**
+	 * Salva o user depois de um login bem sucedido
 	 *
-	 * @param {{ id, name, email, role, gym: { id, name } }} data
+	 * @param {{ id, name, email, role, token }} data
 	 */
 	const login = (data) => {
+
+		console.log(data)
+
 		const userToStore = {
-			id:    data.id,
-			name:  data.name,
+			id: data.id,
+			name: data.name,
 			email: data.email,
-			role:  data.role,
+			role: data.role,
 		};
 
-		localStorage.setItem('user',  JSON.stringify(userToStore));
-		localStorage.setItem('gymId', data.gym?.id ?? '');
+		localStorage.setItem('user', JSON.stringify(userToStore));
+		localStorage.setItem('token', data.token ?? '');
 
 		setUser(userToStore);
 		setIsAuthenticated(true);
@@ -66,11 +94,9 @@ export const AuthProvider = ({ children }) => {
 		setUser(merged);
 	};
 
-	// limpa a sessão e redireciona para o login
+	// limpa a sessão
 	const logout = () => {
-		localStorage.clear();
-		setUser(null);
-		setIsAuthenticated(false);
+		cleanup();
 	};
 
 	const value = {
