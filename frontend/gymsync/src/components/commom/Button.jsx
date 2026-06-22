@@ -1,12 +1,35 @@
-export default function Button({ children, type = 'button', variant = 'primary', onClick, ...props }) {
+import styles from './Button.module.css'
+
+/**
+ * Reusable Button for GymSync App
+ * @param {'primary'|'secondary'|'danger'|'ghost'} variant
+ * @param {'sm'|'md'|'lg'} size
+ */
+export default function Button({
+  children,
+  variant = 'primary',
+  size = 'md',
+  loading = false,
+  disabled = false,
+  onClick,
+  type = 'button',
+  fullWidth = false,
+  ...props
+}) {
   return (
     <button
       type={type}
-      className={`btn btn-${variant} w-100`} // w-100 faz o botão ocupar toda a largura
+      className={[
+        styles.btn,
+        styles[variant],
+        styles[size],
+        fullWidth ? styles.fullWidth : '',
+      ].join(' ')}
+      disabled={disabled || loading}
       onClick={onClick}
       {...props}
     >
-      {children}
+      {loading ? <span className={styles.spinner} /> : children}
     </button>
-  );
+  )
 }

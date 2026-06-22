@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 
 // services
-import classService from '../../services/classService';
+import classBookingService from '../../services/classBookingService';
 
 // contexto
 import { useAuth } from '../../context/AuthContext';
