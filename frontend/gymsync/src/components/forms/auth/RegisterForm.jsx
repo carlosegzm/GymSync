@@ -72,9 +72,10 @@ export default function RegisterForm() {
 
         setLoading(true);
         try {
-            await authService.register({ name, email, password });
-            setSuccess('Account created! Redirecting to login...');
-            setTimeout(() => navigate('/login'), 1800);
+            const user = await authService.register({ name, email, password });
+            login(user);
+            setSuccess('Account created! Redirecting to dashboard...');
+            setTimeout(() => navigate('/dashboard'), 1800);
         } catch (err) {
             const msg = err.response?.data?.message ?? err.message ?? 'Registration failed. Please try again.';
             setError(msg);
