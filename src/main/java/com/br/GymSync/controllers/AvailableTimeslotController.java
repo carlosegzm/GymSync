@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -21,6 +22,7 @@ public class AvailableTimeslotController {
     private final AvailableTimeslotService timeslotService;
 
     @PostMapping("/generate")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'TRAINER')")
     public ResponseEntity<List<AvailableTimeslotResponseDTO>> generateBulk(
             @RequestParam UUID trainerId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
@@ -33,16 +35,19 @@ public class AvailableTimeslotController {
     }
 
     @GetMapping("/trainer/{trainerId}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'TRAINER', 'CLIENT')")
     public ResponseEntity<List<AvailableTimeslotResponseDTO>> listTrainerSlots(@PathVariable UUID trainerId) {
         return ResponseEntity.ok(timeslotService.listAvailableSlotsByTrainer(trainerId));
     }
 
     @PatchMapping("/{slotId}/book/client/{clientId}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'CLIENT')")
     public ResponseEntity<AvailableTimeslotResponseDTO> bookTimeslot(@PathVariable Long slotId, @PathVariable UUID clientId) {
         return ResponseEntity.ok(timeslotService.bookTimeslot(slotId, clientId));
     }
 
     @DeleteMapping("/{slotId}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'TRAINER')")
     public ResponseEntity<Void> cancelTimeslot(@PathVariable Long slotId) {
         timeslotService.cancelTimeslot(slotId);
         return ResponseEntity.noContent().build();

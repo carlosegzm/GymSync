@@ -1,5 +1,6 @@
 package com.br.GymSync.services;
 
+import com.br.GymSync.dtos.user.LoginRequestDTO;
 import com.br.GymSync.dtos.user.UserRequestDTO;
 import com.br.GymSync.dtos.user.UserResponseDTO;
 import com.br.GymSync.config.TokenService;
@@ -11,6 +12,7 @@ import com.br.GymSync.mappers.UserMapper;
 import com.br.GymSync.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,7 +24,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-
+    private final PasswordEncoder passwordEncoder;
     private final TokenService tokenService;
 
     @Transactional
@@ -32,6 +34,10 @@ public class UserService {
         }
 
         User user = userMapper.toEntity(request);
+
+        String encodedPassword = passwordEncoder.encode(request.password());
+        user.setPassword(encodedPassword);
+
         User savedUser = userRepository.save(user);
 
         String token = tokenService.generateToken(savedUser);
@@ -46,11 +52,11 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public UserResponseDTO login(String email, String password) {
-        User user = userRepository.findByEmail(email)
+    public UserResponseDTO login(LoginRequestDTO request) {
+        User user = userRepository.findByEmail(request.email())
                 .orElseThrow(() -> new InvalidCredentialsException("Invalid email or password."));
 
-        if (!user.getPassword().equals(password)) {
+        if (!passwordEncoder.matches(request.password(), user.getPassword())) {
             throw new InvalidCredentialsException("Invalid email or password.");
         }
 
@@ -59,9 +65,4 @@ public class UserService {
         return userMapper.toResponse(user, token);
     }
 
-    public String validateToken(String authHeader) {
-        String token = authHeader.replace("Bearer ", "");
-        
-        return tokenService.validateToken(token);
-    }
 }

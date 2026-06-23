@@ -6,6 +6,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -18,16 +19,19 @@ public class ReportController {
     private final ReportService reportService;
 
     @GetMapping("/finance/{gymId}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<byte[]> downloadFinancialReport(@PathVariable UUID gymId) {
         return buildPdfResponse(reportService.generateFinancialExtractPdf(gymId), "financial-extract.pdf");
     }
 
     @GetMapping("/assessment/{clientId}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'TRAINER', 'CLIENT')")
     public ResponseEntity<byte[]> downloadAssessmentHistory(@PathVariable UUID clientId) {
         return buildPdfResponse(reportService.generateClientAssessmentHistoryPdf(clientId), "assessment-history.pdf");
     }
 
     @GetMapping("/class-occupancy/{classId}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'TRAINER')")
     public ResponseEntity<byte[]> downloadClassOccupancy(@PathVariable Long classId) {
         return buildPdfResponse(reportService.generateClassOccupancyPdf(classId), "class-occupancy.pdf");
     }
