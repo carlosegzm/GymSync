@@ -16,8 +16,7 @@ import java.time.ZoneOffset;
 @Service
 public class TokenService {
 
-    // Essa variável precisa estar no seu application.yaml (ex: api.security.token.secret=suaSenhaSecretaAqui)
-    @Value("${api.security.token.secret:123456789}")
+    @Value("${api.security.token.secret}")
     private String secret;
 
     public String generateToken(User user) {
