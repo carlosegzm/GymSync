@@ -4,6 +4,10 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 // service
 import authService from '../../services/authService';
 
+// utils 
+import { decodeJwt } from '../../utils/jwt';
+import { getRoleFromToken } from '../../utils/jwt';
+
 const AuthContext = createContext(null);
 
 /**
@@ -19,7 +23,7 @@ export const AuthProvider = ({ children }) => {
 	const [isLoading, setIsLoading] = useState(true);
 
 	/**
-	 * Carrega a sessão do localstorage ao carregar uma página
+	 * Loads session from localstorage after a page load
 	 */
 	useEffect(() => {
 		const loadUserFromStorage = async () => {
@@ -30,15 +34,24 @@ export const AuthProvider = ({ children }) => {
 				if (!storedUser || !token) return;
 
 				const validation = await authService.validateToken();
-
-				if (validation.valid) {
-					setUser(JSON.parse(storedUser));
-					setIsAuthenticated(true);
+				if (!validation.valid) {
+					console.log('AuthContext: Invalid token, cleaning storage');
+					cleanup();
 					return;
 				}
 
-				console.log('AuthContext: Invalid token, cleaning storage');
-				cleanup();
+				const tokenRole = getRoleFromToken();
+				const stored = JSON.parse(storedUser);
+
+				if (tokenRole && stored.role !== tokenRole) {
+					console.warn('AuthContext: role mismatch between storage and token, cleaning session');
+					cleanup();
+					return;
+				}
+
+				setUser({ ...stored, role: tokenRole ?? stored.role });
+				setIsAuthenticated(true);
+
 			} catch {
 				console.error('AuthContext: Error while loading user');
 				cleanup();
@@ -65,19 +78,17 @@ export const AuthProvider = ({ children }) => {
 	 * @param {{ id, name, email, role, token }} data
 	 */
 	const login = (data) => {
-
-		console.log(data)
+		const tokenPayload = decodeJwt(data.token);
 
 		const userToStore = {
 			id: data.id,
 			name: data.name,
 			email: data.email,
-			role: data.role,
+			role: tokenPayload?.role ?? data.role, // JWT primeiro, fallback no response
 		};
 
 		localStorage.setItem('user', JSON.stringify(userToStore));
-		localStorage.setItem('token', data.token ?? '');
-
+		localStorage.setItem('token', data.token);
 		setUser(userToStore);
 		setIsAuthenticated(true);
 	};
