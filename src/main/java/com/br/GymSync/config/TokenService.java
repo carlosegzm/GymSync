@@ -26,6 +26,7 @@ public class TokenService {
             return JWT.create()
                     .withIssuer("GymSync_API")
                     .withSubject(user.getEmail())
+                    .withClaim("role", user.getRole().name())
                     .withExpiresAt(genExpirationDate())
                     .sign(algorithm);
         } catch (JWTCreationException exception) {

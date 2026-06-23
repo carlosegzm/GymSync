@@ -6,6 +6,7 @@ import com.br.GymSync.services.GymService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,6 +17,7 @@ public class GymController {
     private final GymService gymService;
 
     @PostMapping
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<GymResponseDTO> create(@RequestBody GymRequestDTO request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(gymService.create(request));
     }

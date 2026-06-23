@@ -6,6 +6,7 @@ import com.br.GymSync.services.PhysicalAssessmentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,11 +20,13 @@ public class PhysicalAssessmentController {
     private final PhysicalAssessmentService assessmentService;
 
     @PostMapping
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'TRAINER')")
     public ResponseEntity<PhysicalAssessmentResponseDTO> create(@RequestBody PhysicalAssessmentRequestDTO request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(assessmentService.create(request));
     }
 
     @GetMapping("/client/{clientId}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'TRAINER', 'CLIENT')")
     public ResponseEntity<List<PhysicalAssessmentResponseDTO>> getClientHistory(@PathVariable UUID clientId) {
         return ResponseEntity.ok(assessmentService.getClientHistory(clientId));
     }
