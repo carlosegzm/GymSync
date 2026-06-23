@@ -4,6 +4,8 @@ import com.br.GymSync.domain.enums.BookingStatus;
 import com.br.GymSync.dtos.classbooking.ClassBookingRequestDTO;
 import com.br.GymSync.dtos.classbooking.ClassBookingResponseDTO;
 import com.br.GymSync.services.ClassBookingService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,18 +16,21 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "Class Bookings", description = "Endpoints for clients to book and manage group gym classes")
 @RequestMapping("/api/class-bookings")
 public class ClassBookingController {
 
     private final ClassBookingService bookingService;
 
     @PostMapping
+    @Operation(summary = "Book a spot in a group class")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'CLIENT')")
     public ResponseEntity<ClassBookingResponseDTO> bookClass(@RequestBody ClassBookingRequestDTO request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(bookingService.createBooking(request));
     }
 
     @PatchMapping("/{bookingId}/status")
+    @Operation(summary = "Update client attendance status for a booking")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'TRAINER')")
     public ResponseEntity<Void> updateAttendance(@PathVariable Long bookingId, @RequestParam BookingStatus status) {
         bookingService.updateAttendance(bookingId, status);
@@ -33,6 +38,7 @@ public class ClassBookingController {
     }
 
     @DeleteMapping("/{bookingId}/cancel/client/{clientId}")
+    @Operation(summary = "Cancel a class booking")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'CLIENT')")
     public ResponseEntity<Void> cancelBooking(@PathVariable Long bookingId, @PathVariable UUID clientId) {
         bookingService.cancelBooking(bookingId, clientId);
