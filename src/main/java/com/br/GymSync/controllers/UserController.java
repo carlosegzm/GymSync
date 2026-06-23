@@ -7,6 +7,8 @@ import com.br.GymSync.dtos.user.UserRequestDTO;
 import com.br.GymSync.dtos.user.UserResponseDTO;
 import com.br.GymSync.services.UserService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "User Authentication", description = "Endpoints for user onboarding, authentication, and session validation")
 @RequestMapping("/api/users")
 public class UserController {
 
@@ -24,16 +27,19 @@ public class UserController {
     private final TokenService tokenService;
 
     @PostMapping("/register")
+    @Operation(summary = "Register a new user account")
     public ResponseEntity<UserResponseDTO> create(@Valid @RequestBody UserRequestDTO request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.create(request));
     }
 
     @PostMapping("/login")
+    @Operation(summary = "Authenticate user credentials and generate JWT token")
     public ResponseEntity<UserResponseDTO> login(@Valid @RequestBody LoginRequestDTO request) {
         return ResponseEntity.ok(userService.login(request));
     }
 
     @GetMapping("/validate")
+    @Operation(summary = "Validate an existing JWT authentication token session")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'TRAINER', 'CLIENT')")
     public ResponseEntity<TokenValidationResponse> validateToken(
             @RequestHeader("Authorization") String authHeader) {

@@ -2,6 +2,8 @@ package com.br.GymSync.controllers;
 
 import com.br.GymSync.dtos.availabletimeslot.AvailableTimeslotResponseDTO;
 import com.br.GymSync.services.AvailableTimeslotService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -16,12 +18,14 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "Available Timeslots", description = "Endpoints for managing trainer schedules and slot bookings")
 @RequestMapping("/api/timeslots")
 public class AvailableTimeslotController {
 
     private final AvailableTimeslotService timeslotService;
 
     @PostMapping("/generate")
+    @Operation(summary = "Bulk generate available timeslots for a trainer")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'TRAINER')")
     public ResponseEntity<List<AvailableTimeslotResponseDTO>> generateBulk(
             @RequestParam UUID trainerId,
@@ -35,18 +39,21 @@ public class AvailableTimeslotController {
     }
 
     @GetMapping("/trainer/{trainerId}")
+    @Operation(summary = "List all available timeslots for a specific trainer")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'TRAINER', 'CLIENT')")
     public ResponseEntity<List<AvailableTimeslotResponseDTO>> listTrainerSlots(@PathVariable UUID trainerId) {
         return ResponseEntity.ok(timeslotService.listAvailableSlotsByTrainer(trainerId));
     }
 
     @PatchMapping("/{slotId}/book/client/{clientId}")
+    @Operation(summary = "Book an available timeslot for a client")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'CLIENT')")
     public ResponseEntity<AvailableTimeslotResponseDTO> bookTimeslot(@PathVariable Long slotId, @PathVariable UUID clientId) {
         return ResponseEntity.ok(timeslotService.bookTimeslot(slotId, clientId));
     }
 
     @DeleteMapping("/{slotId}")
+    @Operation(summary = "Cancel a timeslot")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'TRAINER')")
     public ResponseEntity<Void> cancelTimeslot(@PathVariable Long slotId) {
         timeslotService.cancelTimeslot(slotId);
