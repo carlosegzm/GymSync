@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 
 // context
-import { useAuth } from "../../../context/AuthContext";
+import { useAuth } from "../../../hooks/context/AuthContext";
 
 // services
 import authService from '../../../services/authService';
