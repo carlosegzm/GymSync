@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { Navbar, Nav, Container, NavDropdown } from 'react-bootstrap'
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../hooks/context/AuthContext';
 
 /**
  * Barra de Navegação Principal (Topo).

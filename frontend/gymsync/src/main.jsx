@@ -15,7 +15,7 @@ import AppLayout from './components/layout/AppLayout.jsx';
 import ProtectedRoute from './components/commom/ProtectedRoute';
 
 // Contexto
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider } from './hooks/context/AuthContext.jsx';
 
 //Estilização
 import "bootstrap/dist/css/bootstrap.min.css";

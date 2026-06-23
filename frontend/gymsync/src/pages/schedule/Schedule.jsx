@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import classBookingService from '../../services/classBookingService';
 
 // contexto
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../hooks/context/AuthContext';
 
 // estilização
 import styles from './Schedule.module.css';
