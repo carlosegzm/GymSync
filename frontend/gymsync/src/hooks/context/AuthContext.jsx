@@ -31,6 +31,8 @@ export const AuthProvider = ({ children }) => {
 
 				const validation = await authService.validateToken();
 
+				console.log(validation)
+
 				if (validation.valid) {
 					setUser(JSON.parse(storedUser));
 					setIsAuthenticated(true);
