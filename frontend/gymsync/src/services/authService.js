@@ -39,23 +39,6 @@ const authService = {
 	},
 
 	/**
-	 * Registers a new user (CLIENT role) via JSON body.
-	 * POST /api/users/register
-	 *
-	 * @param {{ name, email, password }} payload
-	 * @returns {Promise<{ id, name, email, role, token }>}
-	 */
-	async register({ name, email, password }) {
-		const { data } = await api.post('/api/users/register', {
-			name,
-			email,
-			password,
-			role: 'CLIENT'
-		});
-		return data;
-	},
-
-	/**
 	 * Validates the current JWT token.
 	 * GET /api/auth/validate
 	 * 
