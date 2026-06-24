@@ -44,7 +44,10 @@
   line-height: 1;
   margin-bottom: 1.25rem;
 }
-.brandAccent { color: var(--accent); }
+
+.brandAccent {
+  color: var(--accent);
+}
 
 .brandTagline {
   font-size: 1rem;
@@ -60,6 +63,7 @@
   flex-direction: column;
   gap: 0.75rem;
 }
+
 .brandFeatures li {
   display: flex;
   align-items: center;
@@ -83,6 +87,7 @@
   inset: 0;
   pointer-events: none;
 }
+
 .brandCircle {
   position: absolute;
   bottom: -120px;
@@ -93,6 +98,7 @@
   border: 1.5px solid var(--border);
   opacity: 0.6;
 }
+
 .brandCircle::after {
   content: '';
   position: absolute;
@@ -120,9 +126,12 @@
   .page {
     grid-template-columns: 1fr;
   }
+
   .brand {
-    display: none; /* em mobile, mostra só o formulário */
+    display: none;
+    /* em mobile, mostra só o formulário */
   }
+
   .formSide {
     padding: 2rem 1.25rem;
     align-items: flex-start;

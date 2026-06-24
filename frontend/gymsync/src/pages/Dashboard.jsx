@@ -8,9 +8,9 @@ import { useAuth } from '../hooks/context/AuthContext';
 import styles from './Dashboard.module.css';
 
 // components
-import ClientSection from '../components/commom/dashboard/sections/ClientSection';
-import TrainerSection from '../components/commom/dashboard/sections/TrainerSection';
-import AdminSection from '../components/commom/dashboard/sections/AdminSection';
+import ClientSection from '../components/dashboard/sections/ClientSection';
+import TrainerSection from '../components/dashboard/sections/TrainerSection';
+import AdminSection from '../components/dashboard/sections/AdminSection';
 
 /**
  * Dashboard page 

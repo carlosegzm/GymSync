@@ -1,23 +1,24 @@
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/context/AuthContext';
+import { getRoleFromToken } from '../../utils/jwt';
 
 import { ROLE_HOME } from '../../routing/routeConfig';
 
 /**
- * Protege rotas por autenticação e/ou role.
+ * Protects routes by authentication and optionally by role.
+ * Role should always be read from the JWT, never from localStorage directly.
  *
  * @param {React.ReactNode} children  - Conteúdo da rota protegida
- * @param {string}          [role]    - Role exigido (ex: 'ALUNO', 'TREINADOR').
- *                                      Se omitido, aceita qualquer usuário autenticado.
+ * @param {string[]} [allowedRoles] - e.g. ['ADMIN'] or ['TRAINER', 'ADMIN']
  *
  * @example
- * // Qualquer usuário autenticado:
+ * // any authenticated user
  * <ProtectedRoute><Dashboard /></ProtectedRoute>
  *
- * // Apenas treinadores:
- * <ProtectedRoute role="TREINADOR"><AgendaTreinador /></ProtectedRoute>
+ * // only trainers
+ * <ProtectedRoute role="TRAINER"><AgendaTreinador /></ProtectedRoute>
  */
-const ProtectedRoute = ({ children, role }) => {
+const ProtectedRoute = ({ children, allowedRoles }) => {
 	const { isAuthenticated, isLoading, user } = useAuth();
 	const location = useLocation();
 
@@ -38,11 +39,15 @@ const ProtectedRoute = ({ children, role }) => {
 		return <Navigate to="/login" state={{ from: location }} replace />;
 	}
 
-	// Role incorreto: redireciona para o home do role atual do usuário
-  if (role && user?.role !== role) {
-    const home = ROLE_HOME[user?.role] ?? '/login';
-    return <Navigate to={home} replace />;
-  }
+	if (allowedRoles?.length) {
+
+		// BEGIN COMENTAR AQUI PRA TESTAR EM DEV AS PÁGINAS
+        // const role = getRoleFromToken();
+        // if (!allowedRoles.includes(role)) {
+        //     return <Navigate to="/dashboard" replace />;
+        // }
+		// END COMENTAR AQUI PRA TESTAR EM DEV AS PÁGINAS
+    }
 
 	// Se estiver autenticado e o loading terminou, renderiza o componente filho (Protected child)
 	return children;

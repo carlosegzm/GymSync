@@ -1,4 +1,4 @@
-import styles from '../../../../pages/DashBoard.module.css'
+import styles from '../../../pages/DashBoard.module.css'
 
 export default function ActionCard({ icon, label, sub, onClick }) {
     return (

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import ActionCard from '../cards/ActionCard';
 
 // styles
-import styles from '../../../../pages/DashBoard.module.css'
+import styles from '../../../pages/DashBoard.module.css'
 
 export default function TrainerSection({ user }) {
     const navigate = useNavigate();
