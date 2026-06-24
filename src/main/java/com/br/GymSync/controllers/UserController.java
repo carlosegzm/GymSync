@@ -40,7 +40,7 @@ public class UserController {
 
     @GetMapping("/validate")
     @Operation(summary = "Validate an existing JWT authentication token session")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'TRAINER', 'CLIENT')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TRAINER', 'CLIENT')")
     public ResponseEntity<TokenValidationResponse> validateToken(
             @RequestHeader("Authorization") String authHeader) {
 

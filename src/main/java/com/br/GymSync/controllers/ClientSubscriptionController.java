@@ -23,14 +23,14 @@ public class ClientSubscriptionController {
 
     @PostMapping("/enroll")
     @Operation(summary = "Enroll a client into a membership plan")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'CLIENT')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLIENT')")
     public ResponseEntity<ClientSubscriptionResponseDTO> enroll(@RequestBody ClientSubscriptionRequestDTO request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(subscriptionService.enrollClient(request));
     }
 
     @PatchMapping("/{subscriptionId}/cancel")
     @Operation(summary = "Cancel an active client subscription")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'CLIENT')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLIENT')")
     public ResponseEntity<Void> cancelSubscription(@PathVariable UUID subscriptionId) {
         subscriptionService.cancelSubscription(subscriptionId);
         return ResponseEntity.noContent().build();

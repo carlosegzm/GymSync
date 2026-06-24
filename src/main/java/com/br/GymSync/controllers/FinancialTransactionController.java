@@ -24,14 +24,14 @@ public class FinancialTransactionController {
 
     @PostMapping
     @Operation(summary = "Create a new financial transaction (revenue or expense)")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<FinancialTransactionResponseDTO> create(@RequestBody FinancialTransactionRequestDTO request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(financeService.create(request));
     }
 
     @GetMapping("/gym/{gymId}/balance")
     @Operation(summary = "Calculate the total financial balance of a gym")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<BigDecimal> getGymBalance(@PathVariable UUID gymId) {
         return ResponseEntity.ok(financeService.calculateGymBalance(gymId));
     }

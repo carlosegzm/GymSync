@@ -23,21 +23,21 @@ public class ReportController {
 
     @GetMapping("/finance/{gymId}")
     @Operation(summary = "Download financial statement extract PDF report for a gym")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<byte[]> downloadFinancialReport(@PathVariable UUID gymId) {
         return buildPdfResponse(reportService.generateFinancialExtractPdf(gymId), "financial-extract.pdf");
     }
 
     @GetMapping("/assessment/{clientId}")
     @Operation(summary = "Download complete physical assessment history PDF report for a client")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'TRAINER', 'CLIENT')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TRAINER', 'CLIENT')")
     public ResponseEntity<byte[]> downloadAssessmentHistory(@PathVariable UUID clientId) {
         return buildPdfResponse(reportService.generateClientAssessmentHistoryPdf(clientId), "assessment-history.pdf");
     }
 
     @GetMapping("/class-occupancy/{classId}")
     @Operation(summary = "Download occupancy rates and attendance PDF report for a group class")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'TRAINER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TRAINER')")
     public ResponseEntity<byte[]> downloadClassOccupancy(@PathVariable Long classId) {
         return buildPdfResponse(reportService.generateClassOccupancyPdf(classId), "class-occupancy.pdf");
     }

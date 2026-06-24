@@ -26,7 +26,7 @@ public class AvailableTimeslotController {
 
     @PostMapping("/generate")
     @Operation(summary = "Bulk generate available timeslots for a trainer")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'TRAINER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TRAINER')")
     public ResponseEntity<List<AvailableTimeslotResponseDTO>> generateBulk(
             @RequestParam UUID trainerId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
@@ -40,21 +40,21 @@ public class AvailableTimeslotController {
 
     @GetMapping("/trainer/{trainerId}")
     @Operation(summary = "List all available timeslots for a specific trainer")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'TRAINER', 'CLIENT')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TRAINER', 'CLIENT')")
     public ResponseEntity<List<AvailableTimeslotResponseDTO>> listTrainerSlots(@PathVariable UUID trainerId) {
         return ResponseEntity.ok(timeslotService.listAvailableSlotsByTrainer(trainerId));
     }
 
     @PatchMapping("/{slotId}/book/client/{clientId}")
     @Operation(summary = "Book an available timeslot for a client")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'CLIENT')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLIENT')")
     public ResponseEntity<AvailableTimeslotResponseDTO> bookTimeslot(@PathVariable Long slotId, @PathVariable UUID clientId) {
         return ResponseEntity.ok(timeslotService.bookTimeslot(slotId, clientId));
     }
 
     @DeleteMapping("/{slotId}")
     @Operation(summary = "Cancel a timeslot")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'TRAINER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TRAINER')")
     public ResponseEntity<Void> cancelTimeslot(@PathVariable Long slotId) {
         timeslotService.cancelTimeslot(slotId);
         return ResponseEntity.noContent().build();

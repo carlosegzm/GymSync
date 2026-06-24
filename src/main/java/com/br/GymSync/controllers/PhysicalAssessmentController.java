@@ -24,14 +24,14 @@ public class PhysicalAssessmentController {
 
     @PostMapping
     @Operation(summary = "Create a new physical assessment for a client")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'TRAINER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TRAINER')")
     public ResponseEntity<PhysicalAssessmentResponseDTO> create(@RequestBody PhysicalAssessmentRequestDTO request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(assessmentService.create(request));
     }
 
     @GetMapping("/client/{clientId}")
     @Operation(summary = "Retrieve the complete physical assessment history of a client")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'TRAINER', 'CLIENT')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TRAINER', 'CLIENT')")
     public ResponseEntity<List<PhysicalAssessmentResponseDTO>> getClientHistory(@PathVariable UUID clientId) {
         return ResponseEntity.ok(assessmentService.getClientHistory(clientId));
     }
