@@ -23,14 +23,14 @@ public class GroupClassController {
 
     @PostMapping
     @Operation(summary = "Create a new group class schedule")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<GroupClassResponseDTO> create(@RequestBody GroupClassRequestDTO request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(groupClassService.create(request));
     }
 
     @GetMapping
     @Operation(summary = "List all available group classes")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'TRAINER', 'CLIENT')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TRAINER', 'CLIENT')")
     public ResponseEntity<List<GroupClassResponseDTO>> listAll() {
         return ResponseEntity.ok(groupClassService.listAllClasses());
     }

@@ -24,14 +24,14 @@ public class ClassBookingController {
 
     @PostMapping
     @Operation(summary = "Book a spot in a group class")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'CLIENT')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLIENT')")
     public ResponseEntity<ClassBookingResponseDTO> bookClass(@RequestBody ClassBookingRequestDTO request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(bookingService.createBooking(request));
     }
 
     @PatchMapping("/{bookingId}/status")
     @Operation(summary = "Update client attendance status for a booking")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'TRAINER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TRAINER')")
     public ResponseEntity<Void> updateAttendance(@PathVariable Long bookingId, @RequestParam BookingStatus status) {
         bookingService.updateAttendance(bookingId, status);
         return ResponseEntity.noContent().build();
@@ -39,7 +39,7 @@ public class ClassBookingController {
 
     @DeleteMapping("/{bookingId}/cancel/client/{clientId}")
     @Operation(summary = "Cancel a class booking")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'CLIENT')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLIENT')")
     public ResponseEntity<Void> cancelBooking(@PathVariable Long bookingId, @PathVariable UUID clientId) {
         bookingService.cancelBooking(bookingId, clientId);
         return ResponseEntity.noContent().build();

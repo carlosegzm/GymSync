@@ -21,7 +21,7 @@ public class DashboardController {
 
     @GetMapping("/{gymId}/metrics")
     @Operation(summary = "Get core administration metrics for a specific gym dashboard")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Map<String, Object>> getMetrics(@PathVariable UUID gymId) {
         return ResponseEntity.ok(dashboardService.getAdminDashboardMetrics(gymId));
     }

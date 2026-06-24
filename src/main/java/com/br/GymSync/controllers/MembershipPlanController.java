@@ -24,14 +24,14 @@ public class MembershipPlanController {
 
     @PostMapping
     @Operation(summary = "Create a new membership plan for a gym")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<MembershipPlanResponseDTO> create(@RequestBody MembershipPlanRequestDTO request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(planService.create(request));
     }
 
     @GetMapping("/gym/{gymId}")
     @Operation(summary = "List all membership plans available at a specific gym")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'TRAINER', 'CLIENT')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TRAINER', 'CLIENT')")
     public ResponseEntity<List<MembershipPlanResponseDTO>> listByGym(@PathVariable UUID gymId) {
         return ResponseEntity.ok(planService.listByGym(gymId));
     }

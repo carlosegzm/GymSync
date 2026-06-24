@@ -21,7 +21,7 @@ public class GymController {
 
     @PostMapping
     @Operation(summary = "Register a new gym branch in the system")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<GymResponseDTO> create(@RequestBody GymRequestDTO request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(gymService.create(request));
     }
