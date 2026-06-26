@@ -1,13 +1,13 @@
 import { useNavigate } from 'react-router-dom';
 
 // styles
-import styles from '../../../../pages/DashBoard.module.css'
+import styles from '../../../pages/DashBoard.module.css'
 
 // services
-import reportService from "../../../../services/reportService";
+import reportService from "../../../services/reportService";
 
 // hooks 
-import { useReportDownload } from '../../../../hooks/report/useReportDownload';
+import { useReportDownload } from '../../../hooks/report/useReportDownload';
 
 // components 
 import ActionCard from '../cards/ActionCard';

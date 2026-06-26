@@ -14,6 +14,13 @@ import { ROLE_HOME } from "../../../routing/routeConfig";
 // styles
 import styles from './AuthForms.module.css';
 
+// testing
+const DEV_PROFILES = [
+	{ label: 'Admin', email: 'admin@gymsync.com', password: '123456', role: 'ADMIN' },
+	{ label: 'Trainer', email: 'trainer@gymsync.com', password: '123456', role: 'TRAINER' },
+	{ label: 'Client', email: 'client@gymsync.com', password: '123456', role: 'CLIENT' },
+];
+
 /**
  * Login form component.
  *
@@ -28,18 +35,23 @@ export default function LoginForm() {
 	const navigate = useNavigate();
 	const location = useLocation();
 
-	const [email, setEmail]                   = useState('');
-	const [password, setPassword]             = useState('');
+	const [email, setEmail] = useState('');
+	const [password, setPassword] = useState('');
 	const [visiblePassword, setVisiblePassword] = useState(false);
-	const [error, setError]                   = useState('');
-	const [loading, setLoading]               = useState(false);
+	const [error, setError] = useState('');
+	const [loading, setLoading] = useState(false);
+
+	function fillProfile(profile) {
+		setEmail(profile.email);
+		setPassword(profile.password);
+	}
 
 	async function handleSubmit(e) {
 		e.preventDefault();
 		setError('');
 
-		if (!email.trim()) { setError('Please enter your email.');    return; }
-		if (!password)     { setError('Please enter your password.'); return; }
+		if (!email.trim()) { setError('Please enter your email.'); return; }
+		if (!password) { setError('Please enter your password.'); return; }
 
 		setLoading(true);
 		try {
@@ -58,8 +70,27 @@ export default function LoginForm() {
 		}
 	}
 
+
 	return (
 		<form className={styles.form} onSubmit={handleSubmit} noValidate>
+			{import.meta.env.DEV && (
+				<div className={styles.devHint}>
+					<span>🧪 Quick login</span>
+					<div className={styles.devProfiles}>
+						{DEV_PROFILES.map((p) => (
+							<button
+								key={p.role}
+								type="button"
+								className={styles.devProfileBtn}
+								onClick={() => fillProfile(p)}
+							>
+								{p.label}
+							</button>
+						))}
+					</div>
+				</div>
+			)}
+
 			<div className={styles.formHeader}>
 				<h2 className={styles.formTitle}>Sign in</h2>
 				<p className={styles.formSubtitle}>Access your GymSync account</p>

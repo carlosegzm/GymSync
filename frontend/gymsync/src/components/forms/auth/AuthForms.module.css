@@ -1,8 +1,3 @@
-/* AuthForms.module.css
-   Estilos compartilhados entre LoginForm e RegisterForm.
-   Assume que as variáveis CSS globais (--bg-*, --accent, etc.) já estão carregadas.
-*/
-
 /* ── Wrapper do formulário ─────────────────────────────────────────────────── */
 .form {
   display: flex;
@@ -57,10 +52,12 @@
   /* deixa espaço pro ícone de olho */
   padding-right: 2.75rem;
 }
+
 .input:focus {
   border-color: var(--accent);
   box-shadow: 0 0 0 3px var(--accent-glow);
 }
+
 .input:disabled {
   opacity: 0.5;
   cursor: not-allowed;
@@ -70,6 +67,7 @@
 .inputWrapper {
   position: relative;
 }
+
 .inputWrapper .input {
   padding-right: 2.75rem;
 }
@@ -88,7 +86,10 @@
   color: var(--text-secondary);
   transition: color 0.15s;
 }
-.eyeBtn:hover { color: var(--text-primary); }
+
+.eyeBtn:hover {
+  color: var(--text-primary);
+}
 
 .matchIcon {
   position: absolute;
@@ -148,17 +149,27 @@
   transition: border-color 0.2s, color 0.2s, background 0.2s;
   cursor: pointer;
 }
+
 .roleBtn:hover:not(:disabled) {
   border-color: var(--border-hover);
   color: var(--text-primary);
 }
+
 .roleBtnActive {
   border-color: var(--accent) !important;
   background: var(--accent-glow) !important;
   color: var(--accent) !important;
 }
-.roleIcon { font-size: 1.4rem; }
-.roleLabel { font-size: 0.78rem; font-weight: 600; letter-spacing: 0.04em; }
+
+.roleIcon {
+  font-size: 1.4rem;
+}
+
+.roleLabel {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
 
 /* ── Erro ──────────────────────────────────────────────────────────────────── */
 .error {
@@ -188,12 +199,20 @@
   transition: background 0.15s, box-shadow 0.15s, transform 0.1s;
   margin-top: 0.25rem;
 }
+
 .submitBtn:hover:not(:disabled) {
   background: var(--accent-dim);
   box-shadow: var(--shadow-accent);
 }
-.submitBtn:active:not(:disabled) { transform: scale(0.98); }
-.submitBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.submitBtn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.submitBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 
 /* ── Spinner ───────────────────────────────────────────────────────────────── */
 .spinner {
@@ -205,7 +224,12 @@
   border-radius: 50%;
   animation: spin 0.65s linear infinite;
 }
-@keyframes spin { to { transform: rotate(360deg); } }
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 
 /* ── Link de troca (Login ↔ Cadastro) ─────────────────────────────────────── */
 .switchLink {
@@ -213,12 +237,16 @@
   font-size: 0.85rem;
   color: var(--text-secondary);
 }
+
 .switchLink a {
   color: var(--accent);
   font-weight: 600;
   transition: opacity 0.15s;
 }
-.switchLink a:hover { opacity: 0.8; }
+
+.switchLink a:hover {
+  opacity: 0.8;
+}
 
 /* ── Dev hint ──────────────────────────────────────────────────────────────── */
 .devHint {
@@ -232,5 +260,35 @@
   flex-direction: column;
   gap: 0.2rem;
 }
-.devHint span { color: var(--accent-dim); font-weight: 600; }
-.devHint code { font-family: monospace; color: var(--text-primary); }
+
+.devHint span {
+  color: var(--accent-dim);
+  font-weight: 600;
+}
+
+.devHint code {
+  font-family: monospace;
+  color: var(--text-primary);
+}
+
+.devProfiles {
+    display: flex;
+    gap: 0.4rem;
+    margin-top: 0.4rem;
+}
+.devProfileBtn {
+    flex: 1;
+    padding: 0.35rem 0;
+    background: var(--bg-base);
+    border: 1px solid var(--accent-dim);
+    border-radius: var(--radius-sm);
+    color: var(--accent-dim);
+    font-size: 0.72rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+}
+.devProfileBtn:hover {
+    background: var(--accent-glow);
+    color: var(--accent);
+}

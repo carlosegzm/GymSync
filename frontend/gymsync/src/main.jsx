@@ -9,6 +9,9 @@ import Login from "./pages/auth/Login.jsx";
 import Register from './pages/auth/Register.jsx';
 import Dashboard from "./pages/Dashboard.jsx"
 import Schedule from './pages/schedule/Schedule.jsx';
+import Subscription from './pages/subscription/Subscription.jsx';
+import Plans from './pages/plans/Plans.jsx';
+import Assessments from './pages/assessments/Assessments.jsx';
 
 //Layout e seguranca
 import AppLayout from './components/layout/AppLayout.jsx';
@@ -35,10 +38,26 @@ import './styles/global.css'
  * o estado de login esteja acessível globalmente.
  * 
  * Estrutura das rotas:
- *   /login    → LoginPage   (public)
- *   /register → RegisterPage (public — used by admins to add students)
- *   /         → Dashboard   (protected, redirects to /login if not authenticated)
- *   /schedule → Schedule    (protected — group class booking)
+ * PUBLIC 
+ * 		/login    → LoginPage   
+ *  	/register → RegisterPage 
+ * 
+ * ALL ROLES
+ * 		/dashboard
+ * 
+ * CLIENT
+ * 		/schedule
+ * 		/assessments
+ * 		/subscription
+ * 
+ * TRAINER
+ * 		/timeslots       ← falta
+ * 		/classes         ← falta
+ * 		/assessments     ← compartilhada com CLIENT (mas visão diferente)
+ * 
+ * ADMIN
+ * 		/plans           ← falta
+ * 		/register        ← já existe (pública, mas usada pelo admin) 
  */
 const router = createHashRouter([
 	{
@@ -65,14 +84,38 @@ const router = createHashRouter([
 			{
 				path: 'schedule',
 				element: (
-					<ProtectedRoute>
+					<ProtectedRoute allowedRoles={['CLIENT']}>
 						<Schedule />
+					</ProtectedRoute>
+				),
+			},
+			{
+				path: 'subscription',
+				element: (
+					<ProtectedRoute allowedRoles={['CLIENT']}>
+						<Subscription />
+					</ProtectedRoute>
+				),
+			},
+			{
+				path: 'plans',
+				element: (
+					<ProtectedRoute allowedRoles={['ADMIN']}>
+						<Plans />
+					</ProtectedRoute>
+				),
+			},
+			{
+				path: 'assessments',
+				element: (
+					<ProtectedRoute allowedRoles={['CLIENT', 'TRAINER']}>
+						<Assessments />
 					</ProtectedRoute>
 				),
 			},
 
 			// Rotas Públicas que compartilham o mesmo layout
-			{ path: 'login',    element: <Login /> },
+			{ path: 'login', element: <Login /> },
 			{ path: 'register', element: <Register /> },
 		],
 	},
