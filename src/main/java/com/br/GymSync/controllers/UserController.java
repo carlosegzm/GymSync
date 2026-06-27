@@ -64,4 +64,15 @@ public class UserController {
         return ResponseEntity.ok(clients);
     }
 
+    @PatchMapping("/{userId}/gym/{gymId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Link a user (Trainer or Client) to a Gym", description = "Associates an existing user with a specific gym. Only Admins can perform this action.")
+    public ResponseEntity<UserResponseDTO> linkUserToGym(
+            @PathVariable UUID userId,
+            @PathVariable UUID gymId) {
+
+        UserResponseDTO updatedUser = userService.associateToGym(userId, gymId);
+        return ResponseEntity.ok(updatedUser);
+    }
+
 }
