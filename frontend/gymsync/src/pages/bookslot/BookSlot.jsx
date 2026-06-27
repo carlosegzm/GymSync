@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/context/AuthContext';
 import availableTimeSlotService from '../../services/availableTimeSlotService';
+import { useGymUsers } from '../../hooks/users/useGymUsers';
+import UserSelect from '../../components/commom/userselect/UserSelect';
 import styles from './BookSlot.module.css';
 
 // ─── Helpers ───────────────────────────────────────────────────────────────────
@@ -53,7 +55,9 @@ function SlotChip({ slot, onBook, bookingId }) {
 export default function BookSlot() {
     const { user } = useAuth();
 
-    const [trainerId, setTrainerId] = useState('');
+    const [selectedTrainer, setSelectedTrainer] = useState(null);
+    const { users: trainers, loading: loadingTrainers, error: trainersError } = useGymUsers('trainers');
+
     const [slots, setSlots] = useState([]);
     const [searched, setSearched] = useState(false);
     const [searching, setSearching] = useState(false);
@@ -62,25 +66,22 @@ export default function BookSlot() {
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
 
-    async function handleSearch(e) {
-        e.preventDefault();
+    useEffect(() => {
+        if (!selectedTrainer) { setSlots([]); setSearched(false); return; }
+
         setError(''); setSuccess(''); setSlots([]); setSearched(false);
-
-        if (!trainerId.trim()) { setError('Please enter a trainer ID.'); return; }
-
         setSearching(true);
-        try {
-            const all = await availableTimeSlotService.listByTrainer(trainerId.trim());
-            const free = all.filter((s) => s.available);
-            setSlots(free);
-            setSearched(true);
-            if (free.length === 0) setError('No available slots for this trainer.');
-        } catch (err) {
-            setError(err.response?.data?.message ?? 'Trainer not found or failed to load slots.');
-        } finally {
-            setSearching(false);
-        }
-    }
+
+        availableTimeSlotService.listByTrainer(selectedTrainer.id)
+            .then((all) => {
+                const free = all.filter((s) => s.available);
+                setSlots(free);
+                setSearched(true);
+                if (free.length === 0) setError('No available slots for this trainer.');
+            })
+            .catch(() => setError('Failed to load slots.'))
+            .finally(() => setSearching(false));
+    }, [selectedTrainer]);
 
     async function handleBook(slotId) {
         setError(''); setSuccess('');
@@ -110,23 +111,21 @@ export default function BookSlot() {
 
             {/* Trainer search */}
             <section className={styles.section}>
-                <h2 className={styles.sectionTitle}>Find Trainer</h2>
-                <form className={styles.searchForm} onSubmit={handleSearch} noValidate>
-                    <input
-                        className={styles.searchInput}
-                        value={trainerId}
-                        onChange={(e) => setTrainerId(e.target.value)}
-                        placeholder="Trainer UUID"
+                <h2 className={styles.sectionTitle}>Select Trainer</h2>
+                {loadingTrainers ? (
+                    <p className={styles.loading}>Loading trainers...</p>
+                ) : trainersError ? (
+                    <div className={styles.error}>{trainersError}</div>
+                ) : (
+                    <UserSelect
+                        users={trainers}
+                        selected={selectedTrainer}
+                        onSelect={setSelectedTrainer}
+                        placeholder="Search trainer by name..."
                         disabled={searching}
                     />
-                    <button
-                        type="submit"
-                        className={styles.searchBtn}
-                        disabled={searching}
-                    >
-                        {searching ? <span className={styles.spinner} /> : 'Search'}
-                    </button>
-                </form>
+                )}
+                {searching && <p className={styles.loading}>Loading slots...</p>}
             </section>
 
             {error && <div className={styles.error} role="alert">{error}</div>}

@@ -1,0 +1,89 @@
+.wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.input {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    border-radius: var(--radius-sm);
+    padding: 0.7rem 1rem;
+    width: 100%;
+    font-size: 0.875rem;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.input:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.selectedBadge {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    pointer-events: none;
+}
+
+.dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    z-index: 100;
+    max-height: 220px;
+    overflow-y: auto;
+}
+
+.option {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    width: 100%;
+    padding: 0.7rem 1rem;
+    background: none;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.15s;
+    border-bottom: 1px solid var(--border);
+}
+
+.option:last-child {
+    border-bottom: none;
+}
+
+.option:hover {
+    background: var(--bg-surface);
+}
+
+.optionName {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.optionEmail {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+}
+
+.noResults {
+    padding: 0.75rem 1rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}

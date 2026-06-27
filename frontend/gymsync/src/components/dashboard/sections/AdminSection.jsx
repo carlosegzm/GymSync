@@ -87,6 +87,11 @@ export default function AdminSection({ gymId }) {
                         sub="Add a new client"
                         onClick={() => navigate('/register')}
                     />
+                    <ActionCard
+                        icon="👥" label="Users"
+                        sub="Link trainers and clients to your gym"
+                        onClick={() => navigate('/users')}
+                    />
                 </div>
             </section>
 
