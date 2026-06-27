@@ -78,6 +78,14 @@ public class UserService {
                 .toList();
     }
 
+    public List<UserResponseDTO> findTrainersByGym(UUID gymId) {
+        List<User> trainers = userRepository.findAllByGymIdAndRole(gymId, Role.TRAINER);
+
+        return trainers.stream()
+                .map(userMapper::toResponse)
+                .toList();
+    }
+
     @Transactional
     public UserResponseDTO associateToGym(UUID userId, UUID gymId) {
         User user = findEntityById(userId);

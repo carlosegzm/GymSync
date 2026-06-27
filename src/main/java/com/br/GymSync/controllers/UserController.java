@@ -64,6 +64,14 @@ public class UserController {
         return ResponseEntity.ok(clients);
     }
 
+    @GetMapping("/gym/{gymId}/trainers")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Get all trainers from a specific gym", description = "Returns a list of users with the TRAINER role associated with the provided gym ID.")
+    public ResponseEntity<List<UserResponseDTO>> getTrainersByGym(@PathVariable UUID gymId) {
+        List<UserResponseDTO> trainers = userService.findTrainersByGym(gymId);
+        return ResponseEntity.ok(trainers);
+    }
+
     @PatchMapping("/{userId}/gym/{gymId}")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Link a user (Trainer or Client) to a Gym", description = "Associates an existing user with a specific gym. Only Admins can perform this action.")
