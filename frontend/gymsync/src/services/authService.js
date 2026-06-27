@@ -6,8 +6,8 @@ import api from './api';
  */
 const authService = {
 	/**
-	 * Authenticates a user via query params (as required by the backend).
-	 * POST /api/users/login?email=...&password=...
+	 * Authenticates a user via JSON body.
+	 * POST /api/users/login
 	 *
 	 * @param {string} email
 	 * @param {string} password

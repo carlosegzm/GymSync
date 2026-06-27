@@ -14,7 +14,7 @@ import ActionCard from '../cards/ActionCard';
 
 export default function ClientSection({ user }) {
     const navigate = useNavigate();
-    
+
     const clientId = user?.id;
 
     const assessmentReport = useReportDownload(
@@ -29,22 +29,27 @@ export default function ClientSection({ user }) {
                 <h2 className={styles.sectionTitle}>Your Training</h2>
                 <div className={styles.actionsGrid}>
                     <ActionCard
-                        icon="🏃" 
+                        icon="🏃"
                         label="Group Classes"
                         sub="Browse and book classes"
                         onClick={() => navigate('/schedule')}
                     />
                     <ActionCard
-                        icon="📈" 
+                        icon="📈"
                         label="My Assessments"
                         sub="View your progress"
                         onClick={() => navigate('/assessments')}
                     />
                     <ActionCard
-                        icon="💳" 
+                        icon="💳"
                         label="My Subscription"
                         sub="Manage your plan"
                         onClick={() => navigate('/subscription')}
+                    />
+                    <ActionCard
+                        icon="📅" label="Book a Session"
+                        sub="Reserve a slot with your trainer"
+                        onClick={() => navigate('/book-slot')}
                     />
                 </div>
             </section>
@@ -58,7 +63,7 @@ export default function ClientSection({ user }) {
                             Download your full physical assessment history as PDF.
                         </p>
                     </div>
-                    
+
                     <button
                         className={styles.pdfBtn}
                         onClick={assessmentReport.download}
@@ -71,7 +76,7 @@ export default function ClientSection({ user }) {
                         )}
                         {assessmentReport.loading ? 'Generating...' : 'Download My Report (PDF)'}
                     </button>
-                    
+
                     {assessmentReport.error && (
                         <p className={styles.reportError}>{assessmentReport.error}</p>
                     )}

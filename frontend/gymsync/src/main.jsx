@@ -12,6 +12,9 @@ import Schedule from './pages/schedule/Schedule.jsx';
 import Subscription from './pages/subscription/Subscription.jsx';
 import Plans from './pages/plans/Plans.jsx';
 import Assessments from './pages/assessments/Assessments.jsx';
+import Classes from './pages/classes/Classes.jsx'
+import Timeslots from './pages/timeslots/Timeslots.jsx'
+import BookSlot from './pages/bookslot/BookSlot.jsx';
 
 //Layout e seguranca
 import AppLayout from './components/layout/AppLayout.jsx';
@@ -112,6 +115,30 @@ const router = createHashRouter([
 						<Assessments />
 					</ProtectedRoute>
 				),
+			},
+			{
+				path: 'classes',
+				element: (
+					<ProtectedRoute allowedRoles={['TRAINER', 'CLIENT']}>
+						<Classes />
+					</ProtectedRoute>
+				)
+			},
+			{
+				path: 'timeslots',
+				element: (
+					<ProtectedRoute allowedRoles={['TRAINER']}>
+						<Timeslots />
+					</ProtectedRoute>
+				)
+			},
+			{
+				path: 'book-slot',
+				element: (
+					<ProtectedRoute allowedRoles={['CLIENT']}>
+						<BookSlot />
+					</ProtectedRoute>
+				)
 			},
 
 			// Rotas Públicas que compartilham o mesmo layout
