@@ -18,12 +18,7 @@ public class UserMapper {
     }
 
     public UserResponseDTO toResponse(User user) {
-        return UserResponseDTO.builder()
-                .id(user.getId())
-                .name(user.getName())
-                .email(user.getEmail())
-                .role(user.getRole())
-                .build();
+        return toResponse(user, null);
     }
 
     public UserResponseDTO toResponse(User user, String token) {
