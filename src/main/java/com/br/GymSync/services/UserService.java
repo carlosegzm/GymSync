@@ -86,6 +86,14 @@ public class UserService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
+    public UserResponseDTO findByEmail(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
+
+        return userMapper.toResponse(user);
+    }
+
     @Transactional
     public UserResponseDTO associateToGym(UUID userId, UUID gymId) {
         User user = findEntityById(userId);
