@@ -88,9 +88,23 @@ export default function AdminSection({ gymId }) {
                         onClick={() => navigate('/register')}
                     />
                     <ActionCard
-                        icon="👥" label="Users"
+                        icon="👥"
+                        label="Users"
                         sub="Link trainers and clients to your gym"
                         onClick={() => navigate('/users')}
+                    />
+                    <ActionCard
+                        icon="💰"
+                        label="Finances"
+                        sub="Track income and expenses"
+                        onClick={() => navigate('/finances')}
+                    />
+                    <ActionCard
+                        icon="🏢"
+                        label="Gym Setup"
+                        sub="Register or update gym info"
+                        onClick={() =>
+                            navigate('/gym')}
                     />
                 </div>
             </section>

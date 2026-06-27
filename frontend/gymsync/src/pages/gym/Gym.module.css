@@ -1,0 +1,225 @@
+.page {
+    padding: 2rem 2.5rem;
+    max-width: 520px;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.title {
+    font-family: var(--font-display);
+    font-size: 2.4rem;
+    letter-spacing: 0.04em;
+    color: var(--text-primary);
+}
+
+.subtitle {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+/* Info card */
+.infoCard {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.infoLabel {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+}
+
+.infoValue {
+    font-size: 0.8rem;
+    font-family: monospace;
+    color: var(--accent);
+}
+
+.infoHint {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 0.25rem;
+}
+
+/* Form */
+.section {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.sectionTitle {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-secondary);
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-secondary);
+}
+
+.input {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    border-radius: var(--radius-sm);
+    padding: 0.7rem 1rem;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    width: 100%;
+}
+
+.input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.input:disabled {
+    opacity: 0.5;
+}
+
+.error {
+    background: rgba(255, 71, 87, 0.1);
+    border: 1px solid var(--danger);
+    color: var(--danger);
+    border-radius: var(--radius-sm);
+    padding: 0.65rem 1rem;
+    font-size: 0.875rem;
+}
+
+.submitBtn {
+    padding: 0.85rem;
+    background: var(--accent);
+    color: #0d0d0f;
+    font-weight: 700;
+    font-size: 0.95rem;
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: background 0.15s;
+}
+
+.submitBtn:hover:not(:disabled) {
+    background: var(--accent-dim);
+}
+
+.submitBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Success */
+.successCard {
+    background: var(--bg-surface);
+    border: 1px solid var(--success);
+    border-radius: var(--radius-lg);
+    padding: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    text-align: center;
+    box-shadow: 0 0 24px rgba(46, 213, 115, 0.1);
+}
+
+.successIcon {
+    font-size: 2.5rem;
+}
+
+.successTitle {
+    font-family: var(--font-display);
+    font-size: 1.8rem;
+    color: var(--text-primary);
+}
+
+.successSub {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.successMeta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin-top: 0.5rem;
+}
+
+.metaItem {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+}
+
+.metaItem b {
+    color: var(--text-secondary);
+}
+
+.resetBtn {
+    margin-top: 0.5rem;
+    padding: 0.55rem 1.25rem;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: border-color 0.15s;
+}
+
+.resetBtn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+/* Spinner */
+.spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(13, 13, 15, 0.3);
+    border-top-color: #0d0d0f;
+    border-radius: 50%;
+    animation: spin 0.65s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
