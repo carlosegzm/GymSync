@@ -1,5 +1,6 @@
 package com.br.GymSync.services;
 
+import com.br.GymSync.domain.enums.Role;
 import com.br.GymSync.dtos.user.LoginRequestDTO;
 import com.br.GymSync.dtos.user.UserRequestDTO;
 import com.br.GymSync.dtos.user.UserResponseDTO;
@@ -16,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -63,6 +65,14 @@ public class UserService {
         String token = tokenService.generateToken(user);
 
         return userMapper.toResponse(user, token);
+    }
+
+    public List<UserResponseDTO> findClientsByGym(UUID gymId) {
+        List<User> clients = userRepository.findAllByGymIdAndRole(gymId, Role.CLIENT);
+
+        return clients.stream()
+                .map(userMapper::toResponse)
+                .toList();
     }
 
 }

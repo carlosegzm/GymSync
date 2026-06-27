@@ -17,6 +17,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.UUID;
+
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "User Authentication", description = "Endpoints for user onboarding, authentication, and session validation")
@@ -52,4 +55,13 @@ public class UserController {
                         .subject(subject)
                         .build());
     }
+
+    @GetMapping("/gym/{gymId}/clients")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TRAINER')")
+    @Operation(summary = "Get all clients from a specific gym", description = "Returns a list of users with the CLIENT role associated with the provided gym ID.")
+    public ResponseEntity<List<UserResponseDTO>> getClientsByGym(@PathVariable UUID gymId) {
+        List<UserResponseDTO> clients = userService.findClientsByGym(gymId);
+        return ResponseEntity.ok(clients);
+    }
+
 }
