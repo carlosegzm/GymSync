@@ -33,6 +33,7 @@ public class UserMapper {
                 .email(user.getEmail())
                 .role(user.getRole())
                 .token(token)
+                .gymId(user.getGym() != null ? user.getGym().getId() : null)
                 .build();
     }
 
