@@ -72,6 +72,13 @@ public class UserController {
         return ResponseEntity.ok(trainers);
     }
 
+    @GetMapping("/email/{email}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Find user by email", description = "Searches for a user by their registered email. Useful for linking existing users to a gym.")
+    public ResponseEntity<UserResponseDTO> getUserByEmail(@PathVariable String email) {
+        return ResponseEntity.ok(userService.findByEmail(email));
+    }
+
     @PatchMapping("/{userId}/gym/{gymId}")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Link a user (Trainer or Client) to a Gym", description = "Associates an existing user with a specific gym. Only Admins can perform this action.")
