@@ -16,6 +16,8 @@ import Classes from './pages/classes/Classes.jsx'
 import Timeslots from './pages/timeslots/Timeslots.jsx'
 import BookSlot from './pages/bookslot/BookSlot.jsx';
 import Users from './pages/users-admin/Users.jsx';
+import Gym from './pages/gym/Gym.jsx';
+import Finances from './pages/finances/Finances.jsx';
 
 //Layout e seguranca
 import AppLayout from './components/layout/AppLayout.jsx';
@@ -146,6 +148,22 @@ const router = createHashRouter([
 				element: (
 					<ProtectedRoute allowedRoles={['ADMIN']}>
 						<Users />
+					</ProtectedRoute>
+				)
+			},
+			{
+				path: 'finances',
+				element: (
+					<ProtectedRoute allowedRoles={['ADMIN']}>
+						<Finances />
+					</ProtectedRoute>
+				)
+			},
+			{
+				path: 'gym',
+				element: (
+					<ProtectedRoute allowedRoles={['ADMIN']}>
+						<Gym />
 					</ProtectedRoute>
 				)
 			},

@@ -34,7 +34,7 @@ function NavBar() {
      */
 	const userTitle = (
 		<div style={{ display: 'flex', alignItems: 'center' }}>
-			<span>Olá, {user?.nome || 'Usuário'}</span>
+			<span>Olá, {user?.name || 'Usuário'}</span>
 		</div>
 	);
 
@@ -56,13 +56,6 @@ function NavBar() {
 						{isAuthenticated ? (
 							// Menu para usuário LOGADO
 							<NavDropdown title={userTitle} id="basic-nav-dropdown">
-								{/* TODO profile */}
-                                <NavDropdown.Item as={Link} to="/profile"> 
-									Perfil
-								</NavDropdown.Item>
-								
-								<NavDropdown.Divider />
-								
 								<NavDropdown.Item onClick={handleLogout}>
 									Sair
 								</NavDropdown.Item>

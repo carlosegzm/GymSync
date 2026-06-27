@@ -15,7 +15,7 @@ import styles from './Classes.module.css';
 
 // ─── Shared ────────────────────────────────────────────────────────────────────
 
-const CLASS_TYPES = ['SPINNING', 'YOGA', 'PILATES', 'ZUMBA', 'CROSSFIT', 'HIIT'];
+const CLASS_TYPES = ['ZUMBA', 'AEROHIT', 'SPINNING', 'FITDANCE', 'JUMP'];
 
 function formatDateTime(iso) {
     const d = new Date(iso);
