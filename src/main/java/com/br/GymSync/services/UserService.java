@@ -1,5 +1,6 @@
 package com.br.GymSync.services;
 
+import com.br.GymSync.domain.entities.Gym;
 import com.br.GymSync.domain.enums.Role;
 import com.br.GymSync.dtos.user.LoginRequestDTO;
 import com.br.GymSync.dtos.user.UserRequestDTO;
@@ -10,6 +11,7 @@ import com.br.GymSync.exceptions.custom.EmailAlreadyExistsException;
 import com.br.GymSync.exceptions.custom.InvalidCredentialsException;
 import com.br.GymSync.exceptions.custom.ResourceNotFoundException;
 import com.br.GymSync.mappers.UserMapper;
+import com.br.GymSync.repositories.GymRepository;
 import com.br.GymSync.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -28,6 +30,7 @@ public class UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final TokenService tokenService;
+    private final GymRepository gymRepository;
 
     @Transactional
     public UserResponseDTO create(UserRequestDTO request) {
@@ -73,6 +76,18 @@ public class UserService {
         return clients.stream()
                 .map(userMapper::toResponse)
                 .toList();
+    }
+
+    @Transactional
+    public UserResponseDTO associateToGym(UUID userId, UUID gymId) {
+        User user = findEntityById(userId);
+
+        Gym gym = gymRepository.findById(gymId)
+                .orElseThrow(() -> new ResourceNotFoundException("Gym not found with ID: " + gymId));
+
+        user.setGym(gym);
+
+        return userMapper.toResponse(user);
     }
 
 }
