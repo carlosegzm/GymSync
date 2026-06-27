@@ -8,10 +8,14 @@ import { getRoleFromToken } from '../../utils/jwt';
 
 // hooks
 import { useReportDownload } from '../../hooks/report/useReportDownload';
+import { useGymUsers } from '../../hooks/users/useGymUsers';
 
 //services
 import reportService from '../../services/reportService';
 import physicalAssessmentService from '../../services/physicalAssessmentService';
+
+// components
+import UserSelect from '../../components/commom/userselect/UserSelect';
 
 // styles
 import styles from './Assessments.module.css';
@@ -99,7 +103,8 @@ function TrainerAssessments({ trainerId }) {
     const [success, setSuccess] = useState('');
 
     // Form state
-    const [clientId, setClientId] = useState('');
+    const [selectedClient, setSelectedClient] = useState(null);
+    const { users: clients, loading: loadingClients } = useGymUsers('clients');
     const [assessmentDate, setDate] = useState('');
     const [weight, setWeight] = useState('');
     const [height, setHeight] = useState('');
@@ -109,23 +114,29 @@ function TrainerAssessments({ trainerId }) {
         e.preventDefault();
         setError(''); setSuccess('');
 
-        if (!clientId.trim()) { setError('Client ID is required.'); return; }
+        if (!selectedClient) { setError('Please select a client.'); return; }
         if (!assessmentDate) { setError('Date is required.'); return; }
         if (!weight || !height) { setError('Weight and height are required.'); return; }
 
         setSubmitting(true);
         try {
-            const created = await physicalAssessmentService.create({
-                clientId,
+            const created = await assessmentService.create({
+                clientId: selectedClient.id,  // ← usa o id do objeto selecionado
                 trainerId,
                 assessmentDate,
                 weight: Number(weight),
                 height: Number(height),
                 bodyFatPercentage: bodyFatPercentage ? Number(bodyFatPercentage) : null,
             });
+
             setAssessments((prev) => [created, ...prev]);
             setSuccess('Assessment registered successfully!');
-            setClientId(''); setDate(''); setWeight(''); setHeight(''); setBodyFat('');
+            setDate('');
+            setWeight('');
+            setHeight('');
+            setBodyFat('');
+            setSelectedClient(null);
+
         } catch (err) {
             setError(err.response?.data?.message ?? 'Failed to register assessment.');
         } finally {
@@ -141,14 +152,17 @@ function TrainerAssessments({ trainerId }) {
                 <form className={styles.form} onSubmit={handleSubmit} noValidate>
                     <div className={styles.formRow}>
                         <div className={styles.field}>
-                            <label className={styles.label}>Client ID</label>
-                            <input
-                                className={styles.input}
-                                value={clientId}
-                                onChange={(e) => setClientId(e.target.value)}
-                                placeholder="Client UUID"
-                                disabled={submitting}
-                            />
+                            <label className={styles.label}>Client</label>
+                            {loadingClients
+                                ? <p className={styles.loading}>Loading clients...</p>
+                                : <UserSelect
+                                    users={clients}
+                                    selected={selectedClient}
+                                    onSelect={setSelectedClient}
+                                    placeholder="Search client by name..."
+                                    disabled={submitting}
+                                />
+                            }
                         </div>
                         <div className={styles.field}>
                             <label className={styles.label}>Date</label>
