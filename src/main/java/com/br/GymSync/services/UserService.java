@@ -56,6 +56,11 @@ public class UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + id));
     }
 
+    public User findEntityByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
+    }
+
     @Transactional(readOnly = true)
     public UserResponseDTO login(LoginRequestDTO request) {
         User user = userRepository.findByEmail(request.email())
