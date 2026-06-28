@@ -13,10 +13,12 @@ import com.br.GymSync.exceptions.custom.ResourceNotFoundException;
 import com.br.GymSync.mappers.ClassBookingMapper;
 import com.br.GymSync.repositories.ClassBookingRepository;
 import com.br.GymSync.repositories.ClientSubscriptionRepository;
+import com.br.GymSync.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -25,6 +27,7 @@ public class ClassBookingService {
 
     private final ClassBookingRepository bookingRepository;
     private final ClientSubscriptionRepository subscriptionRepository;
+    private final UserRepository userRepository;
     private final ClassBookingMapper bookingMapper;
     private final UserService userService;
     private final GroupClassService groupClassService;
@@ -67,6 +70,16 @@ public class ClassBookingService {
         }
 
         bookingRepository.delete(booking);
+    }
+
+    public List<ClassBookingResponseDTO> findBookingsByClientEmail(String clientEmail) {
+        User client = userRepository.findByEmail(clientEmail)
+                .orElseThrow(() -> new ResourceNotFoundException("Client not found"));
+
+        return bookingRepository.findAllByClientId(client.getId())
+                .stream()
+                .map(bookingMapper::toResponse)
+                .toList();
     }
 
 }
