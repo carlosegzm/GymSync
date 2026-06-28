@@ -67,7 +67,7 @@ function ClientAssessments({ userId }) {
     useEffect(() => {
         physicalAssessmentService.listByClient(userId)
             .then(setAssessments)
-            .catch(() => setError('Failed to load your assessments.'))
+            .catch(() => setError('Nenhuma avaliação encontrada ou erro ao buscar histórico.'))
             .finally(() => setLoading(false));
     }, [userId]);
 
@@ -120,7 +120,7 @@ function TrainerAssessments({ trainerId }) {
 
         setSubmitting(true);
         try {
-            const created = await assessmentService.create({
+            const created = await physicalAssessmentService.create({
                 clientId: selectedClient.id,  // ← usa o id do objeto selecionado
                 trainerId,
                 assessmentDate,

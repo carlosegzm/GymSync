@@ -23,9 +23,9 @@ import styles from './Schedule.module.css';
 export default function Schedule() {
 	const { user } = useAuth();
 
-	const [classes, setClasses]   = useState([]);
-	const [loading, setLoading]   = useState(true);
-	const [error, setError]       = useState('');
+	const [classes, setClasses] = useState([]);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState('');
 
 	// bookingState: { [classId]: 'idle' | 'loading' | 'booked' | 'error' }
 	const [bookingState, setBookingState] = useState({});
@@ -33,7 +33,7 @@ export default function Schedule() {
 	useEffect(() => {
 		(async () => {
 			try {
-				const data = await classService.listClasses();
+				const data = await classBookingService.listClasses();
 				setClasses(data);
 				// initialize all buttons as idle
 				const initial = {};
@@ -69,7 +69,7 @@ export default function Schedule() {
 	}
 
 	if (loading) return <div className={styles.center}>Loading classes...</div>;
-	if (error)   return <div className={styles.center + ' ' + styles.errorText}>{error}</div>;
+	if (error) return <div className={styles.center + ' ' + styles.errorText}>{error}</div>;
 
 	return (
 		<div className={styles.page}>
@@ -84,10 +84,10 @@ export default function Schedule() {
 				<div className={styles.grid}>
 					{classes.map((gc) => {
 						const state = bookingState[gc.id] ?? 'idle';
-						const isBooked  = state === 'booked';
+						const isBooked = state === 'booked';
 						const isLoading = state === 'loading';
-						const isError   = state.startsWith('error:');
-						const errorMsg  = isError ? state.replace('error:', '') : '';
+						const isError = state.startsWith('error:');
+						const errorMsg = isError ? state.replace('error:', '') : '';
 
 						return (
 							<div key={gc.id} className={styles.card}>
@@ -109,14 +109,14 @@ export default function Schedule() {
 								<button
 									className={[
 										styles.bookBtn,
-										isBooked  ? styles.bookBtnBooked  : '',
+										isBooked ? styles.bookBtnBooked : '',
 										isLoading ? styles.bookBtnLoading : '',
 									].join(' ')}
 									onClick={() => handleBook(gc)}
 									disabled={isBooked || isLoading}
 								>
 									{isLoading && <span className={styles.spinner} />}
-									{isBooked  ? '✓ Agendado!'  : 'Agendar Agora!'}
+									{isBooked ? '✓ Agendado!' : 'Agendar Agora!'}
 								</button>
 							</div>
 						);

@@ -26,13 +26,13 @@ export default function Subscription() {
     const { user } = useAuth();
     const gymId = localStorage.getItem('gymId');
 
-    const [plans, setPlans]               = useState([]);
+    const [plans, setPlans] = useState([]);
     const [subscription, setSubscription] = useState(null);
     const [loadingPlans, setLoadingPlans] = useState(true);
-    const [enrollingId, setEnrollingId]   = useState(null);   // planId being enrolled
-    const [cancelling, setCancelling]     = useState(false);
-    const [error, setError]               = useState('');
-    const [success, setSuccess]           = useState('');
+    const [enrollingId, setEnrollingId] = useState(null);
+    const [cancelling, setCancelling] = useState(false);
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
 
     useEffect(() => {
         if (!gymId) { setLoadingPlans(false); return; }
@@ -46,7 +46,10 @@ export default function Subscription() {
         setError(''); setSuccess('');
         setEnrollingId(planId);
         try {
-            const sub = await clientSubscriptionService.enroll(user.id, planId);
+            const sub = await clientSubscriptionService.enroll({
+                clientId: user.id,
+                planId
+            });
             setSubscription(sub);
             setSuccess('Enrolled successfully!');
         } catch (err) {
@@ -77,7 +80,7 @@ export default function Subscription() {
                 <p className={styles.subtitle}>Manage your membership plan.</p>
             </div>
 
-            {error   && <div className={styles.error}   role="alert">{error}</div>}
+            {error && <div className={styles.error} role="alert">{error}</div>}
             {success && <div className={styles.success} role="status">{success}</div>}
 
             {/* Active subscription */}
