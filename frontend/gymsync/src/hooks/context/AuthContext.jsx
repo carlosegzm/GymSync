@@ -77,7 +77,7 @@ export const AuthProvider = ({ children }) => {
 	 *
 	 * @param {{ id, name, email, role, token, gymId }} data
 	 */
-	const login = (data) => {
+	const login = async (data) => {
 		const tokenPayload = decodeJwt(data.token);
 
 		const userToStore = {
@@ -88,7 +88,7 @@ export const AuthProvider = ({ children }) => {
 		};
 
 		localStorage.setItem('user', JSON.stringify(userToStore));
-		llocalStorage.setItem('token', data.token ?? '');
+		localStorage.setItem('token', data.token ?? '');
 		localStorage.setItem('gymId', data.gymId ?? '');
 
 		if (!data.gymId) {

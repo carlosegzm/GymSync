@@ -2,8 +2,6 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/context/AuthContext';
 import { getRoleFromToken } from '../../utils/jwt';
 
-import { ROLE_HOME } from '../../routing/routeConfig';
-
 /**
  * Protects routes by authentication and optionally by role.
  * Role should always be read from the JWT, never from localStorage directly.
@@ -39,15 +37,22 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 		return <Navigate to="/login" state={{ from: location }} replace />;
 	}
 
-	if (allowedRoles?.length) {
+	// ADMIN without a gym linked is always sent to /gym first,
+	// except if they're already there (avoids redirect loop)
+	if (
+		user?.role === 'ADMIN' &&
+		!localStorage.getItem('gymId') &&
+		location.pathname !== '/gym'
+	) {
+		return <Navigate to="/gym" replace />;
+	}
 
-		// BEGIN COMENTAR AQUI PRA TESTAR EM DEV AS PÁGINAS
-        // const role = getRoleFromToken();
-        // if (!allowedRoles.includes(role)) {
-        //     return <Navigate to="/dashboard" replace />;
-        // }
-		// END COMENTAR AQUI PRA TESTAR EM DEV AS PÁGINAS
-    }
+	if (allowedRoles?.length) {
+		const role = getRoleFromToken();
+		if (!allowedRoles.includes(role)) {
+			return <Navigate to="/dashboard" replace />;
+		}
+	}
 
 	// Se estiver autenticado e o loading terminou, renderiza o componente filho (Protected child)
 	return children;
