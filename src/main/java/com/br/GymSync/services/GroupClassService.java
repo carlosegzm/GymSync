@@ -42,7 +42,7 @@ public class GroupClassService {
 
     @Transactional(readOnly = true)
     public List<GroupClassResponseDTO> findClassesByGym(UUID gymId) {
-        return groupClassRepository.findAllByGymId(gymId)
+        return groupClassRepository.findAllByTrainerGymId(gymId)
                 .stream()
                 .map(groupClassMapper::toResponse)
                 .toList();

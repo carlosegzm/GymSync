@@ -25,7 +25,7 @@ public class GroupClassController {
 
     @PostMapping
     @Operation(summary = "Create a new group class schedule")
-    @PreAuthorize("hasAnyRole('ADMIN', 'TRAINER')")
+    @PreAuthorize("hasAnyRole('TRAINER')")
     public ResponseEntity<GroupClassResponseDTO> create(@RequestBody GroupClassRequestDTO request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(groupClassService.create(request));
     }

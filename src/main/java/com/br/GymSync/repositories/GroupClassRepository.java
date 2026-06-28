@@ -9,6 +9,6 @@ import java.util.UUID;
 
 @Repository
 public interface GroupClassRepository extends JpaRepository<GroupClass, Long> {
-    List<GroupClass> findAllByGymId(UUID gymId);
+    List<GroupClass> findAllByTrainerGymId(UUID gymId);
     List<GroupClass> findAllByTrainerId(UUID trainerId);
 }
