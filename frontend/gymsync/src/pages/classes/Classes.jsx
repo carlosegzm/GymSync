@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 
-// contexto
+// hooks
 import { useAuth } from '../../hooks/context/AuthContext';
+import { useReportDownload } from '../../hooks/report/useReportDownload';
 
 // services
 import groupClassService from '../../services/groupClassService';
 import classBookingService from '../../services/classBookingService';
+import reportService from '../../services/reportService';
 
 // utils
 import { getRoleFromToken } from '../../utils/jwt';
@@ -39,6 +41,40 @@ function ClassCard({ gc, action }) {
                 <span>🕐 {time}</span>
             </div>
             {action && <div className={styles.cardAction}>{action(gc)}</div>}
+        </div>
+    );
+}
+
+function TrainerClassCard({ gc }) {
+    const { date, time } = formatDateTime(gc.startDateTime);
+
+    const report = useReportDownload(
+        () => reportService.getClassOccupancyReport(gc.id),
+        `occupancy-class-${gc.id}.pdf`
+    );
+
+    return (
+        <div className={styles.card}>
+            <div className={styles.cardTop}>
+                <span className={styles.classType}>{gc.classType}</span>
+                <span className={styles.capacity}>👥 {gc.maxCapacity} spots</span>
+            </div>
+            <h3 className={styles.className}>{gc.name}</h3>
+            <div className={styles.cardMeta}>
+                <span>📅 {date}</span>
+                <span>🕐 {time}</span>
+            </div>
+            <div className={styles.cardAction}>
+                {report.error && <p className={styles.bookError}>{report.error}</p>}
+                <button
+                    className={styles.occupancyBtn}
+                    onClick={report.download}
+                    disabled={report.loading}
+                >
+                    {report.loading ? <span className={styles.spinner} /> : '📄'}
+                    {report.loading ? 'Generating...' : 'Occupancy Report'}
+                </button>
+            </div>
         </div>
     );
 }
@@ -165,7 +201,7 @@ function TrainerClasses({ trainerId }) {
                     <p className={styles.empty}>No classes yet. Create one above.</p>
                 ) : (
                     <div className={styles.grid}>
-                        {classes.map((gc) => <ClassCard key={gc.id} gc={gc} />)}
+                        {classes.map((gc) => <TrainerClassCard key={gc.id} gc={gc} />)}
                     </div>
                 )}
             </section>
