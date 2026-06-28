@@ -5,7 +5,7 @@ import reportService from '../../services/reportService';
 import styles from './Finances.module.css';
 
 const TRANSACTION_TYPES = ['INCOME', 'EXPENSE'];
-const TRANSACTION_CATEGORIES = ['SALARY', 'MAINTENANCE', 'SUBSCRIPTION', 'EQUIPMENT', 'OTHER'];
+const TRANSACTION_CATEGORIES = ['OTHER', 'SALARY', 'LOSS', 'MEMBERSHIP_PAYMENT', 'MAINTENANCE'];
 
 // ─── Sub-components ────────────────────────────────────────────────────────────
 
@@ -64,7 +64,7 @@ export default function Finances() {
     const [description, setDescription] = useState('');
     const [amount, setAmount] = useState('');
     const [type, setType] = useState('INCOME');
-    const [category, setCategory] = useState('SUBSCRIPTION');
+    const [category, setCategory] = useState('OTHER');
     const [transactionDate, setDate] = useState(
         new Date().toISOString().split('T')[0]
     );
@@ -111,7 +111,7 @@ export default function Finances() {
             setTransactions((prev) => [created, ...prev]);
             setSuccess('Transaction registered!');
             setDescription(''); setAmount('');
-            setType('INCOME'); setCategory('SUBSCRIPTION');
+            setType('INCOME'); setCategory('OTHER');
             setDate(new Date().toISOString().split('T')[0]);
         } catch (err) {
             setError(err.response?.data?.message ?? 'Failed to register transaction.');
