@@ -4,8 +4,10 @@ import com.br.GymSync.dtos.physicalassessment.PhysicalAssessmentRequestDTO;
 import com.br.GymSync.dtos.physicalassessment.PhysicalAssessmentResponseDTO;
 import com.br.GymSync.domain.entities.PhysicalAssessment;
 import com.br.GymSync.domain.entities.User;
+import com.br.GymSync.exceptions.custom.ResourceNotFoundException;
 import com.br.GymSync.mappers.PhysicalAssessmentMapper;
 import com.br.GymSync.repositories.PhysicalAssessmentRepository;
+import com.br.GymSync.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,13 +20,17 @@ import java.util.UUID;
 public class PhysicalAssessmentService {
 
     private final PhysicalAssessmentRepository assessmentRepository;
+    private final UserRepository userRepository;
     private final PhysicalAssessmentMapper assessmentMapper;
     private final UserService userService;
 
     @Transactional
-    public PhysicalAssessmentResponseDTO create(PhysicalAssessmentRequestDTO request) {
+    public PhysicalAssessmentResponseDTO create(PhysicalAssessmentRequestDTO request, String trainerEmail) {
+
+        User trainer = userRepository.findByEmail(trainerEmail)
+                .orElseThrow(() -> new ResourceNotFoundException("Trainer not found with email: " + trainerEmail));
+
         User client = userService.findEntityById(request.clientId());
-        User trainer = userService.findEntityById(request.trainerId());
 
         PhysicalAssessment assessment = assessmentMapper.toEntity(request, client, trainer);
         PhysicalAssessment savedAssessment = assessmentRepository.save(assessment);

@@ -25,9 +25,11 @@ public class PhysicalAssessmentController {
     @PostMapping
     @Operation(summary = "Create a new physical assessment for a client")
     @PreAuthorize("hasAnyRole('ADMIN', 'TRAINER')")
-    public ResponseEntity<PhysicalAssessmentResponseDTO> create(@RequestBody PhysicalAssessmentRequestDTO request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(assessmentService.create(request));
+    public ResponseEntity<PhysicalAssessmentResponseDTO> create(@RequestBody PhysicalAssessmentRequestDTO request, org.springframework.security.core.Authentication authentication) {
+        String trainerEmail = authentication.getName();
+        return ResponseEntity.status(HttpStatus.CREATED).body(assessmentService.create(request, trainerEmail));
     }
+
 
     @GetMapping("/client/{clientId}")
     @Operation(summary = "Retrieve the complete physical assessment history of a client")
