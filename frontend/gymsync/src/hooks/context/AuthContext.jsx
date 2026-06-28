@@ -34,31 +34,31 @@ export const AuthProvider = ({ children }) => {
 				if (!storedUser || !token) return;
 
 				const validation = await authService.validateToken();
-				if (!validation.valid) {
-					console.log('AuthContext: Invalid token, cleaning storage');
-					cleanup();
-					return;
-				}
+				if (!validation.valid) { cleanup(); return; }
 
 				const tokenRole = getRoleFromToken();
 				const stored = JSON.parse(storedUser);
 
 				if (tokenRole && stored.role !== tokenRole) {
-					console.warn('AuthContext: role mismatch between storage and token, cleaning session');
+					console.warn('AuthContext: role mismatch, cleaning session');
 					cleanup();
 					return;
 				}
+
+				// Atualiza gymId via /me a cada restauração de sessão
+				// garante que mudanças no backend (e.g. admin linka gym) sejam refletidas
+				const me = await authService.getMe();
+				if (me.gymId) localStorage.setItem('gymId', me.gymId);
 
 				setUser({ ...stored, role: tokenRole ?? stored.role });
 				setIsAuthenticated(true);
 
 			} catch {
-				console.error('AuthContext: Error while loading user');
 				cleanup();
 			} finally {
 				setIsLoading(false);
 			}
-		}
+		};
 
 		loadUserFromStorage();
 	}, []);
@@ -75,7 +75,7 @@ export const AuthProvider = ({ children }) => {
 	/**
 	 * Salva o user depois de um login bem sucedido
 	 *
-	 * @param {{ id, name, email, role, token }} data
+	 * @param {{ id, name, email, role, token, gymId }} data
 	 */
 	const login = (data) => {
 		const tokenPayload = decodeJwt(data.token);
@@ -88,7 +88,16 @@ export const AuthProvider = ({ children }) => {
 		};
 
 		localStorage.setItem('user', JSON.stringify(userToStore));
-		localStorage.setItem('token', data.token);
+		llocalStorage.setItem('token', data.token ?? '');
+		localStorage.setItem('gymId', data.gymId ?? '');
+
+		if (!data.gymId) {
+			try {
+				const me = await authService.getMe();
+				if (me.gymId) localStorage.setItem('gymId', me.gymId);
+			} catch {}
+		}
+
 		setUser(userToStore);
 		setIsAuthenticated(true);
 	};

@@ -11,7 +11,7 @@ const authService = {
 	 *
 	 * @param {string} email
 	 * @param {string} password
-	 * @returns {Promise<{ id, name, email, role, token }>}
+	 * @returns {Promise<{ id, name, email, role, token, gymId }>}
 	 */
 	async login(email, password) {
 		const { data } = await api.post('/api/users/login', {
@@ -26,7 +26,7 @@ const authService = {
 	 * POST /api/users/register
 	 *
 	 * @param {{ name, email, password }} payload
-	 * @returns {Promise<{ id, name, email, role, token }>}
+	 * @returns {Promise<{ id, name, email, role, token, gymId }>}
 	 */
 	async register({ name, email, password }) {
 		const { data } = await api.post('/api/users/register', {
@@ -56,7 +56,7 @@ const authService = {
 	 * hasRole(ADMIN, TRAINER)
 	 * 
 	 * @param {string} gymId
-	 * @returns {Promise<Array<{ id, name, email, role }>>}
+	 * @returns {Promise<{ id, name, email, role, token, gymId }>}
 	 */
 	async getClientsByGym(gymId) {
 		const { data } = await api.get(`/api/users/gym/${gymId}/clients`);
@@ -64,16 +64,16 @@ const authService = {
 	},
 
 	/**
-     * Get all trainers from a specific gym.
-     * GET /api/users/gym/{gymId}/trainers
-     *
-     * @param {string} gymId
-     * @returns {Promise<Array<{ id, name, email, role }>>}
-     */
-    async getTrainersByGym(gymId) {
-        const { data } = await api.get(`/api/users/gym/${gymId}/trainers`);
-        return data;
-    },
+	 * Get all trainers from a specific gym.
+	 * GET /api/users/gym/{gymId}/trainers
+	 *
+	 * @param {string} gymId
+	 * @returns {Promise<{ id, name, email, role, token, gymId }>}
+	 */
+	async getTrainersByGym(gymId) {
+		const { data } = await api.get(`/api/users/gym/${gymId}/trainers`);
+		return data;
+	},
 
 	/**
 	 * Link a user (Trainer or Client) to a Gym.
@@ -83,7 +83,7 @@ const authService = {
 	 *  
 	 * @param {string} userId
 	 * @param {string} gymId
-	 * @returns {Promise<{ id, name, email, role }>}
+	 * @returns {Promise<{ id, name, email, role, token, gymId }>}
 	 */
 	async linkUserToGym(userId, gymId) {
 		const { data } = await api.patch(`/api/users/${userId}/gym/${gymId}`);
@@ -91,16 +91,25 @@ const authService = {
 	},
 
 	/**
-     * Find user by email.
-     * GET /api/users/email/{email}
-     *
-     * @param {string} email
-     * @returns {Promise<{ id, name, email, role }>}
-     */
-    async getUserByEmail(email) {
-        const { data } = await api.get(`/api/users/email/${email}`);
-        return data;
-    },
+	 * Find user by email.
+	 * GET /api/users/email/{email}
+	 *
+	 * @param {string} email
+	 * @returns {Promise<{ id, name, email, role, token, gymId }>}
+	 */
+	async getUserByEmail(email) {
+		const { data } = await api.get(`/api/users/email/${email}`);
+		return data;
+	},
+
+	/**
+	 * 
+	 * @returns {Promise<{ id, name, email, role, token, gymId }>}
+	 */
+	async getMe() {
+		const { data } = await api.get('/api/users/me');
+		return data;
+	},
 
 };
 
