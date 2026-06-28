@@ -4,6 +4,28 @@ import styles from './Users.module.css';
 import { useGymUsers } from '../../hooks/users/useGymUsers';
 import UserSelect from '../../components/commom/userselect/UserSelect';
 
+function UserRow({ user, onUnlink, unlinkingId }) {
+    const isUnlinking = unlinkingId === user.id;
+
+    return (
+        <div className={styles.row}>
+            <span className={styles.rowName}>{user.name}</span>
+            <span className={styles.rowEmail}>{user.email}</span>
+            <span className={styles.rowRole}>{user.role}</span>
+            <button
+                className={styles.unlinkBtn}
+                onClick={() => onUnlink(user.id)}
+                disabled={isUnlinking}
+            >
+                {isUnlinking
+                    ? <span className={styles.spinnerSm} />
+                    : 'Remove'
+                }
+            </button>
+        </div>
+    );
+}
+
 /**
  * Users management page (ADMIN only).
  * Links trainers and clients to the gym via PATCH /api/users/{userId}/gym/{gymId}
@@ -14,11 +36,15 @@ export default function Users() {
     const { users: clients, loading: loadingClients, error: clientsError } = useGymUsers('clients');
     const { users: trainers, loading: loadingTrainers, error: trainersError } = useGymUsers('trainers');
 
+
     const [selectedUser, setSelectedUser] = useState(null);
     const [searchEmail, setSearchEmail] = useState('');
     const [foundUser, setFoundUser] = useState(null);
     const [searching, setSearching] = useState(false);
     const [linking, setLinking] = useState(false);
+    const [unlinkingId, setUnlinkingId] = useState(null);
+    const [unlinkedIds, setUnlinkedIds] = useState(new Set());
+    const [linkedUsers, setLinkedUsers] = useState([]);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
 
@@ -47,12 +73,30 @@ export default function Users() {
         try {
             await authService.linkUserToGym(foundUser.id, gymId);
             setSuccess(`${foundUser.name} (${foundUser.role}) linked successfully!`);
+
+            // Adiciona na lista local da sessão
+            setLinkedUsers((prev) => [...prev, foundUser]);
+
             setFoundUser(null);
             setSearchEmail('');
         } catch (err) {
             setError(err.response?.data?.message ?? 'Failed to link user.');
         } finally {
             setLinking(false);
+        }
+    }
+
+    async function handleUnlink(userId) {
+        setError(''); setSuccess('');
+        setUnlinkingId(userId);
+        try {
+            await authService.unlinkUserFromGym(userId);
+            setUnlinkedIds((prev) => new Set([...prev, userId]));
+            setSuccess('User unlinked from gym successfully.');
+        } catch (err) {
+            setError(err.response?.data?.message ?? 'Failed to unlink user.');
+        } finally {
+            setUnlinkingId(null);
         }
     }
 
@@ -119,13 +163,12 @@ export default function Users() {
                         <div className={styles.listHeader}>
                             <span>Name</span><span>Email</span><span>Role</span>
                         </div>
-                        {trainers.map((u) => (
-                            <div key={u.id} className={styles.row}>
-                                <span className={styles.rowName}>{u.name}</span>
-                                <span className={styles.rowEmail}>{u.email}</span>
-                                <span className={styles.rowRole}>{u.role}</span>
-                            </div>
-                        ))}
+                        {[...trainers, ...linkedUsers.filter((u) => u.role === 'TRAINER')]
+                            .filter((u) => !unlinkedIds.has(u.id))
+                            .map((u) => (
+                                <UserRow key={u.id} user={u} onUnlink={handleUnlink} unlinkingId={unlinkingId} />
+                            ))
+                        }
                     </div>
                 )}
             </section>
@@ -144,13 +187,12 @@ export default function Users() {
                         <div className={styles.listHeader}>
                             <span>Name</span><span>Email</span><span>Role</span>
                         </div>
-                        {clients.map((u) => (
-                            <div key={u.id} className={styles.row}>
-                                <span className={styles.rowName}>{u.name}</span>
-                                <span className={styles.rowEmail}>{u.email}</span>
-                                <span className={styles.rowRole}>{u.role}</span>
-                            </div>
-                        ))}
+                        {[...clients, ...linkedUsers.filter((u) => u.role === 'CLIENT')]
+                            .filter((u) => !unlinkedIds.has(u.id))
+                            .map((u) => (
+                                <UserRow key={u.id} user={u} onUnlink={handleUnlink} unlinkingId={unlinkingId} />
+                            ))
+                        }
                     </div>
                 )}
             </section>

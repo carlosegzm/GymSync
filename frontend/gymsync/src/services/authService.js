@@ -91,6 +91,19 @@ const authService = {
 	},
 
 	/**
+	 * Unlinks a user from their current gym.
+	 * PATCH /api/users/{userId}/gym/unlink
+	 *
+	 * @param {string} userId
+	 * @returns {Promise<void>}
+	 */
+	async unlinkUserFromGym(userId) {
+		await api.patch(`/api/users/${userId}/gym/unlink`, null, {
+			validateStatus: (status) => status === 200 || status === 204,
+		});
+	},
+
+	/**
 	 * Find user by email.
 	 * GET /api/users/email/{email}
 	 *
