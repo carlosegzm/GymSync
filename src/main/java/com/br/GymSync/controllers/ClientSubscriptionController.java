@@ -35,4 +35,12 @@ public class ClientSubscriptionController {
         subscriptionService.cancelSubscription(subscriptionId);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/client/me")
+    @PreAuthorize("hasRole('CLIENT')")
+    @Operation(summary = "Get active subscription for the logged-in client")
+    public ResponseEntity<ClientSubscriptionResponseDTO> getMySubscription(org.springframework.security.core.Authentication authentication) {
+        String clientEmail = authentication.getName();
+        return ResponseEntity.ok(subscriptionService.getMyActiveSubscription(clientEmail));
+    }
 }

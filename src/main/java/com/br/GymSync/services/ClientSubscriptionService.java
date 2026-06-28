@@ -56,4 +56,14 @@ public class ClientSubscriptionService {
         subscriptionRepository.save(subscription);
     }
 
+    @Transactional(readOnly = true)
+    public ClientSubscriptionResponseDTO getMyActiveSubscription(String clientEmail) {
+        User client = userService.findEntityByEmail(clientEmail);
+
+        ClientSubscription subscription = subscriptionRepository.findByClientIdAndStatus(client.getId(), SubscriptionStatus.ACTIVE)
+                .orElseThrow(() -> new ResourceNotFoundException("No active subscription found for this client."));
+
+        return subscriptionMapper.toResponse(subscription);
+    }
+
 }
