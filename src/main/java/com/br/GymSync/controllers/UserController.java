@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -88,6 +89,16 @@ public class UserController {
 
         UserResponseDTO updatedUser = userService.associateToGym(userId, gymId);
         return ResponseEntity.ok(updatedUser);
+    }
+
+    @GetMapping("/me")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TRAINER', 'CLIENT')")
+    @Operation(summary = "Get current authenticated user profile", description = "Returns the profile details of the currently logged-in user.")
+    public ResponseEntity<UserResponseDTO> getMe(Authentication authentication) {
+        String email = authentication.getName();
+
+        UserResponseDTO currentUser = userService.findByEmail(email);
+        return ResponseEntity.ok(currentUser);
     }
 
 }
