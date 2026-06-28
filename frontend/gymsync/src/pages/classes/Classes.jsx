@@ -95,8 +95,8 @@ function TrainerClasses({ trainerId }) {
     const [maxCapacity, setMaxCapacity] = useState('');
 
     useEffect(() => {
-        groupClassService.listAll()
-            .then((all) => setClasses(all.filter((c) => c.trainerId === trainerId)))
+        groupClassService.listMyClassesAsTrainer() 
+            .then((data) => setClasses(data))
             .catch(() => setError('Failed to load classes.'))
             .finally(() => setLoading(false));
     }, [trainerId]);
@@ -213,6 +213,7 @@ function TrainerClasses({ trainerId }) {
 
 function ClientClasses({ clientId }) {
     const [classes, setClasses] = useState([]);
+    const [myBookings, setMyBookings] = useState([]);  // ← novo
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
@@ -220,16 +221,27 @@ function ClientClasses({ clientId }) {
     const [bookingState, setBookingState] = useState({});
 
     useEffect(() => {
-        groupClassService.listAll()
-            .then((data) => {
-                setClasses(data);
+        const gymId = localStorage.getItem('gymId');
+
+        Promise.all([
+            groupClassService.listByGym(gymId),      // ← troca listAll por listByGym
+            classBookingService.listMyBookingsAsClient(),
+        ])
+            .then(([allClasses, bookings]) => {
+                setClasses(allClasses);
+                setMyBookings(bookings);
+
+                // Inicializa estado dos botões — já marcando aulas com booking existente
+                const bookedClassIds = new Set(bookings.map((b) => b.groupClassId));
                 const initial = {};
-                data.forEach((c) => { initial[c.id] = 'idle'; });
+                allClasses.forEach((c) => {
+                    initial[c.id] = bookedClassIds.has(c.id) ? 'booked' : 'idle';
+                });
                 setBookingState(initial);
             })
             .catch(() => setError('Failed to load classes.'))
             .finally(() => setLoading(false));
-    }, []);
+    }, [clientId]);
 
     async function handleBook(gc) {
         setBookingState((prev) => ({ ...prev, [gc.id]: 'loading' }));
@@ -247,42 +259,58 @@ function ClientClasses({ clientId }) {
     if (classes.length === 0) return <p className={styles.empty}>No classes available.</p>;
 
     return (
-        <section className={styles.section}>
-            <h2 className={styles.sectionTitle}>Available Classes ({classes.length})</h2>
-            <div className={styles.grid}>
-                {classes.map((gc) => {
-                    const state = bookingState[gc.id] ?? 'idle';
-                    const isBooked = state === 'booked';
-                    const isLoading = state === 'loading';
-                    const isError = state.startsWith('error:');
-                    const errorMsg = isError ? state.replace('error:', '') : '';
+        <>
+            {/* Aulas agendadas */}
+            {myBookings.length > 0 && (
+                <section className={styles.section}>
+                    <h2 className={styles.sectionTitle}>My Bookings ({myBookings.length})</h2>
+                    <div className={styles.grid}>
+                        {classes
+                            .filter((gc) => myBookings.some((b) => b.groupClassId === gc.id))
+                            .map((gc) => <ClassCard key={gc.id} gc={gc} />)
+                        }
+                    </div>
+                </section>
+            )}
 
-                    return (
-                        <ClassCard
-                            key={gc.id}
-                            gc={gc}
-                            action={() => (
-                                <div className={styles.bookWrapper}>
-                                    {isError && <p className={styles.bookError}>{errorMsg}</p>}
-                                    <button
-                                        className={[
-                                            styles.bookBtn,
-                                            isBooked ? styles.bookBtnBooked : '',
-                                            isLoading ? styles.bookBtnLoading : '',
-                                        ].join(' ')}
-                                        onClick={() => handleBook(gc)}
-                                        disabled={isBooked || isLoading}
-                                    >
-                                        {isLoading && <span className={styles.spinner} />}
-                                        {isBooked ? '✓ Booked!' : 'Book now'}
-                                    </button>
-                                </div>
-                            )}
-                        />
-                    );
-                })}
-            </div>
-        </section>
+            {/* Todas as aulas disponíveis */}
+            <section className={styles.section}>
+                <h2 className={styles.sectionTitle}>Available Classes ({classes.length})</h2>
+                <div className={styles.grid}>
+                    {classes.map((gc) => {
+                        const state = bookingState[gc.id] ?? 'idle';
+                        const isBooked = state === 'booked';
+                        const isLoading = state === 'loading';
+                        const isError = state.startsWith('error:');
+                        const errorMsg = isError ? state.replace('error:', '') : '';
+
+                        return (
+                            <ClassCard
+                                key={gc.id}
+                                gc={gc}
+                                action={() => (
+                                    <div className={styles.bookWrapper}>
+                                        {isError && <p className={styles.bookError}>{errorMsg}</p>}
+                                        <button
+                                            className={[
+                                                styles.bookBtn,
+                                                isBooked ? styles.bookBtnBooked : '',
+                                                isLoading ? styles.bookBtnLoading : '',
+                                            ].join(' ')}
+                                            onClick={() => handleBook(gc)}
+                                            disabled={isBooked || isLoading}
+                                        >
+                                            {isLoading && <span className={styles.spinner} />}
+                                            {isBooked ? '✓ Booked!' : 'Book now'}
+                                        </button>
+                                    </div>
+                                )}
+                            />
+                        );
+                    })}
+                </div>
+            </section>
+        </>
     );
 }
 

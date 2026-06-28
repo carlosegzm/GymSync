@@ -23,7 +23,7 @@ public class ClientSubscriptionController {
 
     @PostMapping("/enroll")
     @Operation(summary = "Enroll a client into a membership plan")
-    @PreAuthorize("hasAnyRole('ADMIN', 'CLIENT')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ClientSubscriptionResponseDTO> enroll(@RequestBody ClientSubscriptionRequestDTO request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(subscriptionService.enrollClient(request));
     }

@@ -34,27 +34,21 @@ export const AuthProvider = ({ children }) => {
 				if (!storedUser || !token) return;
 
 				const validation = await authService.validateToken();
+				console.log('validation:', validation); // ← que está retornando?
+
 				if (!validation.valid) { cleanup(); return; }
 
-				const tokenRole = getRoleFromToken();
-				const stored = JSON.parse(storedUser);
-
-				if (tokenRole && stored.role !== tokenRole) {
-					console.warn('AuthContext: role mismatch, cleaning session');
-					cleanup();
-					return;
-				}
-
-				// Atualiza gymId via /me a cada restauração de sessão
-				// garante que mudanças no backend (e.g. admin linka gym) sejam refletidas
 				const me = await authService.getMe();
+				console.log('me:', me); // ← está chegando aqui?
+
 				if (me.gymId) localStorage.setItem('gymId', me.gymId);
 
-				setUser({ ...stored, role: tokenRole ?? stored.role });
+				setUser(JSON.parse(storedUser));
 				setIsAuthenticated(true);
 
-			} catch {
-				cleanup();
+			} catch (err) {
+				console.error('loadUserFromStorage error:', err); // ← qual erro?
+				cleanup(); // ← esse cleanup está limpando tudo
 			} finally {
 				setIsLoading(false);
 			}
@@ -95,7 +89,7 @@ export const AuthProvider = ({ children }) => {
 			try {
 				const me = await authService.getMe();
 				if (me.gymId) localStorage.setItem('gymId', me.gymId);
-			} catch {}
+			} catch { }
 		}
 
 		setUser(userToStore);

@@ -19,7 +19,6 @@ import styles from './Subscription.module.css';
  * Lists available plans and the client's active subscription.
  *
  * GET  /api/plans/gym/{gymId}
- * POST /api/subscriptions/enroll   { clientId, planId }
  * PATCH /api/subscriptions/{id}/cancel
  */
 export default function Subscription() {
@@ -28,36 +27,27 @@ export default function Subscription() {
 
     const [plans, setPlans] = useState([]);
     const [subscription, setSubscription] = useState(null);
-    const [loadingPlans, setLoadingPlans] = useState(true);
-    const [enrollingId, setEnrollingId] = useState(null);
     const [cancelling, setCancelling] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const [loadingSub, setLoadingSub] = useState(true);
+    const [noActivePlan, setNoActivePlan] = useState(false);
 
     useEffect(() => {
-        if (!gymId) { setLoadingPlans(false); return; }
-        membershipPlanService.listByGym(gymId)
-            .then(setPlans)
-            .catch(() => setError('Failed to load plans.'))
-            .finally(() => setLoadingPlans(false));
-    }, [gymId]);
-
-    async function handleEnroll(planId) {
-        setError(''); setSuccess('');
-        setEnrollingId(planId);
-        try {
-            const sub = await clientSubscriptionService.enroll({
-                clientId: user.id,
-                planId
-            });
-            setSubscription(sub);
-            setSuccess('Enrolled successfully!');
-        } catch (err) {
-            setError(err.response?.data?.message ?? 'Enrollment failed.');
-        } finally {
-            setEnrollingId(null);
-        }
-    }
+        clientSubscriptionService.getMySubscription()
+            .then((data) => {
+                setSubscription(data);
+                setNoActivePlan(false);
+            })
+            .catch((err) => {
+                if (err.response?.status === 404) {
+                    setNoActivePlan(true); // ← sem plano, não é um erro real
+                } else {
+                    setError('Failed to load your subscription.');
+                }
+            })
+            .finally(() => setLoadingSub(false));
+    }, []);
 
     async function handleCancel(subscriptionId) {
         setError(''); setSuccess('');
@@ -84,36 +74,26 @@ export default function Subscription() {
             {success && <div className={styles.success} role="status">{success}</div>}
 
             {/* Active subscription */}
-            {subscription && (
-                <section className={styles.section}>
-                    <h2 className={styles.sectionTitle}>Active Plan</h2>
+            <section className={styles.section}>
+                <h2 className={styles.sectionTitle}>Active Plan</h2>
+
+                {loadingSub ? (
+                    <p className={styles.loading}>Loading subscription...</p>
+                ) : noActivePlan ? (
+                    <div className={styles.emptyPlan}>
+                        <p className={styles.emptyPlanIcon}>📋</p>
+                        <p className={styles.emptyPlanTitle}>No active plan</p>
+                        <p className={styles.emptyPlanSub}>
+                            Contact your gym admin to get enrolled in a membership plan.
+                        </p>
+                    </div>
+                ) : subscription ? (
                     <ActiveSubscriptionCard
                         subscription={subscription}
                         onCancel={handleCancel}
                         loading={cancelling}
                     />
-                </section>
-            )}
-
-            {/* Available plans */}
-            <section className={styles.section}>
-                <h2 className={styles.sectionTitle}>Available Plans</h2>
-                {loadingPlans ? (
-                    <p className={styles.loading}>Loading plans...</p>
-                ) : plans.length === 0 ? (
-                    <p className={styles.empty}>No plans available.</p>
-                ) : (
-                    <div className={styles.plansGrid}>
-                        {plans.map((plan) => (
-                            <PlanCard
-                                key={plan.id}
-                                plan={plan}
-                                onEnroll={handleEnroll}
-                                loading={enrollingId === plan.id}
-                            />
-                        ))}
-                    </div>
-                )}
+                ) : null}
             </section>
         </div>
     );

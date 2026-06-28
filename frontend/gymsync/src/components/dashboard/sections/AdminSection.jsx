@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 // services
 import reportService from "../../../services/reportService";
 import dashboardService from "../../../services/dashboardService";
+import groupClassService from "../../../services/groupClassService";
 
 // hooks
 import { useReportDownload } from "../../../hooks/report/useReportDownload";
@@ -14,6 +15,56 @@ import ActionCard from "../cards/ActionCard";
 
 // styles
 import styles from '../../../pages/DashBoard.module.css'
+
+// No AdminSection, adiciona nos useEffects ou num componente separado
+// uma prévia das próximas aulas da academia
+
+function UpcomingClasses() {
+    const gymId = localStorage.getItem('gymId');
+    const [classes, setClasses] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        if (!gymId) { setLoading(false); return; }
+        groupClassService.listByGym(gymId)
+            .then((data) => {
+                // Ordena por data e pega as próximas 5
+                const sorted = [...data].sort(
+                    (a, b) => new Date(a.startDateTime) - new Date(b.startDateTime)
+                );
+                setClasses(sorted.slice(0, 5));
+            })
+            .catch(() => { })
+            .finally(() => setLoading(false));
+    }, [gymId]);
+
+    if (loading || classes.length === 0) return null;
+
+    return (
+        <section className={styles.section}>
+            <h2 className={styles.sectionTitle}>Upcoming Classes</h2>
+            <div className={styles.upcomingList}>
+                {classes.map((gc) => {
+                    const d = new Date(gc.startDateTime);
+                    return (
+                        <div key={gc.id} className={styles.upcomingRow}>
+                            <span className={styles.upcomingType}>{gc.classType}</span>
+                            <span className={styles.upcomingName}>{gc.name}</span>
+                            <span className={styles.upcomingDate}>
+                                {d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
+                                {' · '}
+                                {d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                        </div>
+                    );
+                })}
+            </div>
+        </section>
+    );
+}
+
+// Adiciona dentro do return do AdminSection, após as métricas:
+<UpcomingClasses />
 
 export default function AdminSection({ gymId }) {
     const navigate = useNavigate();
@@ -133,6 +184,12 @@ export default function AdminSection({ gymId }) {
                     {financeReport.error && (
                         <p className={styles.reportError}>{financeReport.error}</p>
                     )}
+                </div>
+            </section>
+
+            <section className={styles.section}>
+                <div>
+                    <UpcomingClasses />
                 </div>
             </section>
         </>

@@ -14,6 +14,8 @@ const classBookingService = {
 	 * @returns {Promise<{ id, bookingDateTime, clientId, groupClassId }>}
 	 */
 	async create({ clientId, groupClassId }) {
+		console.log("Id client ", clientId);
+		console.log("Id class ", groupClassId);
 		const { data } = await api.post('/api/class-bookings', {
 			clientId,
 			groupClassId,
@@ -46,6 +48,17 @@ const classBookingService = {
 	 */
 	async cancelByClient(bookingId, clientId) {
 		const { data } = await api.delete(`/api/class-bookings/${bookingId}/cancel/client/${clientId}`);
+		return data;
+	},
+
+	/**
+	 * Lists all bookings/reservations for the currently logged-in client.
+	 * GET /api/class-bookings/client/me
+	 *
+	 * @returns {Promise<Array<{ id, bookingDateTime, clientId, groupClassId }>>}
+	 */
+	async listMyBookingsAsClient() {
+		const { data } = await api.get('/api/class-bookings/client/me');
 		return data;
 	},
 };

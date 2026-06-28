@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 
 // services
+import groupClassService from '../../services/groupClassService';
 import classBookingService from '../../services/classBookingService';
 
 // contexto
@@ -32,8 +33,10 @@ export default function Schedule() {
 
 	useEffect(() => {
 		(async () => {
+			const gymId = localStorage.getItem("gymId");
+
 			try {
-				const data = await classBookingService.listClasses();
+				const data = await groupClassService.listByGym(gymId);
 				setClasses(data);
 				// initialize all buttons as idle
 				const initial = {};
@@ -52,7 +55,10 @@ export default function Schedule() {
 
 		setBookingState((prev) => ({ ...prev, [groupClass.id]: 'loading' }));
 		try {
-			await classService.bookClass(user.id, groupClass.id);
+			await classBookingService.create({
+				clientId: user.id,
+				groupClassId: groupClass.id
+			});
 			setBookingState((prev) => ({ ...prev, [groupClass.id]: 'booked' }));
 		} catch (err) {
 			// Show backend message (e.g. "Class is full") inside the card
