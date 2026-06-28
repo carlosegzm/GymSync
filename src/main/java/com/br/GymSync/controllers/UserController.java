@@ -91,6 +91,14 @@ public class UserController {
         return ResponseEntity.ok(updatedUser);
     }
 
+    @PatchMapping("/{userId}/gym/unlink")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Unlink a user from a Gym", description = "Removes the association between a user and their gym. Only Admins can perform this action.")
+    public ResponseEntity<UserResponseDTO> unlinkUserFromGym(@PathVariable UUID userId) {
+        UserResponseDTO updatedUser = userService.unlinkFromGym(userId);
+        return ResponseEntity.ok(updatedUser);
+    }
+
     @GetMapping("/me")
     @PreAuthorize("hasAnyRole('ADMIN', 'TRAINER', 'CLIENT')")
     @Operation(summary = "Get current authenticated user profile", description = "Returns the profile details of the currently logged-in user.")

@@ -106,4 +106,11 @@ public class UserService {
         return userMapper.toResponse(user);
     }
 
+    @Transactional
+    public UserResponseDTO unlinkFromGym(UUID userId) {
+        User user = findEntityById(userId);
+        user.setGym(null);
+        return userMapper.toResponse(user);
+    }
+
 }
