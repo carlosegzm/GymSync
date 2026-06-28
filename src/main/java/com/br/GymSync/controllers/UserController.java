@@ -66,7 +66,7 @@ public class UserController {
     }
 
     @GetMapping("/gym/{gymId}/trainers")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLIENT')")
     @Operation(summary = "Get all trainers from a specific gym", description = "Returns a list of users with the TRAINER role associated with the provided gym ID.")
     public ResponseEntity<List<UserResponseDTO>> getTrainersByGym(@PathVariable UUID gymId) {
         List<UserResponseDTO> trainers = userService.findTrainersByGym(gymId);

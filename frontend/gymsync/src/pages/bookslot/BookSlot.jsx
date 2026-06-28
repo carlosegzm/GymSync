@@ -55,7 +55,7 @@ function SlotChip({ slot, onBook, bookingId }) {
 export default function BookSlot() {
     const { user } = useAuth();
 
-    const [selectedTrainer, setSelectedTrainer] = useState(null);
+    const [selectedTrainerId, setSelectedTrainerId] = useState('');
     const { users: trainers, loading: loadingTrainers, error: trainersError } = useGymUsers('trainers');
 
     const [slots, setSlots] = useState([]);
@@ -67,12 +67,12 @@ export default function BookSlot() {
     const [success, setSuccess] = useState('');
 
     useEffect(() => {
-        if (!selectedTrainer) { setSlots([]); setSearched(false); return; }
+        if (!selectedTrainerId) { setSlots([]); setSearched(false); return; }
 
         setError(''); setSuccess(''); setSlots([]); setSearched(false);
         setSearching(true);
 
-        availableTimeSlotService.listByTrainer(selectedTrainer.id)
+        availableTimeSlotService.listByTrainer(selectedTrainerId)
             .then((all) => {
                 const free = all.filter((s) => s.available);
                 setSlots(free);
@@ -81,7 +81,7 @@ export default function BookSlot() {
             })
             .catch(() => setError('Failed to load slots.'))
             .finally(() => setSearching(false));
-    }, [selectedTrainer]);
+    }, [selectedTrainerId]);
 
     async function handleBook(slotId) {
         setError(''); setSuccess('');
@@ -117,13 +117,19 @@ export default function BookSlot() {
                 ) : trainersError ? (
                     <div className={styles.error}>{trainersError}</div>
                 ) : (
-                    <UserSelect
-                        users={trainers}
-                        selected={selectedTrainer}
-                        onSelect={setSelectedTrainer}
-                        placeholder="Search trainer by name..."
+                    <select
+                        className={styles.select}
+                        value={selectedTrainerId}
+                        onChange={(e) => setSelectedTrainerId(e.target.value)}
                         disabled={searching}
-                    />
+                    >
+                        <option value="">— Choose a trainer —</option>
+                        {trainers.map((t) => (
+                            <option key={t.id} value={t.id}>
+                                {t.name}
+                            </option>
+                        ))}
+                    </select>
                 )}
                 {searching && <p className={styles.loading}>Loading slots...</p>}
             </section>
