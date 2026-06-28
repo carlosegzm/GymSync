@@ -32,6 +32,17 @@ const clientSubscriptionService = {
 		const { data } = await api.patch(`/api/subscriptions/${subscriptionId}/cancel`);
 		return data;
 	},
+
+	/**
+	 * Fetches the active subscription for the currently logged-in client.
+	 * GET /api/subscriptions/client/me
+	 *
+	 * @returns {Promise<{ id, clientId, planId, startDate, endDate, status }>}
+	 */
+	async getMySubscription() {
+		const { data } = await api.get('/api/subscriptions/client/me');
+		return data;
+	},
 };
 
 export default clientSubscriptionService;

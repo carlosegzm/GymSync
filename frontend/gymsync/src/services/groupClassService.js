@@ -6,16 +6,6 @@ import api from "./api";
  * classType enum values (from backend): SPINNING, (others TBD)
  */
 const groupClassService = {
-	/**
-	 * Lists all available group classes.
-	 * GET /api/group-classes
-	 *
-	 * @returns {Promise<Array<{ id, name, classType, startDateTime, maxCapacity, trainerId }>>}
-	 */
-	async listAll() {
-		const { data } = await api.get('/api/group-classes');
-		return data;
-	},
 
 	/**
 	 * Creates a new group class.
@@ -48,6 +38,7 @@ const groupClassService = {
 	 * @returns {Promise<Array<{ id, name, classType, startDateTime, maxCapacity, trainerId }>>}
 	 */
 	async listByGym(gymId) {
+		console.log(gymId)
 		const { data } = await api.get(`/api/group-classes/gym/${gymId}`);
 		return data;
 	},

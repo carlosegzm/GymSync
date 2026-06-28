@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 // services
 import reportService from "../../../services/reportService";
 import dashboardService from "../../../services/dashboardService";
+import groupClassService from "../../../services/groupClassService";
 
 // hooks
 import { useReportDownload } from "../../../hooks/report/useReportDownload";
@@ -156,7 +157,6 @@ export default function AdminSection({ gymId }) {
                         onClick={() =>
                             navigate('/gym')}
                     />
-                    <UpcomingClasses />
                 </div>
             </section>
 
@@ -184,6 +184,12 @@ export default function AdminSection({ gymId }) {
                     {financeReport.error && (
                         <p className={styles.reportError}>{financeReport.error}</p>
                     )}
+                </div>
+            </section>
+
+            <section className={styles.section}>
+                <div>
+                    <UpcomingClasses />
                 </div>
             </section>
         </>

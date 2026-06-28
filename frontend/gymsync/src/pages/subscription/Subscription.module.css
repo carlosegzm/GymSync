@@ -240,3 +240,31 @@
         transform: rotate(360deg);
     }
 }
+
+.emptyPlan {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 2rem;
+    background: var(--bg-surface);
+    border: 1px dashed var(--border);
+    border-radius: var(--radius-md);
+    text-align: center;
+}
+
+.emptyPlanIcon {
+    font-size: 2rem;
+}
+
+.emptyPlanTitle {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.emptyPlanSub {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    max-width: 280px;
+}

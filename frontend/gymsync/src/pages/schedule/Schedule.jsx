@@ -33,8 +33,10 @@ export default function Schedule() {
 
 	useEffect(() => {
 		(async () => {
+			const gymId = localStorage.getItem("gymId");
+
 			try {
-				const data = await groupClassService.listAll();
+				const data = await groupClassService.listByGym(gymId);
 				setClasses(data);
 				// initialize all buttons as idle
 				const initial = {};
