@@ -9,9 +9,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,10 +30,19 @@ public class GroupClassController {
         return ResponseEntity.status(HttpStatus.CREATED).body(groupClassService.create(request));
     }
 
-    @GetMapping
-    @Operation(summary = "List all available group classes")
-    @PreAuthorize("hasAnyRole('ADMIN', 'TRAINER', 'CLIENT')")
-    public ResponseEntity<List<GroupClassResponseDTO>> listAll() {
-        return ResponseEntity.ok(groupClassService.listAllClasses());
+    @GetMapping("/gym/{gymId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLIENT', 'TRAINER')")
+    @Operation(summary = "List all group classes for a specific gym")
+    public ResponseEntity<List<GroupClassResponseDTO>> getClassesByGym(@PathVariable UUID gymId) {
+        return ResponseEntity.ok(groupClassService.findClassesByGym(gymId));
     }
+
+    @GetMapping("/trainer/me")
+    @PreAuthorize("hasRole('TRAINER')")
+    @Operation(summary = "List all group classes for the logged-in trainer")
+    public ResponseEntity<List<GroupClassResponseDTO>> getMyTrainerClasses(org.springframework.security.core.Authentication authentication) {
+        String trainerEmail = authentication.getName();
+        return ResponseEntity.ok(groupClassService.findClassesByTrainerEmail(trainerEmail));
+    }
+
 }

@@ -10,8 +10,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -44,4 +46,13 @@ public class ClassBookingController {
         bookingService.cancelBooking(bookingId, clientId);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/client/me")
+    @PreAuthorize("hasRole('CLIENT')")
+    @Operation(summary = "List all class bookings for the logged-in client")
+    public ResponseEntity<List<ClassBookingResponseDTO>> getMyBookings(org.springframework.security.core.Authentication authentication) {
+        String clientEmail = authentication.getName();
+        return ResponseEntity.ok(classBookingService.findBookingsByClientEmail(clientEmail));
+    }
+
 }
