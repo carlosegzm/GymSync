@@ -50,6 +50,17 @@ const classBookingService = {
 		const { data } = await api.delete(`/api/class-bookings/${bookingId}/cancel/client/${clientId}`);
 		return data;
 	},
+
+	/**
+	 * Lists all bookings/reservations for the currently logged-in client.
+	 * GET /api/class-bookings/client/me
+	 *
+	 * @returns {Promise<Array<{ id, bookingDateTime, clientId, groupClassId }>>}
+	 */
+	async listMyBookingsAsClient() {
+		const { data } = await api.get('/api/class-bookings/client/me');
+		return data;
+	},
 };
 
 export default classBookingService;

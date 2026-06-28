@@ -39,6 +39,29 @@ const groupClassService = {
 		});
 		return data;
 	},
+
+	/**
+	 * Lists all group classes for a specific gym (Calendar/Schedule).
+	 * GET /api/group-classes/gym/{gymId}
+	 *
+	 * @param {string} gymId - Gym UUID
+	 * @returns {Promise<Array<{ id, name, classType, startDateTime, maxCapacity, trainerId }>>}
+	 */
+	async listByGym(gymId) {
+		const { data } = await api.get(`/api/group-classes/gym/${gymId}`);
+		return data;
+	},
+
+	/**
+	 * Lists group classes for the currently logged-in trainer.
+	 * GET /api/group-classes/trainer/me
+	 *
+	 * @returns {Promise<Array<{ id, name, classType, startDateTime, maxCapacity, trainerId }>>}
+	 */
+	async listMyClassesAsTrainer() {
+		const { data } = await api.get('/api/group-classes/trainer/me');
+		return data;
+	},
 };
 
 export default groupClassService;
