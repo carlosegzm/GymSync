@@ -14,27 +14,56 @@
     "signOut": "Sign out"
   },
   "auth": {
-    "email": "Email",
-    "password": "Password",
-    "signIn": "Sign in",
-    "signInTitle": "Sign in",
-    "signInSubtitle": "Access your GymSync account",
-    "createAccount": "Create account",
-    "createAccountTitle": "Create account",
-    "createAccountSubtitle": "Join GymSync",
-    "fullName": "Full name",
-    "confirmPassword": "Confirm password",
-    "alreadyHaveAccount": "Already have an account?",
-    "dontHaveAccount": "Don't have an account?",
-    "invalidCredentials": "Incorrect email or password.",
-    "registrationFailed": "Registration failed. Please try again.",
-    "student": "Student",
-    "trainer": "Trainer",
-    "passwordStrength": {
+    "systemManagement": "Management System",
+    "login": {
+      "tagline": "Schedule, evolution, and class control — all in one place.",
+      "feature1": "Intelligent evaluation scheduling",
+      "feature2": "Real-time spot control",
+      "feature3": "Track your physical progress",
+      "title": "Sign in",
+      "subtitle": "Access your GymSync account",
+      "dontHaveAccount": "Don't have an account?",
+      "createOne": "Create one"
+    },
+    "register": {
+      "tagline": "Start today. Track every step of your journey.",
+      "feature1": "Student or trainer profile",
+      "feature2": "Complete evaluation history",
+      "feature3": "Monthly evolution charts",
+      "title": "Create account",
+      "subtitle": "Join GymSync",
+      "alreadyHaveAccount": "Already have an account?",
+      "signInLink": "Sign in"
+    },
+    "form": {
+      "quickLogin": "🧪 Quick login",
+      "emailLabel": "Email",
+      "emailPlaceholder": "you@email.com",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "Minimum 8 characters",
+      "confirmPasswordLabel": "Confirm password",
+      "confirmPasswordPlaceholder": "Repeat your password",
+      "fullNameLabel": "Full name",
+      "fullNamePlaceholder": "Your name",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password",
+      "submitLogin": "Sign in",
+      "submitRegister": "Create account"
+    },
+    "strength": {
       "weak": "Weak",
-      "fair": "Fair",
+      "regular": "Fair",
       "good": "Good",
       "strong": "Strong"
+    },
+    "validation": {
+      "emailRequired": "Please enter your email.",
+      "passwordRequired": "Please enter your password.",
+      "nameRequired": "Please enter your name.",
+      "passwordTooWeak": "Please choose a stronger password.",
+      "passwordsDoNotMatch": "Passwords do not match.",
+      "loginFailed": "Login failed. Please try again.",
+      "registerSuccess": "Account created! Redirecting to dashboard..."
     }
   },
   "nav": {

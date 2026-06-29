@@ -14,27 +14,56 @@
     "signOut": "Cerrar sesión"
   },
   "auth": {
-    "email": "Correo electrónico",
-    "password": "Contraseña",
-    "signIn": "Iniciar sesión",
-    "signInTitle": "Iniciar sesión",
-    "signInSubtitle": "Accede a tu cuenta GymSync",
-    "createAccount": "Crear cuenta",
-    "createAccountTitle": "Crear cuenta",
-    "createAccountSubtitle": "Únete a GymSync",
-    "fullName": "Nombre completo",
-    "confirmPassword": "Confirmar contraseña",
-    "alreadyHaveAccount": "¿Ya tienes cuenta?",
-    "dontHaveAccount": "¿No tienes cuenta?",
-    "invalidCredentials": "Correo o contraseña incorrectos.",
-    "registrationFailed": "Error al crear cuenta. Inténtalo de nuevo.",
-    "student": "Alumno",
-    "trainer": "Entrenador",
-    "passwordStrength": {
+    "systemManagement": "Sistema de Gestión",
+    "login": {
+      "tagline": "Agenda, evolución y control de clases — todo en un solo lugar.",
+      "feature1": "Programación inteligente de evaluaciones",
+      "feature2": "Control de cupos en tiempo real",
+      "feature3": "Sigue tu evolución física",
+      "title": "Iniciar sesión",
+      "subtitle": "Accede a tu cuenta de GymSync",
+      "dontHaveAccount": "¿No tienes una cuenta?",
+      "createOne": "Crear una"
+    },
+    "register": {
+      "tagline": "Comienza hoy. Sigue cada paso de tu viaje.",
+      "feature1": "Perfil de alumno o entrenador",
+      "feature2": "Historial completo de evaluaciones",
+      "feature3": "Gráficos de evolución mensual",
+      "title": "Crear cuenta",
+      "subtitle": "Únete a GymSync",
+      "alreadyHaveAccount": "¿Ya tienes una cuenta?",
+      "signInLink": "Iniciar sesión"
+    },
+    "form": {
+      "quickLogin": "🧪 Inicio rápido",
+      "emailLabel": "Correo electrónico",
+      "emailPlaceholder": "tu@email.com",
+      "passwordLabel": "Contraseña",
+      "passwordPlaceholder": "Mínimo 8 caracteres",
+      "confirmPasswordLabel": "Confirmar contraseña",
+      "confirmPasswordPlaceholder": "Repite la contraseña",
+      "fullNameLabel": "Nombre completo",
+      "fullNamePlaceholder": "Tu nombre",
+      "showPassword": "Mostrar contraseña",
+      "hidePassword": "Ocultar contraseña",
+      "submitLogin": "Iniciar sesión",
+      "submitRegister": "Crear cuenta"
+    },
+    "strength": {
       "weak": "Débil",
-      "fair": "Regular",
+      "regular": "Regular",
       "good": "Buena",
       "strong": "Fuerte"
+    },
+    "validation": {
+      "emailRequired": "Por favor, introduce tu correo electrónico.",
+      "passwordRequired": "Por favor, introduce tu contraseña.",
+      "nameRequired": "Por favor, introduce tu nombre.",
+      "passwordTooWeak": "Por favor, elige una contraseña más fuerte.",
+      "passwordsDoNotMatch": "Las contraseñas no coinciden.",
+      "loginFailed": "Error al iniciar sesión. Por favor, inténtalo de nuevo.",
+      "registerSuccess": "¡Cuenta creada! Redirigiendo al panel de control..."
     }
   },
   "nav": {

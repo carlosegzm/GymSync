@@ -1,6 +1,7 @@
 // react
 import { useState } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 
 // context
 import { useAuth } from "../../../hooks/context/AuthContext";
@@ -31,6 +32,8 @@ const DEV_PROFILES = [
  * Has no knowledge of the outer layout — inserted by Login.jsx.
  */
 export default function LoginForm() {
+	const { t } = useTranslation();
+
 	const { login } = useAuth();
 	const navigate = useNavigate();
 	const location = useLocation();
@@ -50,8 +53,8 @@ export default function LoginForm() {
 		e.preventDefault();
 		setError('');
 
-		if (!email.trim()) { setError('Please enter your email.'); return; }
-		if (!password) { setError('Please enter your password.'); return; }
+		if (!email.trim()) { setError(t('auth.validation.emailRequired')); return; }
+        if (!password) { setError(t('auth.validation.passwordRequired')); return; }
 
 		setLoading(true);
 		try {
@@ -64,8 +67,8 @@ export default function LoginForm() {
 			console.log(destination);
 			navigate(destination, { replace: true });
 		} catch (err) {
-			const msg = err.response?.data?.message ?? err.message ?? 'Login failed. Please try again.';
-			setError(err.message ?? 'Login failed. Please try again.');
+			const msg = err.response?.data?.message ?? err.message ?? t('auth.validation.loginFailed');
+            setError(msg);
 		} finally {
 			setLoading(false);
 		}
@@ -76,7 +79,7 @@ export default function LoginForm() {
 		<form className={styles.form} onSubmit={handleSubmit} noValidate>
 			{import.meta.env.DEV && (
 				<div className={styles.devHint}>
-					<span>🧪 Quick login</span>
+					<span>{t('auth.form.quickLogin')}</span>
 					<div className={styles.devProfiles}>
 						{DEV_PROFILES.map((p) => (
 							<button
@@ -93,20 +96,20 @@ export default function LoginForm() {
 			)}
 
 			<div className={styles.formHeader}>
-				<h2 className={styles.formTitle}>Sign in</h2>
-				<p className={styles.formSubtitle}>Access your GymSync account</p>
+				<h2 className={styles.formTitle}>{t('auth.login.title')}</h2>
+				<p className={styles.formSubtitle}>{t('auth.login.subtitle')}</p>
 			</div>
 
 			{/* Email Field */}
 			<div className={styles.field}>
-				<label htmlFor="login-email" className={styles.label}>Email</label>
+				<label htmlFor="login-email" className={styles.label}>{t('auth.form.emailLabel')}</label>
 				<input
 					id="login-email"
 					type="email"
 					className={styles.input}
 					value={email}
 					onChange={(e) => setEmail(e.target.value)}
-					placeholder="you@email.com"
+					placeholder={t('auth.form.emailPlaceholder')}
 					autoComplete="email"
 					autoFocus
 					disabled={loading}
@@ -115,7 +118,7 @@ export default function LoginForm() {
 
 			{/* Password Field with visibility */}
 			<div className={styles.field}>
-				<label htmlFor="login-password" className={styles.label}>Password</label>
+				<label htmlFor="login-password" className={styles.label}>{t('auth.form.passwordLabel')}</label>
 				<div className={styles.inputWrapper}>
 					<input
 						id="login-password"
@@ -131,7 +134,7 @@ export default function LoginForm() {
 						type="button"
 						className={styles.eyeBtn}
 						onClick={() => setVisiblePassword((v) => !v)}
-						aria-label={visiblePassword ? 'Hide password' : 'Show password'}
+						aria-label={visiblePassword ? t('auth.form.hidePassword') : t('auth.form.showPassword')}
 					>
 						{visiblePassword ? '🙈' : '👁️'}
 					</button>
@@ -147,13 +150,13 @@ export default function LoginForm() {
 
 			{/* Submit bttn */}
 			<button type="submit" className={styles.submitBtn} disabled={loading}>
-				{loading ? <span className={styles.spinner} /> : 'Sign in'}
+				{loading ? <span className={styles.spinner} /> : t('auth.form.submitLogin')}
 			</button>
 
 			{/* Redirect to Register page */}
 			<p className={styles.switchLink}>
-				Don't have an account?{' '}
-				<Link to="/register">Create one</Link>
+				{t('auth.login.dontHaveAccount')}{' '}
+				<Link to="/register">{t('auth.login.createOne')}</Link>
 			</p>
 		</form>
 	);

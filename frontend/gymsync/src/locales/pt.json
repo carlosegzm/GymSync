@@ -14,27 +14,56 @@
     "signOut": "Sair"
   },
   "auth": {
-    "email": "E-mail",
-    "password": "Senha",
-    "signIn": "Entrar",
-    "signInTitle": "Entrar",
-    "signInSubtitle": "Acesse sua conta GymSync",
-    "createAccount": "Criar conta",
-    "createAccountTitle": "Criar conta",
-    "createAccountSubtitle": "Junte-se ao GymSync",
-    "fullName": "Nome completo",
-    "confirmPassword": "Confirmar senha",
-    "alreadyHaveAccount": "Já tem conta?",
-    "dontHaveAccount": "Não tem conta?",
-    "invalidCredentials": "E-mail ou senha incorretos.",
-    "registrationFailed": "Erro ao criar conta. Tente novamente.",
-    "student": "Aluno",
-    "trainer": "Treinador",
-    "passwordStrength": {
+    "systemManagement": "Sistema de Gestão",
+    "login": {
+      "tagline": "Agenda, evolução e controle de aulas — tudo no mesmo lugar.",
+      "feature1": "Agendamento inteligente de avaliações",
+      "feature2": "Controle de vagas em tempo real",
+      "feature3": "Acompanhe sua evolução física",
+      "title": "Sign in",
+      "subtitle": "Acesse sua conta GymSync",
+      "dontHaveAccount": "Não tem uma conta?",
+      "createOne": "Criar uma"
+    },
+    "register": {
+      "tagline": "Comece hoje. Acompanhe cada avanço da sua jornada.",
+      "feature1": "Perfil de aluno ou treinador",
+      "feature2": "Histórico completo de avaliações",
+      "feature3": "Gráficos de evolução mensal",
+      "title": "Criar conta",
+      "subtitle": "Junte-se ao GymSync",
+      "alreadyHaveAccount": "Já tem conta?",
+      "signInLink": "Entrar"
+    },
+    "form": {
+      "quickLogin": "🧪 Login rápido",
+      "emailLabel": "E-mail",
+      "emailPlaceholder": "seu@email.com",
+      "passwordLabel": "Senha",
+      "passwordPlaceholder": "Mínimo 8 caracteres",
+      "confirmPasswordLabel": "Confirmar senha",
+      "confirmPasswordPlaceholder": "Repita a senha",
+      "fullNameLabel": "Nome completo",
+      "fullNamePlaceholder": "Seu nome",
+      "showPassword": "Mostrar senha",
+      "hidePassword": "Ocultar senha",
+      "submitLogin": "Entrar",
+      "submitRegister": "Criar conta"
+    },
+    "strength": {
       "weak": "Fraca",
-      "fair": "Regular",
+      "regular": "Regular",
       "good": "Boa",
       "strong": "Forte"
+    },
+    "validation": {
+      "emailRequired": "Informe o e-mail.",
+      "passwordRequired": "Informe a senha.",
+      "nameRequired": "Informe seu nome.",
+      "passwordTooWeak": "Escolha uma senha mais forte.",
+      "passwordsDoNotMatch": "As senhas não coincidem.",
+      "loginFailed": "Falha no login. Por favor, tente novamente.",
+      "registerSuccess": "Conta criada! Redirecionando para o painel..."
     }
   },
   "nav": {
