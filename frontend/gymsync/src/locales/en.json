@@ -12,9 +12,13 @@
     "noData": "No data found.",
     "search": "Search",
     "signOut": "Sign out",
-    "name":"Name",
-    "email":"Email",
-    "role":"Role"
+    "name": "Name",
+    "email": "Email",
+    "role": "Role",
+    "hello": "Hello, {{name}}",
+    "user": "User",
+    "dashboard": "Dashboard",
+    "login": "Login"
   },
   "auth": {
     "systemManagement": "Management System",
@@ -118,7 +122,10 @@
     "generating": "Generating...",
     "assessmentReport": "Assessment Report",
     "assessmentReportSub": "Download your full physical assessment history as PDF.",
-    "downloadMyReport": "Download My Report (PDF)"
+    "downloadMyReport": "Download My Report (PDF)",
+    "overview": "Overview",
+    "training": "Training",
+    "trainerTools": "Trainer Tools"
   },
   "classes": {
     "title": "Group Classes",

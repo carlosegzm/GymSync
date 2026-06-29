@@ -14,7 +14,11 @@
     "signOut": "Cerrar sesión",
     "name":"Nombre",
     "email":"Correo electrónico",
-    "role":"Papel"
+    "role":"Papel",
+    "hello": "Hola {{name}}",
+    "user": "usuario",
+    "dashboard": "Dashboard",
+    "login": "Login"
   },
   "auth": {
     "systemManagement": "Sistema de Gestión",
@@ -118,7 +122,10 @@
     "generating": "Generando...",
     "assessmentReport": "Informe de Evaluación",
     "assessmentReportSub": "Descarga tu historial completo de evaluaciones físicas en PDF.",
-    "downloadMyReport": "Descargar Mi Informe (PDF)"
+    "downloadMyReport": "Descargar Mi Informe (PDF)",
+    "overview": "Descripción General",
+    "training": "Entrenamiento",
+    "trainerTools": "Herramientas del entrenador"
   },
   "classes": {
     "title": "Clases de Grupo",
