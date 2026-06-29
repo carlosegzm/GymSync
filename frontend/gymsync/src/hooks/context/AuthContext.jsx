@@ -31,15 +31,18 @@ export const AuthProvider = ({ children }) => {
 				const storedUser = localStorage.getItem('user');
 				const token = localStorage.getItem('token');
 
+				console.log('1. storedUser:', storedUser);
+				console.log('2. token:', token);
+
 				if (!storedUser || !token) return;
 
 				const validation = await authService.validateToken();
-				console.log('validation:', validation); // ← que está retornando?
+				console.log('3. validation:', validation);
 
 				if (!validation.valid) { cleanup(); return; }
 
 				const me = await authService.getMe();
-				console.log('me:', me); // ← está chegando aqui?
+				console.log('4. me:', me);
 
 				if (me.gymId) localStorage.setItem('gymId', me.gymId);
 
@@ -47,8 +50,8 @@ export const AuthProvider = ({ children }) => {
 				setIsAuthenticated(true);
 
 			} catch (err) {
-				console.error('loadUserFromStorage error:', err); // ← qual erro?
-				cleanup(); // ← esse cleanup está limpando tudo
+				console.error('5. ERRO que está causando cleanup:', err);
+				cleanup();
 			} finally {
 				setIsLoading(false);
 			}
@@ -81,19 +84,24 @@ export const AuthProvider = ({ children }) => {
 			role: tokenPayload?.role ?? data.role, // JWT primeiro, fallback no response
 		};
 
+		// 1. Salva no localStorage sincronamente
 		localStorage.setItem('user', JSON.stringify(userToStore));
 		localStorage.setItem('token', data.token ?? '');
 		localStorage.setItem('gymId', data.gymId ?? '');
 
+		// Isso garante que o ProtectedRoute veja o usuário como autenticado logo no próximo render.
+		setUser(userToStore);
+		setIsAuthenticated(true);
+
+		// 2. Busca o gymId em segundo plano sem travar o estado de autenticação do app
 		if (!data.gymId) {
 			try {
 				const me = await authService.getMe();
 				if (me.gymId) localStorage.setItem('gymId', me.gymId);
-			} catch { }
+			} catch (err) {
+				console.error("Erro ao buscar dados complementares do usuário:", err);
+			}
 		}
-
-		setUser(userToStore);
-		setIsAuthenticated(true);
 	};
 
 	/**

@@ -48,7 +48,7 @@ public class UserController {
     public ResponseEntity<TokenValidationResponse> validateToken(
             @RequestHeader("Authorization") String authHeader) {
 
-        String subject = tokenService.validateToken(authHeader);
+        String subject = tokenService.validateToken(authHeader.substring(7)); // "Bearer "...
 
         return ResponseEntity.ok(
                 TokenValidationResponse.builder()

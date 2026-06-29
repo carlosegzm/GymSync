@@ -61,6 +61,7 @@ export default function LoginForm() {
 			// Redirect to the route the user was trying to access,
 			// or to the default home for their role.
 			const destination = location.state?.from?.pathname ?? '/dashboard';
+			console.log(destination);
 			navigate(destination, { replace: true });
 		} catch (err) {
 			const msg = err.response?.data?.message ?? err.message ?? 'Login failed. Please try again.';

@@ -40,7 +40,7 @@ const authService = {
 
 	/**
 	 * Validates the current JWT token.
-	 * GET /api/auth/validate
+	 * GET /api/users/validate
 	 * 
 	 * @returns {Promise<{ valid: boolean, subject: string }>}
 	 */
