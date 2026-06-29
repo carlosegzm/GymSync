@@ -1,6 +1,13 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
+// hooks
 import { useAuth } from '../../hooks/context/AuthContext';
+
+// services
 import gymService from '../../services/gymService';
+
+// styles 
 import styles from './Gym.module.css';
 
 /**
@@ -11,6 +18,7 @@ import styles from './Gym.module.css';
  * POST /api/gyms { name, cnpj }
  */
 export default function Gym() {
+    const { t } = useTranslation();
     const { updateUser } = useAuth();
 
     const [name, setName] = useState('');
@@ -34,8 +42,8 @@ export default function Gym() {
         setError('');
 
         const rawCnpj = cnpj.replace(/\D/g, '');
-        if (!name.trim()) { setError('Gym name is required.'); return; }
-        if (rawCnpj.length !== 14) { setError('Please enter a valid CNPJ.'); return; }
+        if (!name.trim()) { setError(t('gym.nameRequired')); return; }
+        if (rawCnpj.length !== 14) { setError(t('gym.cnpjInvalid')); return; }
 
         setSubmitting(true);
         try {
@@ -46,7 +54,7 @@ export default function Gym() {
             setCreated(gym);
             setName(''); setCnpj('');
         } catch (err) {
-            setError(err.response?.data?.message ?? 'Failed to create gym.');
+            setError(err.response?.data?.message ?? t('gym.createFailed'));
         } finally {
             setSubmitting(false);
         }
@@ -55,16 +63,16 @@ export default function Gym() {
     return (
         <div className={styles.page}>
             <div className={styles.header}>
-                <h1 className={styles.title}>Gym Setup</h1>
-                <p className={styles.subtitle}>Register your gym unit to unlock all features.</p>
+                <h1 className={styles.title}>{t('gym.title')}</h1>
+                <p className={styles.subtitle}>{t('gym.subtitle')}</p>
             </div>
 
             {/* Current gymId info */}
             {localStorage.getItem('gymId') && !created && (
                 <div className={styles.infoCard}>
-                    <p className={styles.infoLabel}>Active Gym ID</p>
+                    <p className={styles.infoLabel}>{t('gym.activeGymId')}</p>
                     <p className={styles.infoValue}>{localStorage.getItem('gymId')}</p>
-                    <p className={styles.infoHint}>A gym is already linked to this session. Creating a new one will replace it.</p>
+                    <p className={styles.infoHint}>{t('gym.activeGymWarning')}</p>
                 </div>
             )}
 
@@ -73,7 +81,7 @@ export default function Gym() {
                 <div className={styles.successCard}>
                     <p className={styles.successIcon}>🏋️</p>
                     <h2 className={styles.successTitle}>{created.name}</h2>
-                    <p className={styles.successSub}>Gym created and linked to your session.</p>
+                    <p className={styles.successSub}>{t('gym.created')}</p>
                     <div className={styles.successMeta}>
                         <span className={styles.metaItem}><b>ID:</b> {created.id}</span>
                         <span className={styles.metaItem}><b>CNPJ:</b> {created.cnpj}</span>
@@ -82,26 +90,26 @@ export default function Gym() {
                         className={styles.resetBtn}
                         onClick={() => setCreated(null)}
                     >
-                        Register another gym
+                        {t('gym.registerAnother')}
                     </button>
                 </div>
             ) : (
                 <section className={styles.section}>
-                    <h2 className={styles.sectionTitle}>New Gym</h2>
+                    <h2 className={styles.sectionTitle}>{t('gym.newGym')}</h2>
                     <form className={styles.form} onSubmit={handleSubmit} noValidate>
                         <div className={styles.field}>
-                            <label className={styles.label}>Gym name</label>
+                            <label className={styles.label}>{t('gym.gymName')}</label>
                             <input
                                 className={styles.input}
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
-                                placeholder="e.g. GymSync Fitness"
+                                placeholder={t('gym.gymNamePlaceholder')}
                                 disabled={submitting}
                                 autoFocus
                             />
                         </div>
                         <div className={styles.field}>
-                            <label className={styles.label}>CNPJ</label>
+                            <label className={styles.label}>{t('gym.cnpj')}</label>
                             <input
                                 className={styles.input}
                                 value={cnpj}
@@ -115,7 +123,7 @@ export default function Gym() {
                         {error && <div className={styles.error} role="alert">{error}</div>}
 
                         <button type="submit" className={styles.submitBtn} disabled={submitting}>
-                            {submitting ? <span className={styles.spinner} /> : 'Create Gym'}
+                            {submitting ? <span className={styles.spinner} /> : t('gym.createGym')}
                         </button>
                     </form>
                 </section>
