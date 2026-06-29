@@ -14,7 +14,11 @@
     "signOut": "Cerrar sesión",
     "name":"Nombre",
     "email":"Correo electrónico",
-    "role":"Papel"
+    "role":"Papel",
+    "hello": "Hola {{name}}",
+    "user": "usuario",
+    "dashboard": "Dashboard",
+    "login": "Login"
   },
   "auth": {
     "systemManagement": "Sistema de Gestión",

@@ -12,9 +12,13 @@
     "noData": "No data found.",
     "search": "Search",
     "signOut": "Sign out",
-    "name":"Name",
-    "email":"Email",
-    "role":"Role"
+    "name": "Name",
+    "email": "Email",
+    "role": "Role",
+    "hello": "Hello, {{name}}",
+    "user": "User",
+    "dashboard": "Dashboard",
+    "login": "Login"
   },
   "auth": {
     "systemManagement": "Management System",

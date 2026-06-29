@@ -1,5 +1,6 @@
 // react
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 // auth context
 import { useAuth } from '../hooks/context/AuthContext';
@@ -20,6 +21,8 @@ import AdminSection from '../components/dashboard/sections/AdminSection';
  * PDF reports use direct anchor links — the browser handles the download natively.
  */
 export default function Dashboard() {
+    const { t } = useTranslation();
+
     const { user, logout } = useAuth();
     const navigate = useNavigate();
     const gymId = localStorage.getItem('gymId');
@@ -31,10 +34,10 @@ export default function Dashboard() {
 
     function renderRoleSection() {
         switch (user?.role) {
-            case 'ADMIN':   return <AdminSection gymId={gymId} />;
+            case 'ADMIN': return <AdminSection gymId={gymId} />;
             case 'TRAINER': return <TrainerSection user={user} />;
-            case 'CLIENT':  return <ClientSection user={user} />;
-            default:        return null;
+            case 'CLIENT': return <ClientSection user={user} />;
+            default: return null;
         }
     }
 
@@ -42,14 +45,14 @@ export default function Dashboard() {
         <div className={styles.page}>
             <div className={styles.header}>
                 <div>
-                    <p className={styles.eyebrow}>Welcome back</p>
+                    <p className={styles.eyebrow}>{t('dashboard.welcomeBack')}</p>
                     <h1 className={styles.title}>
                         {user?.name ?? 'User'}
                         <span className={styles.roleBadge}>{user?.role}</span>
                     </h1>
                 </div>
                 <button className={styles.logoutBtn} onClick={handleLogout}>
-                    Sign out
+                    {t('common.signOut')}
                 </button>
             </div>
 

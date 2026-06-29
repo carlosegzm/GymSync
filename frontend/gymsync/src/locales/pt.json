@@ -14,7 +14,11 @@
     "signOut": "Sair",
     "name":"Nome",
     "email":"Email",
-    "role":"Papel"
+    "role":"Papel",
+    "hello": "Olá, {{name}}",
+    "user": "Usuário",
+    "dashboard": "Dashboard",
+    "login": "Login"
   },
   "auth": {
     "systemManagement": "Sistema de Gestão",
