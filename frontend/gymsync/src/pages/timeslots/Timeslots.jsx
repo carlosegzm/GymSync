@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 // contexto
 import { useAuth } from '../../hooks/context/AuthContext';
@@ -19,8 +20,8 @@ function groupByDate(slots) {
     }, {});
 }
 
-function formatDateHeader(dateStr) {
-    return new Date(dateStr + 'T00:00:00').toLocaleDateString('pt-BR', {
+function formatDateHeader(dateStr, lng = 'pt-BR') {
+    return new Date(dateStr + 'T00:00:00').toLocaleDateString(lng, {
         weekday: 'long', day: '2-digit', month: 'long',
     });
 }
@@ -28,11 +29,12 @@ function formatDateHeader(dateStr) {
 // ─── Sub-components ────────────────────────────────────────────────────────────
 
 function SlotChip({ slot, onDelete, deleting }) {
+    const { t } = useTranslation();
     return (
         <div className={[styles.chip, !slot.available ? styles.chipBooked : ''].join(' ')}>
             <span className={styles.chipTime}>{slot.startTime} – {slot.endTime}</span>
             <span className={[styles.chipStatus, slot.available ? styles.chipAvailable : styles.chipUnavailable].join(' ')}>
-                {slot.available ? 'Free' : 'Booked'}
+                {slot.available ? t('timeslots.free') : t('timeslots.booked')}
             </span>
             {slot.available && (
                 <button
@@ -48,12 +50,12 @@ function SlotChip({ slot, onDelete, deleting }) {
     );
 }
 
-function SlotsByDate({ grouped, onDelete, deleting }) {
+function SlotsByDate({ grouped, onDelete, deleting, currentLanguage }) {
     return (
         <div className={styles.dateList}>
             {Object.keys(grouped).sort().map((date) => (
                 <div key={date} className={styles.dateGroup}>
-                    <p className={styles.dateHeader}>{formatDateHeader(date)}</p>
+                    <p className={styles.dateHeader}>{formatDateHeader(date, currentLanguage)}</p>
                     <div className={styles.chips}>
                         {grouped[date].map((slot) => (
                             <SlotChip
@@ -85,13 +87,14 @@ function SlotsByDate({ grouped, onDelete, deleting }) {
  * Booked slots are displayed as read-only.
  */
 export default function Timeslots() {
+    const { t, i18n } = useTranslation();
     const { user } = useAuth();
     const trainerId = user?.id;
 
     const [slots, setSlots] = useState([]);
     const [loading, setLoading] = useState(true);
     const [generating, setGenerating] = useState(false);
-    const [deleting, setDeleting] = useState(null); // slotId being deleted
+    const [deleting, setDeleting] = useState(null);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const [bookedSlots, setBookedSlots] = useState([]);
@@ -108,9 +111,9 @@ export default function Timeslots() {
         if (!trainerId) return;
         availableTimeSlotService.listByTrainer(trainerId)
             .then(setSlots)
-            .catch(() => setError('Failed to load timeslots.'))
+            .catch(() => setError(t('timeslots.loadFailed')))
             .finally(() => setLoading(false));
-    }, [trainerId]);
+    }, [trainerId, t]);
 
     useEffect(() => {
         availableTimeSlotService.listMyBookedSlots()
@@ -123,11 +126,11 @@ export default function Timeslots() {
         e.preventDefault();
         setError(''); setSuccess('');
 
-        if (!startDate || !endDate) { setError('Start and end date are required.'); return; }
-        if (endDate < startDate) { setError('End date must be after start date.'); return; }
-        if (!startTime || !endTime) { setError('Start and end time are required.'); return; }
-        if (endTime <= startTime) { setError('End time must be after start time.'); return; }
-        if (duration < 15) { setError('Minimum duration is 15 minutes.'); return; }
+        if (!startDate || !endDate) { setError(t('timeslots.startEndRequired')); return; }
+        if (endDate < startDate) { setError(t('timeslots.endAfterStart')); return; }
+        if (!startTime || !endTime) { setError(t('timeslots.timeRequired')); return; }
+        if (endTime <= startTime) { setError(t('timeslots.endTimeAfterStart')); return; }
+        if (duration < 15) { setError(t('timeslots.minDuration')); return; }
 
         setGenerating(true);
         try {
@@ -140,14 +143,13 @@ export default function Timeslots() {
                 durationMinutes: Number(duration),
             });
             setSlots((prev) => {
-                // merge avoiding duplicates by id
                 const existingIds = new Set(prev.map((s) => s.id));
                 const newSlots = generated.filter((s) => !existingIds.has(s.id));
                 return [...prev, ...newSlots];
             });
-            setSuccess(`${generated.length} slot${generated.length !== 1 ? 's' : ''} generated!`);
+            setSuccess(t('timeslots.generated', { count: generated.length }));
         } catch (err) {
-            setError(err.response?.data?.message ?? 'Failed to generate slots.');
+            setError(err.response?.data?.message ?? t('timeslots.generateFailed'));
         } finally {
             setGenerating(false);
         }
@@ -160,7 +162,7 @@ export default function Timeslots() {
             await availableTimeSlotService.deleteSlot(slotId);
             setSlots((prev) => prev.filter((s) => s.id !== slotId));
         } catch (err) {
-            setError(err.response?.data?.message ?? 'Failed to delete slot.');
+            setError(err.response?.data?.message ?? t('timeslots.deleteFailed'));
         } finally {
             setDeleting(null);
         }
@@ -169,37 +171,38 @@ export default function Timeslots() {
     const grouped = groupByDate(slots);
     const freeCount = slots.filter((s) => s.available).length;
     const bookedCount = slots.filter((s) => !s.available).length;
+    const currentLanguage = i18n.language || 'pt-BR';
 
     return (
         <div className={styles.page}>
             <div className={styles.header}>
-                <h1 className={styles.title}>My Schedule</h1>
-                <p className={styles.subtitle}>Generate and manage your available timeslots.</p>
+                <h1 className={styles.title}>{t('timeslots.title')}</h1>
+                <p className={styles.subtitle}>{t('timeslots.subtitle')}</p>
             </div>
 
             {/* Generate form */}
             <section className={styles.section}>
-                <h2 className={styles.sectionTitle}>Generate Slots in Bulk</h2>
+                <h2 className={styles.sectionTitle}>{t('timeslots.generateBulk')}</h2>
                 <form className={styles.form} onSubmit={handleGenerate} noValidate>
                     <div className={styles.formRow}>
                         <div className={styles.field}>
-                            <label className={styles.label}>Start date</label>
+                            <label className={styles.label}>{t('timeslots.startDate')}</label>
                             <input className={styles.input} type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} disabled={generating} />
                         </div>
                         <div className={styles.field}>
-                            <label className={styles.label}>End date</label>
+                            <label className={styles.label}>{t('timeslots.endDate')}</label>
                             <input className={styles.input} type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} disabled={generating} />
                         </div>
                         <div className={styles.field}>
-                            <label className={styles.label}>From</label>
+                            <label className={styles.label}>{t('timeslots.from')}</label>
                             <input className={styles.input} type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} disabled={generating} />
                         </div>
                         <div className={styles.field}>
-                            <label className={styles.label}>To</label>
+                            <label className={styles.label}>{t('timeslots.to')}</label>
                             <input className={styles.input} type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} disabled={generating} />
                         </div>
                         <div className={styles.field}>
-                            <label className={styles.label}>Duration (min)</label>
+                            <label className={styles.label}>{t('timeslots.duration')}</label>
                             <input className={styles.input} type="number" min="15" step="15" value={duration} onChange={(e) => setDuration(e.target.value)} disabled={generating} />
                         </div>
                     </div>
@@ -208,7 +211,7 @@ export default function Timeslots() {
                     {success && <div className={styles.success} role="status">{success}</div>}
 
                     <button type="submit" className={styles.submitBtn} disabled={generating}>
-                        {generating ? <><span className={styles.spinner} /> Generating...</> : '⚡ Generate Slots'}
+                        {generating ? <><span className={styles.spinner} /> {t('timeslots.generating')}</> : t('timeslots.generateBtn')}
                     </button>
                 </form>
             </section>
@@ -217,28 +220,28 @@ export default function Timeslots() {
             <section className={styles.section}>
                 <div className={styles.sectionRow}>
                     <h2 className={styles.sectionTitle}>
-                        Booked Sessions ({bookedSlots.length})
+                        {t('timeslots.bookedSessions')} ({bookedSlots.length})
                     </h2>
                 </div>
 
                 {loadingBooked ? (
-                    <p className={styles.loading}>Loading booked sessions...</p>
+                    <p className={styles.loading}>{t('common.loading')}</p>
                 ) : bookedSlots.length === 0 ? (
-                    <p className={styles.empty}>No sessions booked yet.</p>
+                    <p className={styles.empty}>{t('timeslots.noBooked')}</p>
                 ) : (
                     <div className={styles.dateList}>
                         {Object.entries(groupByDate(bookedSlots))
                             .sort(([a], [b]) => a.localeCompare(b))
                             .map(([date, slots]) => (
                                 <div key={date} className={styles.dateGroup}>
-                                    <p className={styles.dateHeader}>{formatDateHeader(date)}</p>
+                                    <p className={styles.dateHeader}>{formatDateHeader(date, currentLanguage)}</p>
                                     <div className={styles.chips}>
                                         {slots.map((slot) => (
                                             <div key={slot.id} className={styles.bookedChip}>
                                                 <span className={styles.chipTime}>
                                                     {slot.startTime} – {slot.endTime}
                                                 </span>
-                                                <span className={styles.chipUnavailable}>Booked</span>
+                                                <span className={styles.chipUnavailable}>{t('timeslots.booked')}</span>
                                             </div>
                                         ))}
                                     </div>
@@ -253,25 +256,26 @@ export default function Timeslots() {
             <section className={styles.section}>
                 <div className={styles.sectionRow}>
                     <h2 className={styles.sectionTitle}>
-                        Your Slots
+                        {t('timeslots.yourSlots')}
                     </h2>
                     {slots.length > 0 && (
                         <div className={styles.slotSummary}>
-                            <span className={styles.summaryFree}>●  {freeCount} free</span>
-                            <span className={styles.summaryBooked}>●  {bookedCount} booked</span>
+                            <span className={styles.summaryFree}>●  {freeCount} {t('timeslots.free')}</span>
+                            <span className={styles.summaryBooked}>●  {bookedCount} {t('timeslots.booked')}</span>
                         </div>
                     )}
                 </div>
 
                 {loading ? (
-                    <p className={styles.loading}>Loading slots...</p>
+                    <p className={styles.loading}>{t('common.loading')}</p>
                 ) : slots.length === 0 ? (
-                    <p className={styles.empty}>No slots yet. Generate your availability above.</p>
+                    <p className={styles.empty}>{t('timeslots.noSlots')}</p>
                 ) : (
                     <SlotsByDate
                         grouped={grouped}
                         onDelete={handleDelete}
                         deleting={deleting}
+                        currentLanguage={currentLanguage}
                     />
                 )}
             </section>

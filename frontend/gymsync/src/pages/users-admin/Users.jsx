@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 // services 
 import authService from '../../services/authService';
@@ -15,6 +16,7 @@ import UserSelect from '../../components/commom/userselect/UserSelect';
 import styles from './Users.module.css';
 
 function UserRow({ user, onUnlink, unlinkingId }) {
+    const { t } = useTranslation();
     const isUnlinking = unlinkingId === user.id;
 
     return (
@@ -29,7 +31,7 @@ function UserRow({ user, onUnlink, unlinkingId }) {
             >
                 {isUnlinking
                     ? <span className={styles.spinnerSm} />
-                    : 'Remove'
+                    : t('users.remove')
                 }
             </button>
         </div>
@@ -41,6 +43,7 @@ function UserRow({ user, onUnlink, unlinkingId }) {
  * Links trainers and clients to the gym via PATCH /api/users/{userId}/gym/{gymId}
  */
 export default function Users() {
+    const { t, i18n } = useTranslation();
     const gymId = localStorage.getItem('gymId');
 
     const { users: clients, loading: loadingClients, error: clientsError } = useGymUsers('clients');
@@ -69,22 +72,22 @@ export default function Users() {
         if (!gymId) { setLoadingPlans(false); return; }
         membershipPlanService.listByGym(gymId)
             .then(setPlans)
-            .catch(() => setEnrollError('Failed to load plans.'))
+            .catch(() => setEnrollError(t('subscription.loadFailed'))) // Reutilizado fallback global ou tratar local
             .finally(() => setLoadingPlans(false));
-    }, [gymId]);
+    }, [gymId, t]);
 
     async function handleSearch(e) {
         e.preventDefault();
         setError(''); setSuccess(''); setFoundUser(null);
 
-        if (!searchEmail.trim()) { setError('Please enter an email.'); return; }
+        if (!searchEmail.trim()) { setError(t('users.searchEmail')); return; }
 
         setSearching(true);
         try {
             const user = await authService.getUserByEmail(searchEmail.trim());
             setFoundUser(user);
         } catch {
-            setError('No user found with this email.');
+            setError(t('users.userNotFound'));
         } finally {
             setSearching(false);
         }
@@ -97,7 +100,7 @@ export default function Users() {
         setLinking(true);
         try {
             await authService.linkUserToGym(foundUser.id, gymId);
-            setSuccess(`${foundUser.name} (${foundUser.role}) linked successfully!`);
+            setSuccess(t('users.linkedSuccess', { name: foundUser.name, role: foundUser.role }));
 
             // Adiciona na lista local da sessão
             setLinkedUsers((prev) => [...prev, foundUser]);
@@ -105,7 +108,7 @@ export default function Users() {
             setFoundUser(null);
             setSearchEmail('');
         } catch (err) {
-            setError(err.response?.data?.message ?? 'Failed to link user.');
+            setError(err.response?.data?.message ?? t('users.linkFailed'));
         } finally {
             setLinking(false);
         }
@@ -117,9 +120,9 @@ export default function Users() {
         try {
             await authService.unlinkUserFromGym(userId);
             setUnlinkedIds((prev) => new Set([...prev, userId]));
-            setSuccess('User unlinked from gym successfully.');
+            setSuccess(t('users.unlinkedSuccess'));
         } catch (err) {
-            setError(err.response?.data?.message ?? 'Failed to unlink user.');
+            setError(err.response?.data?.message ?? t('users.unlinkFailed'));
         } finally {
             setUnlinkingId(null);
         }
@@ -129,39 +132,39 @@ export default function Users() {
         e.preventDefault();
         setEnrollError(''); setEnrollSuccess('');
 
-        if (!selectedClient) { setEnrollError('Select a client.'); return; }
-        if (!selectedPlan) { setEnrollError('Select a plan.'); return; }
+        if (!selectedClient) { setEnrollError(t('users.selectClient')); return; }
+        if (!selectedPlan) { setEnrollError(t('users.selectPlan')); return; }
 
         setEnrolling(true);
         try {
             await clientSubscriptionService.enroll({
-                clientId: selectedClient, 
+                clientId: selectedClient,
                 planId: selectedPlan
             });
-            
-            setEnrollSuccess('Client enrolled successfully!');
+
+            setEnrollSuccess(t('users.enrollSuccess'));
             setSelectedClient('');
             setSelectedPlan('');
         } catch (err) {
-            setEnrollError(err.response?.data?.message ?? 'Failed to enroll client.');
+            setEnrollError(err.response?.data?.message ?? t('users.enrollFailed'));
         } finally {
             setEnrolling(false);
         }
     }
 
+    const currentLanguage = i18n.language || 'pt-BR';
+
     return (
         <div className={styles.page}>
             <div className={styles.header}>
-                <h1 className={styles.title}>Users</h1>
-                <p className={styles.subtitle}>Manage trainers and clients linked to your gym.</p>
+                <h1 className={styles.title}>{t('users.title')}</h1>
+                <p className={styles.subtitle}>{t('users.subtitle')}</p>
             </div>
 
             {/* Link a new user */}
             <section className={styles.section}>
-                <h2 className={styles.sectionTitle}>Link User to Gym</h2>
-                <p className={styles.hint}>
-                    Search a registered user by email and link them to your gym.
-                </p>
+                <h2 className={styles.sectionTitle}>{t('users.linkUser')}</h2>
+                <p className={styles.hint}>{t('users.linkHint')}</p>
 
                 <form className={styles.linkForm} onSubmit={handleSearch} noValidate>
                     <input
@@ -173,7 +176,7 @@ export default function Users() {
                         disabled={searching || linking}
                     />
                     <button type="submit" className={styles.linkBtn} disabled={searching || linking}>
-                        {searching ? <span className={styles.spinner} /> : 'Search'}
+                        {searching ? <span className={styles.spinner} /> : t('users.search')}
                     </button>
                 </form>
 
@@ -189,7 +192,7 @@ export default function Users() {
                             onClick={handleLink}
                             disabled={linking}
                         >
-                            {linking ? <span className={styles.spinner} /> : 'Link to gym'}
+                            {linking ? <span className={styles.spinner} /> : t('users.linkToGym')}
                         </button>
                     </div>
                 )}
@@ -200,17 +203,17 @@ export default function Users() {
 
             {/* Trainers */}
             <section className={styles.section}>
-                <h2 className={styles.sectionTitle}>Trainers ({trainers.length})</h2>
+                <h2 className={styles.sectionTitle}>{t('users.trainers')} ({trainers.length})</h2>
                 {loadingTrainers ? (
-                    <p className={styles.loading}>Loading...</p>
+                    <p className={styles.loading}>{t('common.loading')}</p>
                 ) : trainersError ? (
                     <div className={styles.error}>{trainersError}</div>
                 ) : trainers.length === 0 ? (
-                    <p className={styles.empty}>No trainers linked yet.</p>
+                    <p className={styles.empty}>{t('users.noTrainers')}</p>
                 ) : (
                     <div className={styles.list}>
                         <div className={styles.listHeader}>
-                            <span>Name</span><span>Email</span><span>Role</span>
+                            <span>{t('common.name')}</span><span>{t('common.email')}</span><span>{t('common.role')}</span>
                         </div>
                         {[...trainers, ...linkedUsers.filter((u) => u.role === 'TRAINER')]
                             .filter((u) => !unlinkedIds.has(u.id))
@@ -224,17 +227,17 @@ export default function Users() {
 
             {/* Clients */}
             <section className={styles.section}>
-                <h2 className={styles.sectionTitle}>Clients ({clients.length})</h2>
+                <h2 className={styles.sectionTitle}>{t('users.clients')} ({clients.length})</h2>
                 {loadingClients ? (
-                    <p className={styles.loading}>Loading...</p>
+                    <p className={styles.loading}>{t('common.loading')}</p>
                 ) : clientsError ? (
                     <div className={styles.error}>{clientsError}</div>
                 ) : clients.length === 0 ? (
-                    <p className={styles.empty}>No clients linked yet.</p>
+                    <p className={styles.empty}>{t('users.noClients')}</p>
                 ) : (
                     <div className={styles.list}>
                         <div className={styles.listHeader}>
-                            <span>Name</span><span>Email</span><span>Role</span>
+                            <span>{t('common.name')}</span><span>{t('common.email')}</span><span>{t('common.role')}</span>
                         </div>
                         {[...clients, ...linkedUsers.filter((u) => u.role === 'CLIENT')]
                             .filter((u) => !unlinkedIds.has(u.id))
@@ -246,22 +249,21 @@ export default function Users() {
                 )}
             </section>
 
+            {/* Enroll Client */}
             <section className={styles.section}>
-                <h2 className={styles.sectionTitle}>Enroll Client in Plan</h2>
-                <p className={styles.hint}>
-                    Select a linked client and assign them to a membership plan.
-                </p>
+                <h2 className={styles.sectionTitle}>{t('users.enrollTitle')}</h2>
+                <p className={styles.hint}>{t('users.enrollHint')}</p>
 
                 <form className={styles.enrollForm} onSubmit={handleEnroll} noValidate>
                     <div className={styles.field}>
-                        <label className={styles.label}>Client</label>
+                        <label className={styles.label}>{t('users.clients')}</label>
                         <select
                             className={styles.select}
                             value={selectedClient}
                             onChange={(e) => setSelectedClient(e.target.value)}
                             disabled={enrolling || loadingClients}
                         >
-                            <option value="">— Select a client —</option>
+                            <option value="">{t('users.selectClient')}</option>
                             {[...clients, ...linkedUsers.filter((u) => u.role === 'CLIENT')]
                                 .filter((u) => !unlinkedIds.has(u.id))
                                 .map((u) => (
@@ -272,17 +274,17 @@ export default function Users() {
                     </div>
 
                     <div className={styles.field}>
-                        <label className={styles.label}>Plan</label>
+                        <label className={styles.label}>{t('subscription.availablePlans')}</label>
                         <select
                             className={styles.select}
                             value={selectedPlan}
                             onChange={(e) => setSelectedPlan(e.target.value)}
                             disabled={enrolling || loadingPlans}
                         >
-                            <option value="">— Select a plan —</option>
+                            <option value="">{t('users.selectPlan')}</option>
                             {plans.map((p) => (
                                 <option key={p.id} value={p.id}>
-                                    {p.name} — R$ {Number(p.price).toFixed(2)} / {p.durationInMonths} mo
+                                    {p.name} — {Number(p.price).toLocaleString(currentLanguage, { style: 'currency', currency: currentLanguage === 'pt-BR' ? 'BRL' : 'USD' })} / {p.durationInMonths} {t('subscription.months')}
                                 </option>
                             ))}
                         </select>
@@ -292,7 +294,7 @@ export default function Users() {
                     {enrollSuccess && <div className={styles.success} role="status">{enrollSuccess}</div>}
 
                     <button type="submit" className={styles.submitBtn} disabled={enrolling || loadingPlans}>
-                        {enrolling ? <span className={styles.spinner} /> : 'Enroll Client'}
+                        {enrolling ? <span className={styles.spinner} /> : t('users.enrollBtn')}
                     </button>
                 </form>
             </section>

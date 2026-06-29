@@ -11,7 +11,10 @@
     "back": "Back",
     "noData": "No data found.",
     "search": "Search",
-    "signOut": "Sign out"
+    "signOut": "Sign out",
+    "name":"Name",
+    "email":"Email",
+    "role":"Role"
   },
   "auth": {
     "systemManagement": "Management System",
@@ -308,5 +311,16 @@
     "nameRequired": "Gym name is required.",
     "cnpjInvalid": "Please enter a valid CNPJ.",
     "createFailed": "Failed to create gym."
+  },
+  "schedule": {
+    "title": "Group Classes",
+    "subtitle": "Pick a class and book your spot.",
+    "noClasses": "No classes available at the moment.",
+    "loadingClasses": "Loading classes...",
+    "spots": "{{count}} spots",
+    "bookNow": "Book Now!",
+    "booked": "✓ Booked!",
+    "loadFailed": "Error loading classes, try again!",
+    "bookingFailed": "Booking failed."
   }
 }

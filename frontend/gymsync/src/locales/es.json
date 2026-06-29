@@ -11,7 +11,10 @@
     "back": "Volver",
     "noData": "No se encontraron datos.",
     "search": "Buscar",
-    "signOut": "Cerrar sesión"
+    "signOut": "Cerrar sesión",
+    "name":"Nombre",
+    "email":"Correo electrónico",
+    "role":"Papel"
   },
   "auth": {
     "systemManagement": "Sistema de Gestión",
@@ -308,5 +311,16 @@
     "nameRequired": "El nombre del gimnasio es obligatorio.",
     "cnpjInvalid": "Por favor ingresa un CNPJ válido.",
     "createFailed": "Error al crear gimnasio."
+  },
+  "schedule": {
+    "title": "Clases Grupales",
+    "subtitle": "Elige una clase y reserva tu lugar.",
+    "noClasses": "No hay clases disponibles en este momento.",
+    "loadingClasses": "Cargando clases...",
+    "spots": "{{count}} cupos",
+    "bookNow": "¡Reservar Ahora!",
+    "booked": "✓ ¡Reservado!",
+    "loadFailed": "¡Error al cargar las clases, intente de nuevo!",
+    "bookingFailed": "La reserva falló."
   }
 }

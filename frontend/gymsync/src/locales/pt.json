@@ -11,7 +11,10 @@
     "back": "Voltar",
     "noData": "Nenhum dado encontrado.",
     "search": "Buscar",
-    "signOut": "Sair"
+    "signOut": "Sair",
+    "name":"Nome",
+    "email":"Email",
+    "role":"Papel"
   },
   "auth": {
     "systemManagement": "Sistema de Gestão",
@@ -308,5 +311,16 @@
     "nameRequired": "Nome da academia é obrigatório.",
     "cnpjInvalid": "Por favor, insira um CNPJ válido.",
     "createFailed": "Falha ao criar academia."
+  },
+  "schedule": {
+    "title": "Aulas Coletivas",
+    "subtitle": "Escolha uma aula e reserve seu lugar.",
+    "noClasses": "Nenhuma aula disponível no momento.",
+    "loadingClasses": "Carregando aulas...",
+    "spots": "{{count}} vagas",
+    "bookNow": "Agendar Agora!",
+    "booked": "✓ Agendado!",
+    "loadFailed": "Erro ao carregar aulas, tente de novo!",
+    "bookingFailed": "Agendamento falhou."
   }
 }
