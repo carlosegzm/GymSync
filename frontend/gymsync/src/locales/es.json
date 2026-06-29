@@ -118,7 +118,7 @@
     "downloadMyReport": "Descargar Mi Informe (PDF)"
   },
   "classes": {
-    "title": "Clases Grupales",
+    "title": "Clases de Grupo",
     "trainerSubtitle": "Crea y gestiona tus clases grupales.",
     "clientSubtitle": "Explora y reserva las clases disponibles.",
     "newClass": "Nueva Clase",
@@ -130,18 +130,18 @@
     "yourClasses": "Tus Clases",
     "availableClasses": "Clases Disponibles",
     "myBookings": "Mis Reservas",
-    "bookNow": "Reservar",
+    "bookNow": "Reservar ahora",
     "booked": "✓ ¡Reservado!",
     "spots": "cupos",
-    "occupancyReport": "Informe de Ocupación",
+    "occupancyReport": "Reporte de Ocupación",
     "namePlaceholder": "ej: Spinning Nocturno",
     "capacityMin": "La capacidad debe ser de al menos 1.",
     "nameRequired": "El nombre de la clase es obligatorio.",
     "dateRequired": "La fecha y hora de inicio son obligatorias.",
-    "created": "¡Clase \"{{name}}\" creada!",
-    "createFailed": "Error al crear clase.",
-    "bookingFailed": "Error al reservar.",
-    "loadFailed": "Error al cargar clases."
+    "created": "¡Clase \"{{name}}\" creada con éxito!",
+    "createFailed": "Error al crear la clase.",
+    "bookingFailed": "Error en la reserva.",
+    "loadFailed": "Error al cargar las clases."
   },
   "timeslots": {
     "title": "Mi Agenda",

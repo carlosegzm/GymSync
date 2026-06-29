@@ -100,6 +100,8 @@ function ClientAssessments({ userId }) {
 // ─── Trainer view ──────────────────────────────────────────────────────────────
 
 function TrainerAssessments({ trainerId }) {
+    const { t } = useTranslation();
+
     const [assessments, setAssessments] = useState([]);
     const [loading, setLoading] = useState(false);
     const [submitting, setSubmitting] = useState(false);
@@ -220,6 +222,8 @@ function TrainerAssessments({ trainerId }) {
  * TRAINER: registers new assessments + sees recently created ones.
  */
 export default function Assessments() {
+    const { t } = useTranslation();
+
     const { user } = useAuth();
     const role = getRoleFromToken();
 
