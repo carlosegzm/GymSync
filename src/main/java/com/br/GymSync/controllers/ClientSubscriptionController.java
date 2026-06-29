@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -43,4 +44,12 @@ public class ClientSubscriptionController {
         String clientEmail = authentication.getName();
         return ResponseEntity.ok(subscriptionService.getMyActiveSubscription(clientEmail));
     }
+
+    @GetMapping("/gym/{gymId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "List all subscriptions for a specific gym")
+    public ResponseEntity<List<ClientSubscriptionResponseDTO>> getAllSubscriptionsByGym(@PathVariable UUID gymId) {
+        return ResponseEntity.ok(subscriptionService.findAllSubscriptionsByGym(gymId));
+    }
+
 }

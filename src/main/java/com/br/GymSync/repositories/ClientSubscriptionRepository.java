@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -14,4 +15,5 @@ public interface ClientSubscriptionRepository extends JpaRepository<ClientSubscr
     Optional<ClientSubscription> findByClientIdAndStatus(UUID clientId, SubscriptionStatus status);
     long countByStatusAndEndDateBetween(SubscriptionStatus status, LocalDate start, LocalDate end);
     long countByStatus(SubscriptionStatus status);
+    List<ClientSubscription> findAllByPlanGymId(UUID gymId);
 }
