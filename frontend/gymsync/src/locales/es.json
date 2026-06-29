@@ -118,7 +118,10 @@
     "generating": "Generando...",
     "assessmentReport": "Informe de Evaluación",
     "assessmentReportSub": "Descarga tu historial completo de evaluaciones físicas en PDF.",
-    "downloadMyReport": "Descargar Mi Informe (PDF)"
+    "downloadMyReport": "Descargar Mi Informe (PDF)",
+    "overview": "Descripción General",
+    "training": "Entrenamiento",
+    "trainerTools": "Herramientas del entrenador"
   },
   "classes": {
     "title": "Clases de Grupo",

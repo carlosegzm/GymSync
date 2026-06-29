@@ -118,7 +118,10 @@
     "generating": "Gerando...",
     "assessmentReport": "Relatório de Avaliação",
     "assessmentReportSub": "Baixe seu histórico completo de avaliações físicas em PDF.",
-    "downloadMyReport": "Baixar Meu Relatório (PDF)"
+    "downloadMyReport": "Baixar Meu Relatório (PDF)",
+    "overview": "Visão Geral",
+    "training": "Treinos",
+    "trainerTools": "Ferramentas do treinador"
   },
   "classes": {
     "title": "Aulas Coletivas",

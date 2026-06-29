@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 // styles
 import styles from '../../../pages/DashBoard.module.css'
@@ -13,6 +14,7 @@ import { useReportDownload } from '../../../hooks/report/useReportDownload';
 import ActionCard from '../cards/ActionCard';
 
 export default function ClientSection({ user }) {
+    const { t } = useTranslation();
     const navigate = useNavigate();
 
     const clientId = user?.id;
@@ -26,29 +28,30 @@ export default function ClientSection({ user }) {
         <>
             {/* Training Section */}
             <section className={styles.section}>
-                <h2 className={styles.sectionTitle}>Your Training</h2>
+                <h2 className={styles.sectionTitle}>{t('dashboard.training')}</h2>
                 <div className={styles.actionsGrid}>
                     <ActionCard
                         icon="🏃"
-                        label="Group Classes"
-                        sub="Browse and book classes"
+                        label={t('dashboard.groupClasses')}
+                        sub={t('dashboard.browseBookClasses')}
                         onClick={() => navigate('/schedule')}
                     />
                     <ActionCard
                         icon="📈"
-                        label="My Assessments"
-                        sub="View your progress"
+                        label={t('dashboard.myAssessments')}
+                        sub={t('dashboard.viewProgress')}
                         onClick={() => navigate('/assessments')}
                     />
                     <ActionCard
                         icon="💳"
-                        label="My Subscription"
-                        sub="Manage your plan"
+                        label={t('dashboard.mySubscription')}
+                        sub={t('dashboard.managePlan')}
                         onClick={() => navigate('/subscription')}
                     />
                     <ActionCard
-                        icon="📅" label="Book a Session"
-                        sub="Reserve a slot with your trainer"
+                        icon="📅"
+                        label={t('dashboard.bookSession')}
+                        sub={t('dashboard.reserveSlot')}
                         onClick={() => navigate('/book-slot')}
                     />
                 </div>
@@ -58,9 +61,9 @@ export default function ClientSection({ user }) {
             <section className={styles.section}>
                 <div className={styles.reportCard}>
                     <div className={styles.reportText}>
-                        <h2 className={styles.reportTitle}>Assessment Report</h2>
+                        <h2 className={styles.reportTitle}>{t('dashboard.assessmentReport')}</h2>
                         <p className={styles.reportSub}>
-                            Download your full physical assessment history as PDF.
+                            {t('dashboard.assessmentReportSub')}
                         </p>
                     </div>
 
@@ -74,7 +77,7 @@ export default function ClientSection({ user }) {
                         ) : (
                             <span>📄</span>
                         )}
-                        {assessmentReport.loading ? 'Generating...' : 'Download My Report (PDF)'}
+                        {assessmentReport.loading ? t('dashboard.generating') : t('dashboard.downloadMyReport')}
                     </button>
 
                     {assessmentReport.error && (

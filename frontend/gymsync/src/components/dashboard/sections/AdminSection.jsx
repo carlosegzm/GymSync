@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 // services
 import reportService from "../../../services/reportService";
@@ -16,10 +17,8 @@ import ActionCard from "../cards/ActionCard";
 // styles
 import styles from '../../../pages/DashBoard.module.css'
 
-// No AdminSection, adiciona nos useEffects ou num componente separado
-// uma prévia das próximas aulas da academia
-
 function UpcomingClasses() {
+    const { t, i18n } = useTranslation();
     const gymId = localStorage.getItem('gymId');
     const [classes, setClasses] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -28,7 +27,6 @@ function UpcomingClasses() {
         if (!gymId) { setLoading(false); return; }
         groupClassService.listByGym(gymId)
             .then((data) => {
-                // Ordena por data e pega as próximas 5
                 const sorted = [...data].sort(
                     (a, b) => new Date(a.startDateTime) - new Date(b.startDateTime)
                 );
@@ -40,9 +38,11 @@ function UpcomingClasses() {
 
     if (loading || classes.length === 0) return null;
 
+    const currentLanguage = i18n.language || 'en';
+
     return (
         <section className={styles.section}>
-            <h2 className={styles.sectionTitle}>Upcoming Classes</h2>
+            <h2 className={styles.sectionTitle}>{t('dashboard.upcomingClasses')}</h2>
             <div className={styles.upcomingList}>
                 {classes.map((gc) => {
                     const d = new Date(gc.startDateTime);
@@ -51,9 +51,9 @@ function UpcomingClasses() {
                             <span className={styles.upcomingType}>{gc.classType}</span>
                             <span className={styles.upcomingName}>{gc.name}</span>
                             <span className={styles.upcomingDate}>
-                                {d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
+                                {d.toLocaleDateString(currentLanguage, { day: '2-digit', month: 'short' })}
                                 {' · '}
-                                {d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                                {d.toLocaleTimeString(currentLanguage, { hour: '2-digit', minute: '2-digit' })}
                             </span>
                         </div>
                     );
@@ -63,10 +63,8 @@ function UpcomingClasses() {
     );
 }
 
-// Adiciona dentro do return do AdminSection, após as métricas:
-<UpcomingClasses />
-
 export default function AdminSection({ gymId }) {
+    const { t, i18n } = useTranslation();
     const navigate = useNavigate();
     const [metrics, setMetrics] = useState(null);
     const [loadingMetrics, setLoadingMetrics] = useState(true);
@@ -83,17 +81,18 @@ export default function AdminSection({ gymId }) {
             .finally(() => setLoadingMetrics(false));
     }, [gymId]);
 
-    // Blob-based service-consuming hook
     const financeReport = useReportDownload(
         () => reportService.getFinanceReport(gymId),
         'financial-report.pdf'
     );
 
+    const currentLanguage = i18n.language || 'en';
+
     return (
         <>
             {/* Metrics */}
             <section className={styles.section}>
-                <h2 className={styles.sectionTitle}>Gym Overview</h2>
+                <h2 className={styles.sectionTitle}>{t('dashboard.overview')}</h2>
                 {!gymId && (
                     <p className={styles.warn}>
                         ⚠️ No gym linked to this account. Metrics unavailable.
@@ -101,16 +100,16 @@ export default function AdminSection({ gymId }) {
                 )}
                 <div className={styles.metricsGrid}>
                     <MetricCard
-                        label="Active Members"
+                        label={t('dashboard.activeMembers')}
                         value={loadingMetrics ? '...' : metrics?.activeMembers}
                     />
                     <MetricCard
-                        label="Expiring in 30 days"
+                        label={t('dashboard.expiringIn30Days')}
                         value={loadingMetrics ? '...' : metrics?.membersExpiringIn30Days}
-                        sub="memberships"
+                        sub={t('dashboard.memberships')}
                     />
                     <MetricCard
-                        label="Net Balance"
+                        label={t('dashboard.netBalance')}
                         value={
                             loadingMetrics
                                 ? '...'
@@ -124,18 +123,18 @@ export default function AdminSection({ gymId }) {
 
             {/* Quick actions */}
             <section className={styles.section}>
-                <h2 className={styles.sectionTitle}>Management</h2>
+                <h2 className={styles.sectionTitle}>Admin </h2>
                 <div className={styles.actionsGrid}>
                     <ActionCard
                         icon="📋"
-                        label="Membership Plans"
-                        sub="Create and manage plans"
+                        label={t('dashboard.membershipPlans')}
+                        sub={t('dashboard.createManagePlans')}
                         onClick={() => navigate('/plans')}
                     />
                     <ActionCard
                         icon="👥"
-                        label="Users"
-                        sub="Link trainers and clients to your gym"
+                        label={t('dashboard.gymUsers')}
+                        sub={t('dashboard.linkClientsTrainers')}
                         onClick={() => navigate('/users')}
                     />
                     <ActionCard
@@ -146,10 +145,9 @@ export default function AdminSection({ gymId }) {
                     />
                     <ActionCard
                         icon="🏢"
-                        label="Gym Setup"
-                        sub="Register or update gym info"
-                        onClick={() =>
-                            navigate('/gym')}
+                        label={t('dashboard.gymSetup')}
+                        sub={t('dashboard.registerUpdateGym')}
+                        onClick={() => navigate('/gym')}
                     />
                 </div>
             </section>
@@ -158,9 +156,9 @@ export default function AdminSection({ gymId }) {
             <section className={styles.section}>
                 <div className={styles.reportCard}>
                     <div className={styles.reportText}>
-                        <h2 className={styles.reportTitle}>Financial Report</h2>
+                        <h2 className={styles.reportTitle}>{t('dashboard.financialReport')}</h2>
                         <p className={styles.reportSub}>
-                            Complete financial summary for your gym, generated live.
+                            {t('dashboard.financialReportSub')}
                         </p>
                     </div>
                     <button
@@ -173,7 +171,7 @@ export default function AdminSection({ gymId }) {
                         ) : (
                             <span>📄</span>
                         )}
-                        {financeReport.loading ? 'Generating...' : 'Download Financial Report (PDF)'}
+                        {financeReport.loading ? t('dashboard.generating') : t('dashboard.downloadReport')}
                     </button>
                     {financeReport.error && (
                         <p className={styles.reportError}>{financeReport.error}</p>

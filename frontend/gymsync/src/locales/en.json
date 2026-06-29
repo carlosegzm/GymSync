@@ -118,7 +118,10 @@
     "generating": "Generating...",
     "assessmentReport": "Assessment Report",
     "assessmentReportSub": "Download your full physical assessment history as PDF.",
-    "downloadMyReport": "Download My Report (PDF)"
+    "downloadMyReport": "Download My Report (PDF)",
+    "overview": "Overview",
+    "training": "Training",
+    "trainerTools": "Trainer Tools"
   },
   "classes": {
     "title": "Group Classes",
