@@ -37,4 +37,12 @@ public class PhysicalAssessmentController {
     public ResponseEntity<List<PhysicalAssessmentResponseDTO>> getClientHistory(@PathVariable UUID clientId) {
         return ResponseEntity.ok(assessmentService.getClientHistory(clientId));
     }
+
+    @GetMapping("/trainer/me")
+    @Operation(summary = "List all physical assessments performed by the logged-in trainer")
+    @PreAuthorize("hasRole('TRAINER')")
+    public ResponseEntity<List<PhysicalAssessmentResponseDTO>> getMyPerformedAssessments(org.springframework.security.core.Authentication authentication) {
+        String trainerEmail = authentication.getName();
+        return ResponseEntity.ok(assessmentService.getMyPerformedAssessments(trainerEmail));
+    }
 }

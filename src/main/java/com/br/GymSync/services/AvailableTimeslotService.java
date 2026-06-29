@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -39,6 +40,11 @@ public class AvailableTimeslotService {
         List<AvailableTimeslot> slotsToSave = new ArrayList<>();
 
         for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
+
+            if (date.getDayOfWeek() == DayOfWeek.SUNDAY) {
+                continue;
+            }
+
             LocalTime currentSlotTime = startTime;
 
             while (!currentSlotTime.plusMinutes(durationMinutes).isAfter(endTime)) {
@@ -95,6 +101,16 @@ public class AvailableTimeslotService {
 
         AvailableTimeslot savedSlot = timeslotRepository.save(slot);
         return timeslotMapper.toResponse(savedSlot);
+    }
+
+    @Transactional(readOnly = true)
+    public List<AvailableTimeslotResponseDTO> getMyBookedSlots(String trainerEmail) {
+        User trainer = userService.findEntityByEmail(trainerEmail);
+
+        return timeslotRepository.findByTrainerIdAndAvailableFalse(trainer.getId())
+                .stream()
+                .map(timeslotMapper::toResponse)
+                .toList();
     }
 
 }

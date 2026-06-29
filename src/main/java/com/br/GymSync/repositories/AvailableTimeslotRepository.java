@@ -10,4 +10,5 @@ import java.util.UUID;
 @Repository
 public interface AvailableTimeslotRepository extends JpaRepository<AvailableTimeslot, Long> {
     List<AvailableTimeslot> findByTrainerIdAndAvailableTrue(UUID trainerId);
+    List<AvailableTimeslot> findByTrainerIdAndAvailableFalse(UUID trainerId);
 }

@@ -59,4 +59,12 @@ public class AvailableTimeslotController {
         timeslotService.cancelTimeslot(slotId);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/trainer/me/booked")
+    @Operation(summary = "List all booked timeslots for the logged-in trainer")
+    @PreAuthorize("hasRole('TRAINER')")
+    public ResponseEntity<List<AvailableTimeslotResponseDTO>> getMyBookedSlots(org.springframework.security.core.Authentication authentication) {
+        String trainerEmail = authentication.getName();
+        return ResponseEntity.ok(timeslotService.getMyBookedSlots(trainerEmail));
+    }
 }
