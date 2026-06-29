@@ -34,7 +34,7 @@ export default function ClientSection({ user }) {
                         icon="🏃"
                         label={t('dashboard.groupClasses')}
                         sub={t('dashboard.browseBookClasses')}
-                        onClick={() => navigate('/schedule')}
+                        onClick={() => navigate('/classes')}
                     />
                     <ActionCard
                         icon="📈"

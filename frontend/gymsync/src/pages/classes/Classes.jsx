@@ -236,6 +236,8 @@ function ClientClasses({ clientId }) {
                 setClasses(allClasses);
                 setMyBookings(bookings);
 
+                console.log(myBookings)
+
                 const bookedClassIds = new Set(bookings.map((b) => b.groupClassId));
                 const initial = {};
                 allClasses.forEach((c) => {
