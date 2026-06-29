@@ -14,8 +14,6 @@ const classBookingService = {
 	 * @returns {Promise<{ id, bookingDateTime, clientId, groupClassId }>}
 	 */
 	async create({ clientId, groupClassId }) {
-		console.log("Id client ", clientId);
-		console.log("Id class ", groupClassId);
 		const { data } = await api.post('/api/class-bookings', {
 			clientId,
 			groupClassId,
