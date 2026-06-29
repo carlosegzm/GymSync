@@ -10,7 +10,6 @@ import { Navigate } from 'react-router-dom';
 import Login from "./pages/auth/Login.jsx";
 import Register from './pages/auth/Register.jsx';
 import Dashboard from "./pages/Dashboard.jsx"
-import Schedule from './pages/schedule/Schedule.jsx';
 import Subscription from './pages/subscription/Subscription.jsx';
 import Plans from './pages/plans/Plans.jsx';
 import Assessments from './pages/assessments/Assessments.jsx';
@@ -54,7 +53,7 @@ import './styles/global.css'
  * 		/dashboard
  * 
  * CLIENT
- * 		/schedule
+ * 		/classes
  * 		/assessments
  * 		/subscription
  * 
@@ -86,14 +85,6 @@ const router = createHashRouter([
 				element: (
 					<ProtectedRoute>
 						<Dashboard />
-					</ProtectedRoute>
-				),
-			},
-			{
-				path: 'schedule',
-				element: (
-					<ProtectedRoute allowedRoles={['CLIENT']}>
-						<Schedule />
 					</ProtectedRoute>
 				),
 			},
