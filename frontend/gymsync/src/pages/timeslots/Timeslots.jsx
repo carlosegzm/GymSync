@@ -79,7 +79,8 @@ function SlotsByDate({ grouped, onDelete, deleting }) {
  * POST /api/timeslots/generate  (query params)
  * GET  /api/timeslots/trainer/{trainerId}
  * DELETE /api/timeslots/{slotId}
- *
+ * GET /api/timeslots/trainer/me/booked 
+ * 
  * Business rule: only free slots (available: true) can be deleted.
  * Booked slots are displayed as read-only.
  */
@@ -93,6 +94,8 @@ export default function Timeslots() {
     const [deleting, setDeleting] = useState(null); // slotId being deleted
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const [bookedSlots, setBookedSlots] = useState([]);
+    const [loadingBooked, setLoadingBooked] = useState(true);
 
     // Generate form
     const [startDate, setStartDate] = useState('');
@@ -108,6 +111,13 @@ export default function Timeslots() {
             .catch(() => setError('Failed to load timeslots.'))
             .finally(() => setLoading(false));
     }, [trainerId]);
+
+    useEffect(() => {
+        availableTimeSlotService.listMyBookedSlots()
+            .then(setBookedSlots)
+            .catch(() => { }) 
+            .finally(() => setLoadingBooked(false));
+    }, []);
 
     async function handleGenerate(e) {
         e.preventDefault();
@@ -201,6 +211,42 @@ export default function Timeslots() {
                         {generating ? <><span className={styles.spinner} /> Generating...</> : '⚡ Generate Slots'}
                     </button>
                 </form>
+            </section>
+
+            {/* Booked Slots */}
+            <section className={styles.section}>
+                <div className={styles.sectionRow}>
+                    <h2 className={styles.sectionTitle}>
+                        Booked Sessions ({bookedSlots.length})
+                    </h2>
+                </div>
+
+                {loadingBooked ? (
+                    <p className={styles.loading}>Loading booked sessions...</p>
+                ) : bookedSlots.length === 0 ? (
+                    <p className={styles.empty}>No sessions booked yet.</p>
+                ) : (
+                    <div className={styles.dateList}>
+                        {Object.entries(groupByDate(bookedSlots))
+                            .sort(([a], [b]) => a.localeCompare(b))
+                            .map(([date, slots]) => (
+                                <div key={date} className={styles.dateGroup}>
+                                    <p className={styles.dateHeader}>{formatDateHeader(date)}</p>
+                                    <div className={styles.chips}>
+                                        {slots.map((slot) => (
+                                            <div key={slot.id} className={styles.bookedChip}>
+                                                <span className={styles.chipTime}>
+                                                    {slot.startTime} – {slot.endTime}
+                                                </span>
+                                                <span className={styles.chipUnavailable}>Booked</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            ))
+                        }
+                    </div>
+                )}
             </section>
 
             {/* Slots list */}

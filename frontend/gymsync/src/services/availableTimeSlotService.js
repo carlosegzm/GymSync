@@ -67,6 +67,17 @@ const availableTimeSlotService = {
 		const { data } = await api.delete(`/api/timeslots/${slotId}`);
 		return data;
 	},
+
+	/**
+	 * Fetches all booked slots for the currently logged-in trainer.
+	 * GET /api/timeslots/trainer/me/booked
+	 *
+	 * @returns {Promise<Array<{ id, date, startTime, endTime, available, trainerId }>>}
+	 */
+	async listMyBookedSlots() {
+		const { data } = await api.get('/api/timeslots/trainer/me/booked');
+		return data;
+	},
 };
 
 export default availableTimeSlotService;
