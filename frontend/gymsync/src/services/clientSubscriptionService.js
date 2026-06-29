@@ -43,6 +43,18 @@ const clientSubscriptionService = {
 		const { data } = await api.get('/api/subscriptions/client/me');
 		return data;
 	},
+
+	/**
+	 * Lists all subscriptions for a specific gym.
+	 * GET /api/subscriptions/gym/{gymId}
+	 *
+	 * @param {string} gymId - Gym UUID (path)
+	 * @returns {Promise<Array<{ id, clientId, planId, startDate, endDate, status }>>}
+	 */
+	async listByGym(gymId) {
+		const { data } = await api.get(`/api/subscriptions/gym/${gymId}`);
+		return data;
+	},
 };
 
 export default clientSubscriptionService;

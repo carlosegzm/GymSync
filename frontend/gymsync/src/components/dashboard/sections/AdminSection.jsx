@@ -133,12 +133,6 @@ export default function AdminSection({ gymId }) {
                         onClick={() => navigate('/plans')}
                     />
                     <ActionCard
-                        icon="👤"
-                        label="Register Student"
-                        sub="Add a new client"
-                        onClick={() => navigate('/register')}
-                    />
-                    <ActionCard
                         icon="👥"
                         label="Users"
                         sub="Link trainers and clients to your gym"

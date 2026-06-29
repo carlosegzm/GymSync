@@ -1,8 +1,18 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+
+// services 
 import authService from '../../services/authService';
-import styles from './Users.module.css';
+import clientSubscriptionService from '../../services/clientSubscriptionService';
+import membershipPlanService from '../../services/membershipPlanService';
+
+// hooks
 import { useGymUsers } from '../../hooks/users/useGymUsers';
+
+// components 
 import UserSelect from '../../components/commom/userselect/UserSelect';
+
+// styles
+import styles from './Users.module.css';
 
 function UserRow({ user, onUnlink, unlinkingId }) {
     const isUnlinking = unlinkingId === user.id;
@@ -36,7 +46,6 @@ export default function Users() {
     const { users: clients, loading: loadingClients, error: clientsError } = useGymUsers('clients');
     const { users: trainers, loading: loadingTrainers, error: trainersError } = useGymUsers('trainers');
 
-
     const [selectedUser, setSelectedUser] = useState(null);
     const [searchEmail, setSearchEmail] = useState('');
     const [foundUser, setFoundUser] = useState(null);
@@ -47,6 +56,22 @@ export default function Users() {
     const [linkedUsers, setLinkedUsers] = useState([]);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+
+    const [plans, setPlans] = useState([]);
+    const [loadingPlans, setLoadingPlans] = useState(true);
+    const [selectedClient, setSelectedClient] = useState('');   // clientId
+    const [selectedPlan, setSelectedPlan] = useState('');   // planId
+    const [enrolling, setEnrolling] = useState(false);
+    const [enrollError, setEnrollError] = useState('');
+    const [enrollSuccess, setEnrollSuccess] = useState('');
+
+    useEffect(() => {
+        if (!gymId) { setLoadingPlans(false); return; }
+        membershipPlanService.listByGym(gymId)
+            .then(setPlans)
+            .catch(() => setEnrollError('Failed to load plans.'))
+            .finally(() => setLoadingPlans(false));
+    }, [gymId]);
 
     async function handleSearch(e) {
         e.preventDefault();
@@ -97,6 +122,30 @@ export default function Users() {
             setError(err.response?.data?.message ?? 'Failed to unlink user.');
         } finally {
             setUnlinkingId(null);
+        }
+    }
+
+    async function handleEnroll(e) {
+        e.preventDefault();
+        setEnrollError(''); setEnrollSuccess('');
+
+        if (!selectedClient) { setEnrollError('Select a client.'); return; }
+        if (!selectedPlan) { setEnrollError('Select a plan.'); return; }
+
+        setEnrolling(true);
+        try {
+            await clientSubscriptionService.enroll({
+                clientId: selectedClient, 
+                planId: selectedPlan
+            });
+            
+            setEnrollSuccess('Client enrolled successfully!');
+            setSelectedClient('');
+            setSelectedPlan('');
+        } catch (err) {
+            setEnrollError(err.response?.data?.message ?? 'Failed to enroll client.');
+        } finally {
+            setEnrolling(false);
         }
     }
 
@@ -195,6 +244,57 @@ export default function Users() {
                         }
                     </div>
                 )}
+            </section>
+
+            <section className={styles.section}>
+                <h2 className={styles.sectionTitle}>Enroll Client in Plan</h2>
+                <p className={styles.hint}>
+                    Select a linked client and assign them to a membership plan.
+                </p>
+
+                <form className={styles.enrollForm} onSubmit={handleEnroll} noValidate>
+                    <div className={styles.field}>
+                        <label className={styles.label}>Client</label>
+                        <select
+                            className={styles.select}
+                            value={selectedClient}
+                            onChange={(e) => setSelectedClient(e.target.value)}
+                            disabled={enrolling || loadingClients}
+                        >
+                            <option value="">— Select a client —</option>
+                            {[...clients, ...linkedUsers.filter((u) => u.role === 'CLIENT')]
+                                .filter((u) => !unlinkedIds.has(u.id))
+                                .map((u) => (
+                                    <option key={u.id} value={u.id}>{u.name}</option>
+                                ))
+                            }
+                        </select>
+                    </div>
+
+                    <div className={styles.field}>
+                        <label className={styles.label}>Plan</label>
+                        <select
+                            className={styles.select}
+                            value={selectedPlan}
+                            onChange={(e) => setSelectedPlan(e.target.value)}
+                            disabled={enrolling || loadingPlans}
+                        >
+                            <option value="">— Select a plan —</option>
+                            {plans.map((p) => (
+                                <option key={p.id} value={p.id}>
+                                    {p.name} — R$ {Number(p.price).toFixed(2)} / {p.durationInMonths} mo
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    {enrollError && <div className={styles.error} role="alert">{enrollError}</div>}
+                    {enrollSuccess && <div className={styles.success} role="status">{enrollSuccess}</div>}
+
+                    <button type="submit" className={styles.submitBtn} disabled={enrolling || loadingPlans}>
+                        {enrolling ? <span className={styles.spinner} /> : 'Enroll Client'}
+                    </button>
+                </form>
             </section>
         </div>
     );
