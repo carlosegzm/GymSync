@@ -10,4 +10,5 @@ import java.util.UUID;
 @Repository
 public interface PhysicalAssessmentRepository extends JpaRepository<PhysicalAssessment, Long> {
     List<PhysicalAssessment> findByClientIdOrderByAssessmentDateAsc(UUID clientId);
+    List<PhysicalAssessment> findAllByTrainerId(UUID trainerId);
 }

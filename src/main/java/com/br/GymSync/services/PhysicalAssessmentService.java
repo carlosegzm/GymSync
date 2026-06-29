@@ -45,4 +45,14 @@ public class PhysicalAssessmentService {
                 .map(assessmentMapper::toResponse)
                 .toList();
     }
+
+    @Transactional(readOnly = true)
+    public List<PhysicalAssessmentResponseDTO> getMyPerformedAssessments(String trainerEmail) {
+        User trainer = userService.findEntityByEmail(trainerEmail);
+
+        return assessmentRepository.findAllByTrainerId(trainer.getId())
+                .stream()
+                .map(assessmentMapper::toResponse)
+                .toList();
+    }
 }
