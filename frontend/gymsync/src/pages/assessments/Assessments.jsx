@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 // contexts
 import { useAuth } from '../../hooks/context/AuthContext';
@@ -36,16 +37,18 @@ function AssessmentRow({ a }) {
 }
 
 function AssessmentList({ assessments, loading }) {
-    if (loading) return <p className={styles.loading}>Loading assessments...</p>;
-    if (assessments.length === 0) return <p className={styles.empty}>No assessments found.</p>;
+    const { t } = useTranslation();
+
+    if (loading) return <p className={styles.loading}>{t('common.loading')}</p>;
+    if (assessments.length === 0) return <p className={styles.empty}>{t('assessments.noAssessments')}</p>;
 
     return (
         <div className={styles.list}>
             <div className={styles.listHeader}>
-                <span>Date</span>
-                <span>Weight</span>
-                <span>Height</span>
-                <span>Body Fat</span>
+                <span>{t('assessments.date')}</span>
+                <span>{t('assessments.weight')}</span>
+                <span>{t('assessments.height')}</span>
+                <span>{t('assessments.bodyFat')}</span>
             </div>
             {assessments.map((a) => <AssessmentRow key={a.id} a={a} />)}
         </div>
@@ -55,6 +58,7 @@ function AssessmentList({ assessments, loading }) {
 // ─── Client view ───────────────────────────────────────────────────────────────
 
 function ClientAssessments({ userId }) {
+    const { t } = useTranslation();
     const [assessments, setAssessments] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -67,7 +71,7 @@ function ClientAssessments({ userId }) {
     useEffect(() => {
         physicalAssessmentService.listByClient(userId)
             .then(setAssessments)
-            .catch(() => setError('Nenhuma avaliação encontrada ou erro ao buscar histórico.'))
+            .catch(() => setError(t('assessments.noAssessments')))
             .finally(() => setLoading(false));
     }, [userId]);
 
@@ -75,14 +79,14 @@ function ClientAssessments({ userId }) {
         <>
             <section className={styles.section}>
                 <div className={styles.sectionRow}>
-                    <h2 className={styles.sectionTitle}>My Assessment History</h2>
+                    <h2 className={styles.sectionTitle}>{t('assessments.myHistory')}</h2>
                     <button
                         className={styles.pdfBtn}
                         onClick={report.download}
                         disabled={report.loading}
                     >
                         {report.loading ? <span className={styles.spinner} /> : '📄'}
-                        {report.loading ? 'Generating...' : 'Download PDF'}
+                        {report.loading ? t('dashboard.generating') : t('assessments.downloadPDF')}
                     </button>
                 </div>
                 {error && <div className={styles.error}>{error}</div>}
@@ -114,9 +118,9 @@ function TrainerAssessments({ trainerId }) {
         e.preventDefault();
         setError(''); setSuccess('');
 
-        if (!selectedClient) { setError('Please select a client.'); return; }
-        if (!assessmentDate) { setError('Date is required.'); return; }
-        if (!weight || !height) { setError('Weight and height are required.'); return; }
+        if (!selectedClient) { setError(t('assessments.clientRequired')); return; }
+        if (!assessmentDate) { setError(t('assessments.dateRequired')); return; }
+        if (!weight || !height) { setError(t('assessments.measurementsRequired')); return; }
 
         setSubmitting(true);
         try {
@@ -130,7 +134,7 @@ function TrainerAssessments({ trainerId }) {
             });
 
             setAssessments((prev) => [created, ...prev]);
-            setSuccess('Assessment registered successfully!');
+            setSuccess(t('assessments.created'));
             setDate('');
             setWeight('');
             setHeight('');
@@ -138,7 +142,7 @@ function TrainerAssessments({ trainerId }) {
             setSelectedClient(null);
 
         } catch (err) {
-            setError(err.response?.data?.message ?? 'Failed to register assessment.');
+            setError(err.response?.data?.message ?? (t('assessments.createFailed')));
         } finally {
             setSubmitting(false);
         }
@@ -148,24 +152,24 @@ function TrainerAssessments({ trainerId }) {
         <>
             {/* Create form */}
             <section className={styles.section}>
-                <h2 className={styles.sectionTitle}>Register Assessment</h2>
+                <h2 className={styles.sectionTitle}>{t('assessments.registerAssessment')}</h2>
                 <form className={styles.form} onSubmit={handleSubmit} noValidate>
                     <div className={styles.formRow}>
                         <div className={styles.field}>
-                            <label className={styles.label}>Client</label>
+                            <label className={styles.label}>{t('assessments.clientId')}</label>
                             {loadingClients
-                                ? <p className={styles.loading}>Loading clients...</p>
+                                ? <p className={styles.loading}>{t('assessments.loadingClients')}</p>
                                 : <UserSelect
                                     users={clients}
                                     selected={selectedClient}
                                     onSelect={setSelectedClient}
-                                    placeholder="Search client by name..."
+                                    placeholder={t('assessments.clientId')}
                                     disabled={submitting}
                                 />
                             }
                         </div>
                         <div className={styles.field}>
-                            <label className={styles.label}>Date</label>
+                            <label className={styles.label}>{t('assessments.date')}</label>
                             <input
                                 className={styles.input}
                                 type="date"
@@ -177,15 +181,15 @@ function TrainerAssessments({ trainerId }) {
                     </div>
                     <div className={styles.formRow}>
                         <div className={styles.field}>
-                            <label className={styles.label}>Weight (kg)</label>
+                            <label className={styles.label}>{t('assessments.weight')}</label>
                             <input className={styles.input} type="number" step="0.1" value={weight} onChange={(e) => setWeight(e.target.value)} placeholder="70.5" disabled={submitting} />
                         </div>
                         <div className={styles.field}>
-                            <label className={styles.label}>Height (m)</label>
+                            <label className={styles.label}>{t('assessments.height')}</label>
                             <input className={styles.input} type="number" step="0.01" value={height} onChange={(e) => setHeight(e.target.value)} placeholder="1.75" disabled={submitting} />
                         </div>
                         <div className={styles.field}>
-                            <label className={styles.label}>Body Fat %</label>
+                            <label className={styles.label}>{t('assessments.bodyFat')}</label>
                             <input className={styles.input} type="number" step="0.1" value={bodyFatPercentage} onChange={(e) => setBodyFat(e.target.value)} placeholder="18.5" disabled={submitting} />
                         </div>
                     </div>
@@ -194,14 +198,14 @@ function TrainerAssessments({ trainerId }) {
                     {success && <div className={styles.success} role="status">{success}</div>}
 
                     <button type="submit" className={styles.submitBtn} disabled={submitting}>
-                        {submitting ? <span className={styles.spinner} /> : '+ Register Assessment'}
+                        {submitting ? <span className={styles.spinner} /> : t('assessments.register')}
                     </button>
                 </form>
             </section>
 
             {/* Recent assessments registered by this trainer */}
             <section className={styles.section}>
-                <h2 className={styles.sectionTitle}>Recently Registered</h2>
+                <h2 className={styles.sectionTitle}>{t('assessments.recentlyRegistered')}</h2>
                 <AssessmentList assessments={assessments} loading={loading} />
             </section>
         </>
@@ -222,11 +226,9 @@ export default function Assessments() {
     return (
         <div className={styles.page}>
             <div className={styles.header}>
-                <h1 className={styles.title}>Assessments</h1>
+                <h1 className={styles.title}>{t('assessments.title')}</h1>
                 <p className={styles.subtitle}>
-                    {role === 'CLIENT'
-                        ? 'Your physical assessment history.'
-                        : 'Register and manage client assessments.'}
+                    {role === 'CLIENT' ? t('assessments.clientSubtitle') : t('assessments.trainerSubtitle')}
                 </p>
             </div>
 
