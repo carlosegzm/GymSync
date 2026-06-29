@@ -2,6 +2,7 @@ package com.br.GymSync.services;
 
 import com.br.GymSync.domain.entities.Gym;
 import com.br.GymSync.domain.enums.Role;
+import com.br.GymSync.domain.enums.SubscriptionStatus;
 import com.br.GymSync.dtos.user.LoginRequestDTO;
 import com.br.GymSync.dtos.user.UserRequestDTO;
 import com.br.GymSync.dtos.user.UserResponseDTO;
@@ -11,6 +12,7 @@ import com.br.GymSync.exceptions.custom.EmailAlreadyExistsException;
 import com.br.GymSync.exceptions.custom.InvalidCredentialsException;
 import com.br.GymSync.exceptions.custom.ResourceNotFoundException;
 import com.br.GymSync.mappers.UserMapper;
+import com.br.GymSync.repositories.ClientSubscriptionRepository;
 import com.br.GymSync.repositories.GymRepository;
 import com.br.GymSync.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +33,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final TokenService tokenService;
     private final GymRepository gymRepository;
+    private final ClientSubscriptionRepository subscriptionRepository;
 
     @Transactional
     public UserResponseDTO create(UserRequestDTO request) {
@@ -115,6 +118,13 @@ public class UserService {
     public UserResponseDTO unlinkFromGym(UUID userId) {
         User user = findEntityById(userId);
         user.setGym(null);
+
+        subscriptionRepository.findByClientIdAndStatus(userId, SubscriptionStatus.ACTIVE)
+                .ifPresent(subscription -> {
+                    subscription.setStatus(SubscriptionStatus.CANCELED);
+                    subscriptionRepository.save(subscription);
+                });
+
         return userMapper.toResponse(user);
     }
 
