@@ -49,7 +49,8 @@ public class ClassBookingController {
     @GetMapping("/client/me")
     @PreAuthorize("hasRole('CLIENT')")
     @Operation(summary = "List all class bookings for the logged-in client")
-    public ResponseEntity<List<ClassBookingResponseDTO>> getMyBookings(org.springframework.security.core.Authentication authentication) {
+    public ResponseEntity<List<ClassBookingResponseDTO>> getMyBookings(
+            org.springframework.security.core.Authentication authentication) {
         String clientEmail = authentication.getName();
         return ResponseEntity.ok(bookingService.findBookingsByClientEmail(clientEmail));
     }
