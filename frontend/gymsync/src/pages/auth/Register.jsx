@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import RegisterForm from '../../components/forms/auth/RegisterForm';
 import styles from './AuthPage.module.css';
 
@@ -10,23 +11,25 @@ import styles from './AuthPage.module.css';
  * Toda a lógica de registro reside em {@link RegisterForm}.
  */
 export default function Register() {
+  const { t } = useTranslation();
+
   return (
     <div className={styles.page}>
       {/* Lado esquerdo — branding */}
       <div className={styles.brand}>
         <div className={styles.brandContent}>
-          <p className={styles.brandEyebrow}>Sistema de Gestão</p>
+          <p className={styles.brandEyebrow}>{t('auth.systemManagement')}</p>
           <h1 className={styles.brandLogo}>
             <span className={styles.brandAccent}>GYM</span>SYNC
           </h1>
           <p className={styles.brandTagline}>
-            Comece hoje. Acompanhe cada avanço da sua jornada.
+            {t('auth.register.tagline')}
           </p>
 
           <ul className={styles.brandFeatures}>
-            <li><span className={styles.featureDot} />Perfil de aluno ou treinador</li>
-            <li><span className={styles.featureDot} />Histórico completo de avaliações</li>
-            <li><span className={styles.featureDot} />Gráficos de evolução mensal</li>
+            <li><span className={styles.featureDot} />{t('auth.register.feature1')}</li>
+            <li><span className={styles.featureDot} />{t('auth.register.feature2')}</li>
+            <li><span className={styles.featureDot} />{t('auth.register.feature3')}</li>
           </ul>
         </div>
 

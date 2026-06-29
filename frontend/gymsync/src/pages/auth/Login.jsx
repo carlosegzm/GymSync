@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+
 import LoginForm from "../../components/forms/auth/LoginForm";
 
 import styles from './AuthPage.module.css';
@@ -11,23 +13,25 @@ import styles from './AuthPage.module.css';
  * Toda a lógica de autenticação e validação reside em {@link LoginForm}.
  */
 export default function Login() {
+  const { t } = useTranslation();
+
   return (
     <div className={styles.page}>
       {/* Lado esquerdo — branding */}
       <div className={styles.brand}>
         <div className={styles.brandContent}>
-          <p className={styles.brandEyebrow}>Sistema de Gestão</p>
+          <p className={styles.brandEyebrow}>{t('auth.systemManagement')}</p>
           <h1 className={styles.brandLogo}>
             <span className={styles.brandAccent}>GYM</span>SYNC
           </h1>
           <p className={styles.brandTagline}>
-            Agenda, evolução e controle de aulas — tudo no mesmo lugar.
+            {t('auth.login.tagline')}
           </p>
 
           <ul className={styles.brandFeatures}>
-            <li><span className={styles.featureDot} />Agendamento inteligente de avaliações</li>
-            <li><span className={styles.featureDot} />Controle de vagas em tempo real</li>
-            <li><span className={styles.featureDot} />Acompanhe sua evolução física</li>
+            <li><span className={styles.featureDot} />{t('auth.login.feature1')}</li>
+            <li><span className={styles.featureDot} />{t('auth.login.feature2')}</li>
+            <li><span className={styles.featureDot} />{t('auth.login.feature3')}</li>
           </ul>
         </div>
 

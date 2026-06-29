@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 // context
 import { useAuth } from '../../hooks/context/AuthContext';
@@ -22,6 +23,7 @@ import styles from './Subscription.module.css';
  * PATCH /api/subscriptions/{id}/cancel
  */
 export default function Subscription() {
+    const { t } = useTranslation();
     const { user } = useAuth();
     const gymId = localStorage.getItem('gymId');
 
@@ -43,11 +45,11 @@ export default function Subscription() {
                 if (err.response?.status === 404) {
                     setNoActivePlan(true); // ← sem plano, não é um erro real
                 } else {
-                    setError('Failed to load your subscription.');
+                    setError(t('subscription.loadFailed'));
                 }
             })
             .finally(() => setLoadingSub(false));
-    }, []);
+    }, [t]);
 
     async function handleCancel(subscriptionId) {
         setError(''); setSuccess('');
@@ -55,9 +57,9 @@ export default function Subscription() {
         try {
             await clientSubscriptionService.cancelSubscription(subscriptionId);
             setSubscription((prev) => ({ ...prev, status: 'CANCELLED' }));
-            setSuccess('Subscription cancelled.');
+            setSuccess(t('subscription.cancelSuccess'));
         } catch (err) {
-            setError(err.response?.data?.message ?? 'Cancellation failed.');
+            setError(err.response?.data?.message ?? t('subscription.cancelFailed'));
         } finally {
             setCancelling(false);
         }
@@ -66,8 +68,8 @@ export default function Subscription() {
     return (
         <div className={styles.page}>
             <div className={styles.header}>
-                <h1 className={styles.title}>My Subscription</h1>
-                <p className={styles.subtitle}>Manage your membership plan.</p>
+                <h1 className={styles.title}>{t('subscription.title')}</h1>
+                <p className={styles.subtitle}>{t('subscription.subtitle')}</p>
             </div>
 
             {error && <div className={styles.error} role="alert">{error}</div>}
@@ -75,16 +77,16 @@ export default function Subscription() {
 
             {/* Active subscription */}
             <section className={styles.section}>
-                <h2 className={styles.sectionTitle}>Active Plan</h2>
+                <h2 className={styles.sectionTitle}>{t('subscription.activePlan')}</h2>
 
                 {loadingSub ? (
-                    <p className={styles.loading}>Loading subscription...</p>
+                    <p className={styles.loading}>{t('common.loading')}</p>
                 ) : noActivePlan ? (
                     <div className={styles.emptyPlan}>
                         <p className={styles.emptyPlanIcon}>📋</p>
-                        <p className={styles.emptyPlanTitle}>No active plan</p>
+                        <p className={styles.emptyPlanTitle}>{t('subscription.noActivePlan')}</p>
                         <p className={styles.emptyPlanSub}>
-                            Contact your gym admin to get enrolled in a membership plan.
+                            {t('subscription.noActivePlanSub')}
                         </p>
                     </div>
                 ) : subscription ? (

@@ -1,5 +1,6 @@
 // react
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 // services
 import groupClassService from '../../services/groupClassService';
@@ -22,6 +23,7 @@ import styles from './Schedule.module.css';
  * POST /api/class-bookings  { clientId, groupClassId }
  */
 export default function Schedule() {
+	const { t, i18n } = useTranslation();
 	const { user } = useAuth();
 
 	const [classes, setClasses] = useState([]);
@@ -43,12 +45,12 @@ export default function Schedule() {
 				data.forEach((c) => { initial[c.id] = 'idle'; });
 				setBookingState(initial);
 			} catch {
-				setError('Erro ao carregar aulas, tente de novo!');
+				setError(t('schedule.loadFailed'));
 			} finally {
 				setLoading(false);
 			}
 		})();
-	}, []);
+	}, [t]);
 
 	async function handleBook(groupClass) {
 		if (!user?.id) return;
@@ -62,30 +64,34 @@ export default function Schedule() {
 			setBookingState((prev) => ({ ...prev, [groupClass.id]: 'booked' }));
 		} catch (err) {
 			// Show backend message (e.g. "Class is full") inside the card
-			const msg = err.response?.data?.message ?? 'Agendamento falhou.';
+			const msg = err.response?.data?.message ?? t('schedule.bookingFailed');
 			setBookingState((prev) => ({ ...prev, [groupClass.id]: `error:${msg}` }));
 		}
 	}
 
 	function formatDate(iso) {
 		const d = new Date(iso);
-		return d.toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: 'short' })
+
+		// Utiliza dinamicamente o idioma atual da aplicação (ex: 'pt-BR', 'en', 'es')
+		const currentLanguage = i18n.language || 'pt-BR';
+
+		return d.toLocaleDateString(currentLanguage, { weekday: 'short', day: '2-digit', month: 'short' })
 			+ ' — '
-			+ d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+			+ d.toLocaleTimeString(currentLanguage, { hour: '2-digit', minute: '2-digit' });
 	}
 
-	if (loading) return <div className={styles.center}>Loading classes...</div>;
+	if (loading) return <div className={styles.center}>{t('schedule.loadingClasses')}</div>;
 	if (error) return <div className={styles.center + ' ' + styles.errorText}>{error}</div>;
 
 	return (
 		<div className={styles.page}>
 			<div className={styles.header}>
-				<h1 className={styles.title}>Group Classes</h1>
-				<p className={styles.subtitle}>Pick a class and book your spot.</p>
+				<h1 className={styles.title}>{t('schedule.title')}</h1>
+				<p className={styles.subtitle}>{t('schedule.subtitle')}</p>
 			</div>
 
 			{classes.length === 0 ? (
-				<div className={styles.empty}>No classes available at the moment.</div>
+				<div className={styles.empty}>{t('schedule.noClasses')}</div>
 			) : (
 				<div className={styles.grid}>
 					{classes.map((gc) => {
@@ -100,7 +106,7 @@ export default function Schedule() {
 								<div className={styles.cardTop}>
 									<span className={styles.classType}>{gc.classType}</span>
 									<span className={styles.capacity}>
-										{gc.maxCapacity} spots
+										{t('schedule.spots', { count: gc.maxCapacity })}
 									</span>
 								</div>
 
@@ -122,7 +128,7 @@ export default function Schedule() {
 									disabled={isBooked || isLoading}
 								>
 									{isLoading && <span className={styles.spinner} />}
-									{isBooked ? '✓ Agendado!' : 'Agendar Agora!'}
+									{isBooked ? t('schedule.booked') : t('schedule.bookNow')}
 								</button>
 							</div>
 						);

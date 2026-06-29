@@ -1,19 +1,27 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+
+// services
 import financialTransactionService from '../../services/financialTransactionService';
-import { useReportDownload } from '../../hooks/report/useReportDownload';
 import reportService from '../../services/reportService';
+
+// hooks 
+import { useReportDownload } from '../../hooks/report/useReportDownload';
+
+// styles
 import styles from './Finances.module.css';
 
 const TRANSACTION_TYPES = ['INCOME', 'EXPENSE'];
 const TRANSACTION_CATEGORIES = ['OTHER', 'SALARY', 'LOSS', 'MEMBERSHIP_PAYMENT', 'MAINTENANCE'];
 
-// ─── Sub-components ────────────────────────────────────────────────────────────
+// ===== Sub-components =====
 
 function BalanceCard({ balance, loading }) {
+    const { t } = useTranslation();
     const isPositive = balance >= 0;
     return (
         <div className={[styles.balanceCard, isPositive ? styles.balancePositive : styles.balanceNegative].join(' ')}>
-            <p className={styles.balanceLabel}>Current Balance</p>
+            <p className={styles.balanceLabel}>{t('finances.currentBalance')}</p>
             {loading ? (
                 <p className={styles.balanceValue}>...</p>
             ) : (
@@ -39,7 +47,7 @@ function TransactionRow({ t }) {
     );
 }
 
-// ─── Main ──────────────────────────────────────────────────────────────────────
+// ===== Main =====
 
 /**
  * Finances page (ADMIN only).
@@ -51,6 +59,7 @@ function TransactionRow({ t }) {
  * GET  /api/reports/finance/{gymId}  (PDF)
  */
 export default function Finances() {
+    const { t } = useTranslation();
     const gymId = localStorage.getItem('gymId');
 
     const [balance, setBalance] = useState(0);
@@ -78,17 +87,17 @@ export default function Finances() {
         if (!gymId) { setLoadingBal(false); return; }
         financialTransactionService.getBalance(gymId)
             .then(setBalance)
-            .catch(() => setError('Failed to load balance.'))
+            .catch(() => setError(t('finances.loadFailed')))
             .finally(() => setLoadingBal(false));
-    }, [gymId]);
+    }, [gymId, t]);
 
     async function handleSubmit(e) {
         e.preventDefault();
         setError(''); setSuccess('');
 
-        if (!description.trim()) { setError('Description is required.'); return; }
-        if (!amount || amount <= 0) { setError('Amount must be greater than 0.'); return; }
-        if (!transactionDate) { setError('Date is required.'); return; }
+        if (!description.trim()) { setError(t('finances.descriptionRequired')); return; }
+        if (!amount || amount <= 0) { setError(t('finances.amountRequired')); return; }
+        if (!transactionDate) { setError(t('finances.dateRequired')); return; }
 
         setSubmitting(true);
         try {
@@ -109,12 +118,12 @@ export default function Finances() {
             );
 
             setTransactions((prev) => [created, ...prev]);
-            setSuccess('Transaction registered!');
+            setSuccess(t('finances.registered'));
             setDescription(''); setAmount('');
             setType('INCOME'); setCategory('OTHER');
             setDate(new Date().toISOString().split('T')[0]);
         } catch (err) {
-            setError(err.response?.data?.message ?? 'Failed to register transaction.');
+            setError(err.response?.data?.message ?? t('finances.registerFailed'));
         } finally {
             setSubmitting(false);
         }
@@ -124,16 +133,16 @@ export default function Finances() {
         <div className={styles.page}>
             <div className={styles.header}>
                 <div>
-                    <h1 className={styles.title}>Finances</h1>
-                    <p className={styles.subtitle}>Track income and expenses for your gym.</p>
+                    <h1 className={styles.title}>{t('finances.title')}</h1>
+                    <p className={styles.subtitle}>{t('finances.subtitle')}</p>
                 </div>
                 <button
                     className={styles.pdfBtn}
                     onClick={report.download}
                     disabled={report.loading || !gymId}
                 >
-                    {report.loading ? <span className={styles.spinner} /> : '📄'}
-                    {report.loading ? 'Generating...' : 'Download Report (PDF)'}
+                    {report.loading ? <span className={styles.spinner} /> : '📄 '}
+                    {report.loading ? t('common.loading') : t('finances.downloadReport')}
                 </button>
             </div>
 
@@ -145,11 +154,11 @@ export default function Finances() {
 
             {/* New transaction form */}
             <section className={styles.section}>
-                <h2 className={styles.sectionTitle}>New Transaction</h2>
+                <h2 className={styles.sectionTitle}>{t('finances.newTransaction')}</h2>
                 <form className={styles.form} onSubmit={handleSubmit} noValidate>
                     <div className={styles.formRow}>
                         <div className={[styles.field, styles.fieldWide].join(' ')}>
-                            <label className={styles.label}>Description</label>
+                            <label className={styles.label}>{t('finances.description')}</label>
                             <input
                                 className={styles.input}
                                 value={description}
@@ -159,7 +168,7 @@ export default function Finances() {
                             />
                         </div>
                         <div className={styles.field}>
-                            <label className={styles.label}>Amount (R$)</label>
+                            <label className={styles.label}>{t('finances.amount')}</label>
                             <input
                                 className={styles.input}
                                 type="number"
@@ -174,7 +183,7 @@ export default function Finances() {
                     </div>
                     <div className={styles.formRow}>
                         <div className={styles.field}>
-                            <label className={styles.label}>Type</label>
+                            <label className={styles.label}>{t('finances.type')}</label>
                             <select
                                 className={styles.input}
                                 value={type}
@@ -187,7 +196,7 @@ export default function Finances() {
                             </select>
                         </div>
                         <div className={styles.field}>
-                            <label className={styles.label}>Category</label>
+                            <label className={styles.label}>{t('finances.category')}</label>
                             <select
                                 className={styles.input}
                                 value={category}
@@ -200,7 +209,7 @@ export default function Finances() {
                             </select>
                         </div>
                         <div className={styles.field}>
-                            <label className={styles.label}>Date</label>
+                            <label className={styles.label}>{t('finances.date')}</label>
                             <input
                                 className={styles.input}
                                 type="date"
@@ -212,23 +221,23 @@ export default function Finances() {
                     </div>
 
                     <button type="submit" className={styles.submitBtn} disabled={submitting}>
-                        {submitting ? <span className={styles.spinner} /> : '+ Register Transaction'}
+                        {submitting ? <span className={styles.spinner} /> : t('finances.register')}
                     </button>
                 </form>
             </section>
 
-            {/* Session transactions */}
+            {/* Transaction Sections */}
             {transactions.length > 0 && (
                 <section className={styles.section}>
                     <h2 className={styles.sectionTitle}>
-                        Registered this session ({transactions.length})
+                        {t('finances.sessionTransactions')} ({transactions.length})
                     </h2>
                     <div className={styles.list}>
                         <div className={styles.listHeader}>
-                            <span>Date</span>
-                            <span>Description</span>
-                            <span>Category</span>
-                            <span>Amount</span>
+                            <span>{t('finances.date')}</span>
+                            <span>{t('finances.description')}</span>
+                            <span>{t('finances.category')}</span>
+                            <span>{t('finances.amount')}</span>
                         </div>
                         {transactions.map((t) => (
                             <TransactionRow key={t.id} t={t} />

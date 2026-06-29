@@ -1,11 +1,20 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+
+// hooks
 import { useAuth } from '../../hooks/context/AuthContext';
-import availableTimeSlotService from '../../services/availableTimeSlotService';
 import { useGymUsers } from '../../hooks/users/useGymUsers';
+
+// services
+import availableTimeSlotService from '../../services/availableTimeSlotService';
+
+// components
 import UserSelect from '../../components/commom/userselect/UserSelect';
+
+// styles
 import styles from './BookSlot.module.css';
 
-// ─── Helpers ───────────────────────────────────────────────────────────────────
+// ===== Helpers ===== 
 
 function groupByDate(slots) {
     return slots.reduce((acc, slot) => {
@@ -21,9 +30,10 @@ function formatDateHeader(dateStr) {
     });
 }
 
-// ─── Sub-components ────────────────────────────────────────────────────────────
+// ===== Sub-components =====
 
 function SlotChip({ slot, onBook, bookingId }) {
+    const { t } = useTranslation();
     const isBooking = bookingId === slot.id;
 
     return (
@@ -37,13 +47,13 @@ function SlotChip({ slot, onBook, bookingId }) {
             </span>
             {isBooking
                 ? <span className={styles.spinnerSm} />
-                : <span className={styles.chipCta}>Book</span>
+                : <span className={styles.chipCta}>{t('bookSlot.enroll')}</span>
             }
         </button>
     );
 }
 
-// ─── Main ──────────────────────────────────────────────────────────────────────
+// ===== Main =====
 
 /**
  * Book a Slot page (CLIENT only).
@@ -53,6 +63,7 @@ function SlotChip({ slot, onBook, bookingId }) {
  * @preAuthorize CLIENT
  */
 export default function BookSlot() {
+    const { t, i18n } = useTranslation();
     const { user } = useAuth();
 
     const [selectedTrainerId, setSelectedTrainerId] = useState('');
@@ -77,11 +88,11 @@ export default function BookSlot() {
                 const free = all.filter((s) => s.available);
                 setSlots(free);
                 setSearched(true);
-                if (free.length === 0) setError('No available slots for this trainer.');
+                if (free.length === 0) setError(t('bookSlot.noSlots'));
             })
-            .catch(() => setError('Failed to load slots.'))
+            .catch(() => setError(t('bookSlot.loadFailed')))
             .finally(() => setSearching(false));
-    }, [selectedTrainerId]);
+    }, [selectedTrainerId, t]);
 
     async function handleBook(slotId) {
         setError(''); setSuccess('');
@@ -90,9 +101,9 @@ export default function BookSlot() {
             await availableTimeSlotService.bookSlot(slotId, user.id);
             setBookedIds((prev) => new Set([...prev, slotId]));
             setSlots((prev) => prev.filter((s) => s.id !== slotId));
-            setSuccess('Slot booked successfully!');
+            setSuccess(t('common.success'));
         } catch (err) {
-            setError(err.response?.data?.message ?? 'Failed to book slot.');
+            setError(err.response?.data?.message ?? t('bookSlot.bookFailed'));
         } finally {
             setBookingId(null);
         }
@@ -103,17 +114,17 @@ export default function BookSlot() {
     return (
         <div className={styles.page}>
             <div className={styles.header}>
-                <h1 className={styles.title}>Book a Session</h1>
+                <h1 className={styles.title}>{t('bookSlot.title')}</h1>
                 <p className={styles.subtitle}>
-                    Enter your trainer's ID to see their available slots.
+                    {t('bookSlot.subtitle')}
                 </p>
             </div>
 
             {/* Trainer search */}
             <section className={styles.section}>
-                <h2 className={styles.sectionTitle}>Select Trainer</h2>
+                <h2 className={styles.sectionTitle}>{t('bookSlot.selectTrainer')}</h2>
                 {loadingTrainers ? (
-                    <p className={styles.loading}>Loading trainers...</p>
+                    <p className={styles.loading}>{t('bookSlot.loadingTrainers')}</p>
                 ) : trainersError ? (
                     <div className={styles.error}>{trainersError}</div>
                 ) : (
@@ -123,7 +134,7 @@ export default function BookSlot() {
                         onChange={(e) => setSelectedTrainerId(e.target.value)}
                         disabled={searching}
                     >
-                        <option value="">— Choose a trainer —</option>
+                        <option value="">{t('bookSlot.chooseTrainer')}</option>
                         {trainers.map((t) => (
                             <option key={t.id} value={t.id}>
                                 {t.name}
@@ -131,7 +142,7 @@ export default function BookSlot() {
                         ))}
                     </select>
                 )}
-                {searching && <p className={styles.loading}>Loading slots...</p>}
+                {searching && <p className={styles.loading}>{t('bookSlot.loadingSlots')}</p>}
             </section>
 
             {error && <div className={styles.error} role="alert">{error}</div>}
@@ -141,13 +152,13 @@ export default function BookSlot() {
             {searched && slots.length > 0 && (
                 <section className={styles.section}>
                     <h2 className={styles.sectionTitle}>
-                        Available Slots ({slots.length})
+                        {t('bookSlot.availableSlots')} ({slots.length})
                     </h2>
                     <div className={styles.dateList}>
                         {Object.keys(grouped).sort().map((date) => (
                             <div key={date} className={styles.dateGroup}>
                                 <p className={styles.dateHeader}>
-                                    {formatDateHeader(date)}
+                                    {formatDateHeader(date, i18n.language)}
                                 </p>
                                 <div className={styles.chips}>
                                     {grouped[date].map((slot) => (
@@ -169,11 +180,11 @@ export default function BookSlot() {
             {bookedIds.size > 0 && (
                 <section className={styles.section}>
                     <h2 className={styles.sectionTitle}>
-                        Booked this session ({bookedIds.size})
+                        {t('bookSlot.bookedThisSession')} ({bookedIds.size})
                     </h2>
                     <p className={styles.bookedNote}>
-                        ✓ {bookedIds.size} slot{bookedIds.size !== 1 ? 's' : ''} confirmed.
-                        Check with your trainer for details.
+                        {/* Utiliza a chave nativa com suporte a plural e contagem do i18next */}
+                        {t('bookSlot.confirmed', { count: bookedIds.size })}
                     </p>
                 </section>
             )}
