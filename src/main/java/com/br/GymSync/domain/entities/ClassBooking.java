@@ -31,6 +31,7 @@ public class ClassBooking {
     @JoinColumn(name = "group_class_id", nullable = false)
     GroupClass groupClass;
 
+    @Builder.Default // Damnnn soo
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private BookingStatus status = BookingStatus.PENDING;
