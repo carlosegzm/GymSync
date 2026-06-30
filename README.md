@@ -91,8 +91,8 @@ O GymSync segue uma arquitetura **cliente-servidor desacoplada**, com backend RE
 │  │Components│  │AuthContext  │  │        │  │   Mapper   │  ┌─────▼─────┐   │
 │  └──────────┘  └─────────────┘  │        │  └────────────┘  │Repository │   │
 │  ┌────────────────────────────┐ │        │  ┌────────────┐  └─────┬─────┘   │
-│  │  React Router (rotas por   │ │        │  │    DTOs    │        │         │
-│  │  role: ALUNO / TREINADOR)  │ │        │  └────────────┘  ┌─────▼─────┐   │
+│  │  React Router (roles:      │ │        │  │    DTOs    │        │         │
+│  │ ADMIN / ALUNO / TREINADOR) │ │        │  └────────────┘  ┌─────▼─────┐   │
 │  └────────────────────────────┘ │        │                  │  Entities │   │
 └─────────────────────────────────┘        │                  └─────┬─────┘   │
                                            └────────────────────────┼─────────┘
@@ -107,7 +107,7 @@ O GymSync segue uma arquitetura **cliente-servidor desacoplada**, com backend RE
 
 | Camada | Pacote | Responsabilidade |
 |---|---|---|
-| **Controller** | _(a implementar)_ | Receber requisições HTTP, delegar ao Service e retornar respostas |
+| **Controller** | `controllers/` | Receber requisições HTTP, delegar ao Service e retornar respostas |
 | **Service** | `services/` | Regras de negócio, orquestração e validações |
 | **Repository** | `repositories/` | Acesso ao banco de dados via Spring Data JPA |
 | **Domain / Entity** | `domain/entities/` | Modelos de domínio mapeados para o banco |
@@ -115,15 +115,20 @@ O GymSync segue uma arquitetura **cliente-servidor desacoplada**, com backend RE
 | **Mapper** | `mappers/` | Conversão bidirecional entre Entity e DTO |
 | **Exception** | `exceptions/` | Tratamento global de erros com respostas padronizadas |
 
-### Camadas do Frontend
+## Camadas do Frontend
 
 | Camada | Pasta | Responsabilidade |
-|---|---|---|
-| **Pages** | `pages/` | Telas completas da aplicação (Dashboard, Login, Profile) |
-| **Components** | `components/` | Componentes reutilizáveis (NavBar, Button, Forms) |
-| **Context** | `context/` | Estado global de autenticação via React Context API |
-| **Services** | `services/` | Chamadas à API backend (atualmente em modo mock) |
-| **Routing** | `routing/` | Configuração declarativa de rotas por role de usuário |
+|--------|--------|------------------|
+| **Pages** | `pages/` | Telas completas da aplicação (Dashboard, Login, Perfil, etc.). |
+| **Components** | `components/` | Componentes reutilizáveis da interface (botões, formulários, cards, navbar, etc.). |
+| **Hooks** | `hooks/` | Hooks customizados para reutilização de lógica de estado, efeitos e integração com serviços. |
+| **i18n** | `i18n/` | Configuração da internacionalização da aplicação. |
+| **Locales** | `locales/` | Arquivos de tradução utilizados pelo sistema de internacionalização. |
+| **Routing** | `routing/` | Configuração e organização das rotas da aplicação, incluindo controle de acesso quando necessário. |
+| **Services** | `services/` | Comunicação com a API backend, centralizando chamadas HTTP e regras de acesso aos endpoints. |
+| **Styles** | `styles/` | Estilos globais, temas e configurações visuais compartilhadas pela aplicação. |
+| **Utils** | `utils/` | Funções utilitárias e helpers reutilizados em diferentes partes do projeto. |
+| **Main** | `main.jsx` | Ponto de entrada da aplicação, responsável por inicializar o React e carregar os provedores globais. |
 
 ---
 
@@ -222,7 +227,7 @@ Após iniciar o backend, a API estará disponível em:
 |---|---|
 | **Porta padrão** | `8080` |
 | **URL base da API** | `http://localhost:8080` |
-| **Swagger / OpenAPI** | _(não configurado — ver [Melhorias Futuras](#-melhorias-futuras))_ |
+| **Swagger / OpenAPI** | `http://localhost:8080/swagger-ui/index.html` |
 
 O frontend de desenvolvimento estará disponível em:
 
@@ -230,15 +235,6 @@ O frontend de desenvolvimento estará disponível em:
 |---|---|
 | **Porta padrão (Vite)** | `5173` |
 | **URL do frontend** | `http://localhost:5173` |
-
-### Credenciais de teste (frontend mock)
-
-O frontend utiliza atualmente um serviço mock de autenticação. Use as credenciais abaixo para testar:
-
-| Usuário | E-mail | Senha | Role |
-|---|---|---|---|
-| Aluno | `aluno@gymsync.com` | `123456` | `ALUNO` |
-| Treinador | `treinador@gymsync.com` | `123456` | `TREINADOR` |
 
 ---
 
@@ -261,170 +257,303 @@ O frontend utiliza atualmente um serviço mock de autenticação. Use as credenc
 
 ### Frontend (implementado)
 
-- **Sistema de roteamento por role:** Rotas diferentes para `ALUNO` e `TREINADOR`, com estrutura preparada para `ADMIN`.
-- **Autenticação (mock):** Fluxo completo de login e registro com AuthContext global.
-- **Rotas protegidas:** Componente `ProtectedRoute` que impede acesso a páginas sem autenticação.
-- **Layout persistente:** NavBar responsiva com menu de usuário e botão de logout.
-- **Páginas base:** Dashboard, Login, Registro e Perfil.
-- **Formulários de autenticação** com feedback de erro.
+- **Sistema de roteamento por role:** Rotas protegidas por role (`ADMIN`, `TRAINER`, `CLIENT`), validadas a partir do JWT decodificado — não do localStorage, prevenindo adulteração client-side.
+- **Autenticação real:** Login e registro integrados ao backend via JWT, com restauração de sessão (`GET /api/users/validate` + `GET /api/users/me`) ao recarregar a página.
+- **Onboarding de ADMIN:** Administradores sem academia vinculada são redirecionados automaticamente para `/gym` até criarem ou serem vinculados a uma.
+- **Rotas protegidas:** Componente `ProtectedRoute` com suporte a `allowedRoles`, bloqueando acesso por role além de autenticação.
+- **Internacionalização (i18n):** Suporte a Português, Inglês e Espanhol via `i18next`, com detecção automática do idioma do navegador — sem solicitar configuração ao usuário.
+- **Layout persistente:** Sidebar de navegação adaptada por role, com avatar, nome e botão de logout.
+
+#### Páginas implementadas
+
+- **Login / Registro** — formulários com validação client-side, medidor de força de senha e feedback de erro.
+- **Dashboard** — conteúdo condicional por role: métricas da academia (ADMIN), atalhos de navegação (TRAINER/CLIENT) e download de relatórios em PDF.
+- **Aulas Coletivas (`/classes`)** — TRAINER cria e gerencia suas aulas; CLIENT visualiza e reserva vagas, com tratamento de erro de turma cheia.
+- **Agenda do Treinador (`/timeslots`)** — geração em lote de horários disponíveis, exclusão de horários livres e visualização de sessões já agendadas.
+- **Agendamento de Sessão (`/book-slot`)** — CLIENT seleciona um treinador (dropdown por nome) e reserva um horário livre.
+- **Avaliações Físicas (`/assessments`)** — TRAINER registra avaliações de clientes (com busca por nome); CLIENT visualiza seu histórico e baixa relatório em PDF.
+- **Assinatura (`/subscription`)** — CLIENT visualiza plano ativo, se inscreve em planos disponíveis e cancela assinatura.
+- **Planos de Membros (`/plans`)** — ADMIN cria e lista planos de assinatura da academia.
+- **Financeiro (`/finances`)** — ADMIN registra transações (receita/despesa), acompanha saldo em tempo real e baixa relatório financeiro em PDF.
+- **Usuários (`/users`)** — ADMIN busca usuários por e-mail, vincula/desvincula treinadores e clientes à academia, e inscreve clientes em planos existentes.
+- **Configuração de Academia (`/gym`)** — ADMIN registra uma nova unidade de academia (nome + CNPJ).
+
+#### Decisões técnicas
+
+- **Segurança de role:** A role exibida na UI é sempre extraída do JWT (`getRoleFromToken`), nunca do `localStorage` puro, prevenindo bypass de visualização por adulteração manual do storage.
+- **Relatórios em PDF:** Hook reutilizável `useReportDownload` para download de Blobs retornados pelo backend (financeiro, avaliações físicas, ocupação de salas).
+- **Busca por nome:** Componente `UserSelect` reutilizável substitui inputs de UUID por busca textual com dropdown, usado em Avaliações, Agendamento de Sessão e Usuários.
 
 ---
 
 ## 🔌 Endpoints da API
 
-> **Observação:** Os Controllers REST estão em fase de implementação. Os serviços abaixo já possuem lógica de negócio completa. Os endpoints listados representam a interface esperada da API baseada nos serviços existentes.
-
-### Usuários
-
-| Método | Rota | Descrição |
-|---|---|---|
-| `POST` | `/users` | Criar novo usuário |
-| `POST` | `/users/login` | Autenticar usuário (login) |
-
-### Academias
-
-| Método | Rota | Descrição |
-|---|---|---|
-| `POST` | `/gyms` | Criar nova academia |
-
-### Planos de Assinatura
-
-| Método | Rota | Descrição |
-|---|---|---|
-| `POST` | `/membership-plans` | Criar plano de assinatura |
-| `GET` | `/membership-plans?gymId={id}` | Listar planos por academia |
-
-### Assinaturas de Clientes
-
-| Método | Rota | Descrição |
-|---|---|---|
-| `POST` | `/subscriptions` | Inscrever cliente em um plano |
-| `DELETE` | `/subscriptions/{id}` | Cancelar assinatura |
-
-### Aulas em Grupo
-
-| Método | Rota | Descrição |
-|---|---|---|
-| `POST` | `/group-classes` | Criar aula em grupo |
-| `GET` | `/group-classes` | Listar todas as aulas |
-
-### Reservas de Aulas
-
-| Método | Rota | Descrição |
-|---|---|---|
-| `POST` | `/bookings` | Reservar vaga em aula |
-| `PATCH` | `/bookings/{id}/attendance` | Atualizar presença (CONFIRMED / MISSED) |
-| `DELETE` | `/bookings/{id}?clientId={id}` | Cancelar reserva |
-
-### Horários Disponíveis
-
-| Método | Rota | Descrição |
-|---|---|---|
-| `POST` | `/timeslots/bulk` | Gerar horários em lote para treinador |
-| `GET` | `/timeslots?trainerId={id}` | Listar horários disponíveis por treinador |
-| `PATCH` | `/timeslots/{id}/book?clientId={id}` | Agendar horário com treinador |
-| `DELETE` | `/timeslots/{id}` | Cancelar horário |
-
-### Avaliações Físicas
-
-| Método | Rota | Descrição |
-|---|---|---|
-| `POST` | `/physical-assessments` | Registrar avaliação física |
-| `GET` | `/physical-assessments?clientId={id}` | Histórico de avaliações do cliente |
-
-### Transações Financeiras
-
-| Método | Rota | Descrição |
-|---|---|---|
-| `POST` | `/financial-transactions` | Registrar transação financeira |
-| `GET` | `/financial-transactions/balance?gymId={id}` | Obter saldo líquido da academia |
-
-### Dashboard
-
-| Método | Rota | Descrição |
-|---|---|---|
-| `GET` | `/dashboard?gymId={id}` | Métricas consolidadas da academia |
-
----
+Leia e entenda como consumir os endpoints em [./api.md](./api.md)
+  
+> Obs: O api.md pode estar desatualizado. Para uma documentação mais detalhada e atual, acesse a documentação do Swagger em `http://localhost:8080/swagger-ui/index.html`
 
 ## 📁 Estrutura do Projeto
 
 ```
 GymSync/
-├── compose.yaml                          # Docker Compose (PostgreSQL)
-├── pom.xml                               # Dependências Maven
-├── mvnw / mvnw.cmd                       # Maven Wrapper
-│
-├── src/
-│   └── main/
-│       ├── java/com/br/GymSync/
-│       │   ├── GymSyncApplication.java   # Entry point
-│       │   │
-│       │   ├── domain/
-│       │   │   ├── entities/             # Entidades JPA
-│       │   │   └── enums/                # Enums de domínio
-│       │   │
-│       │   ├── dtos/                     # Request e Response DTOs
-│       │   │   ├── availabletimeslot/
-│       │   │   ├── classbooking/
-│       │   │   ├── clientsubscription/
-│       │   │   ├── financialltransaction/
-│       │   │   ├── groupclass/
-│       │   │   ├── gym/
-│       │   │   ├── membershipplan/
-│       │   │   ├── physicalassessment/
-│       │   │   └── user/
-│       │   │
-│       │   ├── exceptions/               # Handler global + exceções customizadas
-│       │   ├── mappers/                  # Entity ↔ DTO converters
-│       │   ├── repositories/             # Interfaces Spring Data JPA
-│       │   └── services/                 # Regras de negócio
-│       │
-│       └── resources/
-│           ├── application.yaml          # Configuração da aplicação
-│           └── db/migration/
-│               ├── V1__create_initial_schema.sql
-│               └── V2__add_gym_management_and_finance.sql
-│
-└── frontend/
-    └── gymsync/
-        ├── package.json
-        ├── vite.config.js
-        └── src/
-            ├── main.jsx                  # Entry point React
-            ├── components/
-            │   ├── commom/               # Button, ProtectedRoute
-            │   ├── forms/auth/           # LoginForm, RegisterForm
-            │   └── layout/               # AppLayout, NavBar
-            ├── context/
-            │   └── AuthContext.jsx       # Estado global de autenticação
-            ├── pages/
-            │   ├── Dashboard.jsx         # Página principal da SPA
-            │   ├── auth/                 # Login, Register
-            │   └── user/                 # Profile
-            ├── routing/
-            │   └── routeConfig.js        # Mapa de rotas por role
-            ├── services/
-            │   └── authService.mock.js   # Mock de autenticação
-            └── styles/
-                └── global.css
+├── api.md
+├── compose.yaml
+├── frontend
+│   └── gymsync
+│       ├── index.html
+│       ├── package.json
+│       ├── package-lock.json
+│       ├── README.md
+│       ├── src
+│       │   ├── components
+│       │   │   ├── commom
+│       │   │   │   ├── button
+│       │   │   │   │   ├── Button.jsx
+│       │   │   │   │   └── Button.module.css
+│       │   │   │   ├── ProtectedRoute.jsx
+│       │   │   │   └── userselect
+│       │   │   │       ├── UserSelect.jsx
+│       │   │   │       └── UserSelect.module.css
+│       │   │   ├── dashboard
+│       │   │   │   ├── cards
+│       │   │   │   │   ├── ActionCard.jsx
+│       │   │   │   │   └── MetricCard.jsx
+│       │   │   │   └── sections
+│       │   │   │       ├── AdminSection.jsx
+│       │   │   │       ├── ClientSection.jsx
+│       │   │   │       └── TrainerSection.jsx
+│       │   │   ├── forms
+│       │   │   │   └── auth
+│       │   │   │       ├── AuthForms.module.css
+│       │   │   │       ├── LoginForm.jsx
+│       │   │   │       └── RegisterForm.jsx
+│       │   │   ├── layout
+│       │   │   │   ├── AppLayout.jsx
+│       │   │   │   └── NavBar.jsx
+│       │   │   └── subscription
+│       │   │       └── cards
+│       │   │           ├── ActiveSubscriptionCard.jsx
+│       │   │           └── PlanCard.jsx
+│       │   ├── hooks
+│       │   │   ├── context
+│       │   │   │   └── AuthContext.jsx
+│       │   │   ├── report
+│       │   │   │   └── useReportDownload.js
+│       │   │   └── users
+│       │   │       └── useGymUsers.js
+│       │   ├── i18n
+│       │   │   └── i18n.js
+│       │   ├── locales
+│       │   │   ├── en.json
+│       │   │   ├── es.json
+│       │   │   └── pt.json
+│       │   ├── main.jsx
+│       │   ├── pages
+│       │   │   ├── assessments
+│       │   │   │   ├── Assessments.jsx
+│       │   │   │   └── Assessments.module.css
+│       │   │   ├── auth
+│       │   │   │   ├── AuthPage.module.css
+│       │   │   │   ├── Login.jsx
+│       │   │   │   └── Register.jsx
+│       │   │   ├── bookslot
+│       │   │   │   ├── BookSlot.jsx
+│       │   │   │   └── BookSlot.module.css
+│       │   │   ├── classes
+│       │   │   │   ├── Classes.jsx
+│       │   │   │   └── Classes.module.css
+│       │   │   ├── Dashboard.jsx
+│       │   │   ├── Dashboard.module.css
+│       │   │   ├── finances
+│       │   │   │   ├── Finances.jsx
+│       │   │   │   └── Finances.module.css
+│       │   │   ├── gym
+│       │   │   │   ├── Gym.jsx
+│       │   │   │   └── Gym.module.css
+│       │   │   ├── plans
+│       │   │   │   ├── Plans.jsx
+│       │   │   │   └── Plans.module.css
+│       │   │   ├── subscription
+│       │   │   │   ├── Subscription.jsx
+│       │   │   │   └── Subscription.module.css
+│       │   │   ├── timeslots
+│       │   │   │   ├── Timeslots.jsx
+│       │   │   │   └── Timeslots.module.css
+│       │   │   └── users-admin
+│       │   │       ├── Users.jsx
+│       │   │       └── Users.module.css
+│       │   ├── routing
+│       │   │   └── routeConfig.js
+│       │   ├── services
+│       │   │   ├── api.js
+│       │   │   ├── authService.js
+│       │   │   ├── availableTimeSlotService.js
+│       │   │   ├── classBookingService.js
+│       │   │   ├── clientSubscriptionService.js
+│       │   │   ├── dashboardService.js
+│       │   │   ├── financialTransactionService.js
+│       │   │   ├── groupClassService.js
+│       │   │   ├── gymService.js
+│       │   │   ├── membershipPlanService.js
+│       │   │   ├── physicalAssessmentService.js
+│       │   │   └── reportService.js
+│       │   ├── styles
+│       │   │   └── global.css
+│       │   └── utils
+│       │       └── jwt.js
+│       └── vite.config.js
+├── mvnw
+├── mvnw.cmd
+├── pom.xml
+├── README.md
+└── src
+    ├── main
+    │   ├── java
+    │   │   └── com
+    │   │       └── br
+    │   │           └── GymSync
+    │   │               ├── config
+    │   │               │   ├── AuthenticationService.java
+    │   │               │   ├── OpenApiConfig.java
+    │   │               │   ├── SecurityConfig.java
+    │   │               │   ├── SecurityFilter.java
+    │   │               │   └── TokenService.java
+    │   │               ├── controllers
+    │   │               │   ├── AvailableTimeslotController.java
+    │   │               │   ├── ClassBookingController.java
+    │   │               │   ├── ClientSubscriptionController.java
+    │   │               │   ├── DashboardController.java
+    │   │               │   ├── FinancialTransactionController.java
+    │   │               │   ├── GroupClassController.java
+    │   │               │   ├── GymController.java
+    │   │               │   ├── MembershipPlanController.java
+    │   │               │   ├── PhysicalAssessmentController.java
+    │   │               │   ├── ReportController.java
+    │   │               │   └── UserController.java
+    │   │               ├── domain
+    │   │               │   ├── entities
+    │   │               │   │   ├── AvailableTimeslot.java
+    │   │               │   │   ├── ClassBooking.java
+    │   │               │   │   ├── ClientSubscription.java
+    │   │               │   │   ├── FinancialTransaction.java
+    │   │               │   │   ├── GroupClass.java
+    │   │               │   │   ├── Gym.java
+    │   │               │   │   ├── MembershipPlan.java
+    │   │               │   │   ├── PhysicalAssessment.java
+    │   │               │   │   └── User.java
+    │   │               │   └── enums
+    │   │               │       ├── BookingStatus.java
+    │   │               │       ├── ClassType.java
+    │   │               │       ├── Role.java
+    │   │               │       ├── SubscriptionStatus.java
+    │   │               │       ├── TransactionCategory.java
+    │   │               │       └── TransactionType.java
+    │   │               ├── dtos
+    │   │               │   ├── auth
+    │   │               │   │   └── TokenValidationResponse.java
+    │   │               │   ├── availabletimeslot
+    │   │               │   │   ├── AvailableTimeslotRequestDTO.java
+    │   │               │   │   └── AvailableTimeslotResponseDTO.java
+    │   │               │   ├── classbooking
+    │   │               │   │   ├── ClassBookingRequestDTO.java
+    │   │               │   │   └── ClassBookingResponseDTO.java
+    │   │               │   ├── clientsubscription
+    │   │               │   │   ├── ClientSubscriptionRequestDTO.java
+    │   │               │   │   └── ClientSubscriptionResponseDTO.java
+    │   │               │   ├── financialltransaction
+    │   │               │   │   ├── FinancialTransactionRequestDTO.java
+    │   │               │   │   └── FinancialTransactionResponseDTO.java
+    │   │               │   ├── groupclass
+    │   │               │   │   ├── GroupClassRequestDTO.java
+    │   │               │   │   └── GroupClassResponseDTO.java
+    │   │               │   ├── gym
+    │   │               │   │   ├── GymRequestDTO.java
+    │   │               │   │   └── GymResponseDTO.java
+    │   │               │   ├── membershipplan
+    │   │               │   │   ├── MembershipPlanRequestDTO.java
+    │   │               │   │   └── MembershipPlanResponseDTO.java
+    │   │               │   ├── physicalassessment
+    │   │               │   │   ├── PhysicalAssessmentRequestDTO.java
+    │   │               │   │   └── PhysicalAssessmentResponseDTO.java
+    │   │               │   └── user
+    │   │               │       ├── LoginRequestDTO.java
+    │   │               │       ├── UserRequestDTO.java
+    │   │               │       └── UserResponseDTO.java
+    │   │               ├── exceptions
+    │   │               │   ├── custom
+    │   │               │   │   ├── ActiveSubscriptionRequiredException.java
+    │   │               │   │   ├── ClassClassroomFullException.java
+    │   │               │   │   ├── CnpjAlreadyExistsException.java
+    │   │               │   │   ├── EmailAlreadyExistsException.java
+    │   │               │   │   ├── InvalidCredentialsException.java
+    │   │               │   │   ├── InvalidDateRangeException.java
+    │   │               │   │   ├── InvalidUserRoleException.java
+    │   │               │   │   └── ResourceNotFoundException.java
+    │   │               │   ├── ErrorResponse.java
+    │   │               │   └── GlobalExceptionHandler.java
+    │   │               ├── GymSyncApplication.java
+    │   │               ├── mappers
+    │   │               │   ├── AvailableTimeslotMapper.java
+    │   │               │   ├── ClassBookingMapper.java
+    │   │               │   ├── ClientSubscriptionMapper.java
+    │   │               │   ├── FinancialTransactionMapper.java
+    │   │               │   ├── GroupClassMapper.java
+    │   │               │   ├── GymMapper.java
+    │   │               │   ├── MembershipPlanMapper.java
+    │   │               │   ├── PhysicalAssessmentMapper.java
+    │   │               │   └── UserMapper.java
+    │   │               ├── repositories
+    │   │               │   ├── AvailableTimeslotRepository.java
+    │   │               │   ├── ClassBookingRepository.java
+    │   │               │   ├── ClientSubscriptionRepository.java
+    │   │               │   ├── FinancialTransactionRepository.java
+    │   │               │   ├── GroupClassRepository.java
+    │   │               │   ├── GymRepository.java
+    │   │               │   ├── MembershipPlanRepository.java
+    │   │               │   ├── PhysicalAssessmentRepository.java
+    │   │               │   └── UserRepository.java
+    │   │               └── services
+    │   │                   ├── AvailableTimeslotService.java
+    │   │                   ├── ClassBookingService.java
+    │   │                   ├── ClientSubscriptionService.java
+    │   │                   ├── DashboardService.java
+    │   │                   ├── FinancialTransactionService.java
+    │   │                   ├── GroupClassService.java
+    │   │                   ├── GymService.java
+    │   │                   ├── MembershipPlanService.java
+    │   │                   ├── PhysicalAssessmentService.java
+    │   │                   ├── ReportService.java
+    │   │                   └── UserService.java
+    │   └── resources
+    │       ├── application.yaml
+    │       └── db
+    │           └── migration
+    │               ├── V1__create_initial_schema.sql
+    │               ├── V2__add_gym_management_and_finance.sql
+    │               └── V3__Insert_default_users_for_testing.sql
+    └── test
+        └── java
+            └── com
+                └── br
+                    └── GymSync
+                        └── GymSyncApplicationTests.java
 ```
 
 ---
 
 ## 🔮 Melhorias Futuras
 
-- [ ] **Implementar Controllers REST** — expor todos os serviços via endpoints HTTP.
-- [ ] **Autenticação e autorização com JWT** — substituir o mock de autenticação do frontend por integração real com o backend, com tokens JWT e refresh tokens.
-- [ ] **Controle de acesso por role (RBAC)** — restringir endpoints por perfil (`CLIENT`, `TRAINER`, futuramente `ADMIN`).
-- [ ] **Hash de senhas** — implementar BCrypt para armazenamento seguro de credenciais.
-- [ ] **Documentação Swagger / OpenAPI** — adicionar `springdoc-openapi` para documentação interativa da API.
+- [x] **Implementar Controllers REST** — expor todos os serviços via endpoints HTTP.
+- [x] **Autenticação e autorização com JWT** — substituir o mock de autenticação do frontend por integração real com o backend, com tokens JWT e refresh tokens.
+- [x] **Controle de acesso por role (RBAC)** — restringir endpoints por perfil (`CLIENT`, `TRAINER`, futuramente `ADMIN`).
+- [x] **Hash de senhas** — implementar BCrypt para armazenamento seguro de credenciais.
+- [x] **Documentação Swagger / OpenAPI** — adicionar `springdoc-openapi` para documentação interativa da API.
 - [ ] **Testes unitários e de integração** — cobertura com JUnit 5 e Mockito no backend; Vitest/RTL no frontend.
 - [ ] **Paginação e filtros** — suporte a paginação nas listagens e filtros avançados.
 - [ ] **Monitoramento e observabilidade** — integrar Spring Actuator + Prometheus + Grafana.
 - [ ] **Pipeline CI/CD** — configurar GitHub Actions para build, testes e deploy automatizados.
-- [ ] **Páginas de role no frontend** — implementar painéis específicos para `ALUNO` e `TREINADOR` (já mapeados no `routeConfig.js`).
-- [ ] **Internacionalização (i18n)** — o frontend já prevê chaves de tradução (`nav.dashboard`, etc.); implementar a solução de i18n.
+- [x] **Páginas de role no frontend** — implementar painéis específicos para `ALUNO` e `TREINADOR` (já mapeados no `routeConfig.js`).
+- [x] **Internacionalização (i18n)** — o frontend já prevê chaves de tradução (`nav.dashboard`, etc.); implementar a solução de i18n.
 - [ ] **Upload de foto de perfil** — suporte a foto de perfil do usuário.
 - [ ] **Notificações de assinatura expirando** — alertar automaticamente clientes com assinaturas próximas do vencimento.
 
